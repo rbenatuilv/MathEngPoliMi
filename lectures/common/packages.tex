@@ -1,0 +1,67 @@
+
+\usepackage[utf8]{inputenc}
+\usepackage[english]{babel}
+
+% Miscelanea
+\usepackage{amsmath,amssymb,amsbsy} %matemátias y símbolos
+\usepackage{hyperref} % hipervínculos en la tabla de contenidos
+\usepackage{enumitem}
+\usepackage{titlesec}  % Paquete para personalizar los títulos de secciones
+
+%Cosas gráficas
+\usepackage{graphicx}
+\usepackage{tikz}
+\usepackage{wrapfig}
+\usepackage{pgfplots}
+\usepackage{color}
+\usepackage{booktabs}
+\usepackage{tikz}
+\usetikzlibrary{matrix}
+\pgfplotsset{compat=1.17} 
+\usepackage{float}
+\usepackage{mathtools}
+\DeclarePairedDelimiter\ceil{\lceil}{\rceil}
+\usepackage{cancel}
+\usepackage{xifthen}
+
+
+\usepackage{graphicx}
+\usepackage{subcaption}
+
+% Margenes
+\usepackage{fullpage}
+
+\usepackage{listings} % Paquete para incluir código fuente
+\usepackage{xcolor}   % Paquete para definir colores (opcional, para personalización)
+
+% Definir el estilo del código
+\lstset{
+  language=C++,               % Lenguaje de programación
+  basicstyle=\ttfamily\footnotesize, % Estilo de la fuente del código
+  keywordstyle=\color{blue},   % Color para palabras clave
+  commentstyle=\color{gray},   % Color para comentarios
+  stringstyle=\color{orange},  % Color para cadenas de texto
+  numbers=left,                % Colocar números de línea a la izquierda
+  numberstyle=\tiny\color{gray}, % Estilo de los números de línea
+  stepnumber=1,                % Incremento de los números de línea
+  frame=single,                % Coloca un marco alrededor del código
+  breaklines=true,             % Divide líneas largas
+  captionpos=b,                % Posición de la leyenda (abajo)
+  showspaces=false,            % No mostrar espacios en blanco
+  showstringspaces=false       % No mostrar espacios dentro de strings
+}
+
+\hypersetup{
+	colorlinks,
+	linkcolor={red!50!black},
+	citecolor={blue!50!black},
+	urlcolor={blue!80!black}
+}
+
+% Definir el estilo del capítulo usando tcolorbox
+\titleformat{\chapter}[display]
+  {\normalfont\huge\bfseries\centering} % Estilo de la fuente
+  {\large\chaptertitlename\ \thechapter} % Texto que aparece antes del título
+  {5pt} % Espacio entre el título y el capítulo
+  {\huge} % Estilo del título
+  [\vspace{2pt} \rule{\textwidth}{1pt}] % Línea horizontal después del título
