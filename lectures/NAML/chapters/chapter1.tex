@@ -1,3 +1,282 @@
-\chapter{Class 1: Recap of Linear Algebra}
+\chapter{Numerical Linear Algebra tools}
 
-Hola hola hola
+\section{Introduction: Recap of Linear Algebra}
+
+In this section we will review some basic concepts of Linear Algebra that will be useful for the rest of the course.
+
+\subsection{Matrix-vector multiplication}
+
+Given a matrix $A \in \mathbb{R}^{m \times n}$ and a vector $x \in \mathbb{R}^n$, the matrix-vector multiplication $y = Ax$ 
+is defined as:
+
+\begin{equation}
+    y_i = \sum_{j=1}^{n} A_{ij} x_j
+\end{equation}
+
+A matrix-vector multiplication can be considered as a linear combination of the columns of the matrix $A$. Lets
+see an example:
+
+\begin{equation}
+    \begin{bmatrix}
+        1 & 4 \\
+        2 & 5 \\
+        3 & 6
+    \end{bmatrix} \begin{bmatrix}
+        x_1 \\
+        x_2 \\
+    \end{bmatrix} = \begin{bmatrix}
+        1 \\
+        2 \\
+        3
+    \end{bmatrix} x_1 + \begin{bmatrix}
+        4 \\
+        5 \\
+        6
+    \end{bmatrix} x_2
+\end{equation}
+
+\subsection{Column space of a matrix}
+
+The column space of a matrix $A \in \mathbb{R}^{m \times n}$ is the subspace of $\mathbb{R}^m$ spanned by the columns of $A$.
+In other words, it is the set of all possible linear combinations of the columns of $A$. The column space of a matrix is denoted
+as $C(A)$.\\
+
+If the columns of $A$ are linearly independent, then the column space of $A$ is the entire $\mathbb{R}^m$. If the columns of $A$
+are linearly dependent, then the column space of $A$ is a subspace of $\mathbb{R}^m$ with dimension equal to the rank of $A$.\\
+
+The rank of a matrix $A$ is is the size of the largest set of linearly independent columns of $A$. It is denoted as $rank(A)$.
+Note that $rank(A) = rank(A^T)$.
+
+\subsection{System of linear equations}
+
+A system of linear equations is a set of $m$ equations with $n$ unknowns of the form:
+
+\begin{equation}
+    \begin{aligned}
+        a_{11} x_1 + a_{12} x_2 + \ldots + a_{1n} x_n &= b_1 \\
+        a_{21} x_1 + a_{22} x_2 + \ldots + a_{2n} x_n &= b_2 \\
+        \vdots \\
+        a_{m1} x_1 + a_{m2} x_2 + \ldots + a_{mn} x_n &= b_m \\
+    \end{aligned}
+\end{equation}
+
+This system can be written in matrix form as $Ax = b$, where $A \in \mathbb{R}^{m \times n}$, $x \in \mathbb{R}^n$ 
+and $b \in \mathbb{R}^m$.\\
+
+The system $Ax = b$ has a solution if and only if $b \in C(A)$. If $b \in C(A)$, then the system has a unique solution
+if and only if $rank(A) = n$. If $rank(A) < n$, then the system has infinitely many solutions.
+
+\subsection{CR factorization}
+
+The CR factorization of a matrix $A \in \mathbb{R}^{m \times n}$, with $m \geq n$, is a factorization of $A$ as $A = CR$, where
+$C \in \mathbb{R}^{m \times r}$ is a matrix with the linearly independent columns of $A$ and $R \in \mathbb{R}^{r \times n}$ is 
+obtained by determining the coefficients of the linear combination of the columns of $C$ that give the columns of $A$.
+In this factorization, $r = rank(A)$.\\
+
+Lets see an example:
+
+\begin{equation}
+    A = \begin{bmatrix}
+        1 & 4 & 7 \\
+        2 & 5 & 8 \\
+        3 & 6 & 9
+    \end{bmatrix} = \begin{bmatrix}
+        1 & 4 \\
+        2 & 5 \\
+        3 & 6
+    \end{bmatrix} \begin{bmatrix}
+        1 & 0 & -1 \\
+        0 & 1 & 2
+    \end{bmatrix} = C R
+\end{equation}
+
+The matrix $C$ is also called the Row Reduced Echelon Form of $A$.
+
+\subsection{Matrix-matrix multiplication}
+
+Given two matrices $A \in \mathbb{R}^{m \times n}$ and $B \in \mathbb{R}^{n \times p}$, the matrix-matrix multiplication $C = AB$
+is defined as:
+
+\begin{equation}
+    C_{ij} = \sum_{k=1}^{n} A_{ik} B_{kj}
+\end{equation}
+
+A matrix-matrix multiplication can be considered as the outer product of the columns of $A$ and the rows of $B$. Lets see an example:
+
+\begin{equation}
+    \begin{bmatrix}
+        1 & 4 \\
+        2 & 5 \\
+        3 & 6
+    \end{bmatrix} \begin{bmatrix}
+        1 & 2 \\
+        3 & 4
+    \end{bmatrix} = \begin{bmatrix}
+        1 \\
+        2 \\
+        3
+    \end{bmatrix} \begin{bmatrix}
+        1 & 2
+    \end{bmatrix} + \begin{bmatrix}
+        4 \\
+        5 \\
+        6
+    \end{bmatrix} \begin{bmatrix}
+        3 & 4
+    \end{bmatrix}
+\end{equation}
+
+Note that each outer product generates a matrix of the same size as the result matrix, but always with rank 1. So 
+the matrix-matrix multiplication can be considered as a sum of rank 1 matrices, obtained by the outer products of the columns of $A$
+and the rows of $B$.
+
+\subsection{Null space of a matrix}
+
+The null space of a matrix $A \in \mathbb{R}^{m \times n}$ is the set of all vectors $x \in \mathbb{R}^n$ such that $Ax = 0$.
+The null space of a matrix is denoted as $N(A)$. It is also called the kernel of $A$, denoted as $ker(A)$.\\
+
+Formally, we have that:
+
+\begin{equation}
+    N(A) = \{ x \in \mathbb{R}^n : Ax = 0 \}
+\end{equation}
+
+The null space of a matrix is a subspace of $\mathbb{R}^n$. The dimension of the null space of a matrix is called the nullity 
+of the matrix.
+
+\subsection{Fundamental subspaces of a matrix}
+
+Given a matrix $A \in \mathbb{R}^{m \times n}$, we can define four fundamental subspaces:
+
+\begin{itemize}
+    \item The column space of $A$, denoted as $C(A)$
+    \item The row space of $A$, denoted as $C(A^T)$
+    \item The null space of $A$, denoted as $N(A)$
+    \item The left null space of $A$, denoted as $N(A^T)$
+\end{itemize}
+
+These subspaces are related by the following properties:
+
+\begin{equation}
+    \begin{aligned}
+        C(A) &\perp N(A^T) \\
+        C(A^T) &\perp N(A) \\
+    \end{aligned}
+\end{equation}
+
+They also satisfy the following dimensions properties:
+
+\begin{equation}
+    \begin{aligned}
+        dim(C(A)) + dim(N(A)) &= n \\
+        dim(C(A^T)) + dim(N(A^T)) &= m \\
+    \end{aligned}
+\end{equation}
+
+This is known as the Rank-Nullity Theorem.
+
+\subsection{Orthogonal matrices}
+
+An orthogonal matrix is a square matrix $Q \in \mathbb{R}^{n \times n}$ such that $Q^T Q = I$, where $I$ is the identity matrix.
+This implies that $Q^T = Q^{-1}$.\\
+
+Now, consider that $Q$ is an orthogonal matrix, and set $w = Q^T x$. Then we have that:
+
+\begin{equation}
+    \begin{aligned}
+        \|w\|^2 =w^T w &= x^T Q Q^T x \\
+        &= x^T x = \|x\|^2
+    \end{aligned}
+\end{equation}
+
+This means that the norm of a vector is preserved under an orthogonal transformation. This is called an isometry. It is
+a useful property for numerical algorithms, as it helps to avoid numerical instability.\\
+
+There are two main types of orthogonal transformations that we are interested:
+
+\subsubsection{Rotation matrices}
+
+A rotation matrix is an orthogonal matrix that represents a rotation in $\mathbb{R}^2$ or $\mathbb{R}^3$. In $\mathbb{R}^2$,
+a rotation matrix is of the form:
+
+\begin{equation}
+    Q(\theta) = \begin{bmatrix}
+        \cos(\theta) & -\sin(\theta) \\
+        \sin(\theta) & \cos(\theta)
+    \end{bmatrix}
+\end{equation}
+
+\subsubsection{Reflection matrices}
+
+A reflection matrix is an orthogonal matrix that represents a reflection with respect to a hyperplane. If $n$ denotes
+the unit normal vector to the hyperplane, then the reflection matrix is of the form:
+
+\begin{equation}
+    Q = I - 2 n n^T
+\end{equation}
+
+Note that the inverse of this matrix is itself, as $Q^T = Q^{-1}$ and in this case, $Q$ is symmetric ($Q = Q^T$).\\
+
+\subsection{QR factorization}
+
+The QR factorization of a matrix $A \in \mathbb{R}^{m \times n}$, with $m \geq n$, is a factorization of $A$ as $A = QR$, where
+$Q \in \mathbb{R}^{m \times n}$ is an orthogonal matrix and $R \in \mathbb{R}^{n \times n}$ is an upper triangular matrix.\\
+
+\subsubsection{Gram-Schmidt process}
+
+The Gram-Schmidt process is a method to compute the QR factorization of a matrix. Given a matrix $A \in \mathbb{R}^{m \times n}$,
+the Gram-Schmidt process computes an orthonormal basis for the column space of $A$, as follows:
+
+\begin{equation}
+    \begin{aligned}
+        q_1 &= \frac{a_1}{\|a_1\|} \\
+        q_i = a_i - \sum_{j=1}^{i-1} &(q_j^T a_i) q_j \quad \forall i = 2, \ldots, n
+    \end{aligned}
+\end{equation}
+
+where $a_i$ denotes the $i$-th column of $A$. The matrix $Q$ is obtained by stacking the vectors $q_i$ as columns. The matrix $R$
+is obtained by computing the coefficients of the linear combination of the columns of $Q$ that give the columns of $A$.\\
+
+\subsection{Eigenvalues and eigenvectors}
+
+Given a square matrix $A \in \mathbb{R}^{n \times n}$, a scalar $\lambda$ is called an eigenvalue of $A$ if there exists a vector
+$v \in \mathbb{R}^n$ such that:
+
+\begin{equation}
+    Av = \lambda v
+\end{equation}
+
+The vector $v$ is called an eigenvector of $A$ associated with the eigenvalue $\lambda$.\\
+
+Let $P$ be the matrix whose columns are the eigenvectors of $A$, and $\Lambda$ be the diagonal matrix whose diagonal elements
+are the eigenvalues of $A$. Then we have that:
+
+\begin{equation}
+    A = P \Lambda P^{-1}
+\end{equation}
+
+This is called the eigendecomposition of $A$.\\
+
+The eigenvalues of a matrix are the roots of the characteristic polynomial of $A$, which is defined as:
+
+\begin{equation}
+    det(A - \lambda I) = 0
+\end{equation}
+
+\subsection{Similar matrices}
+
+Two square matrices $A$ and $B$ are called similar if there exists a non-singular matrix $M$ such that:
+
+\begin{equation}
+    B = M^{-1} A M
+\end{equation}
+
+Similar matrices have the same eigenvalues, but not necessarily the same eigenvectors. Let $(\lambda, y)$ be 
+an eigenpair of $B$, then we have:
+
+\begin{equation}
+    B y = \lambda y \Rightarrow M^{-1} A M y = \lambda y \Rightarrow A (M y) = \lambda (M y)
+\end{equation}
+
+This means that $M y$ is an eigenvector of $A$ associated with the eigenvalue $\lambda$. So, to obtain
+the eigenvectors of $A$ from the eigenvectors of $B$, we need to multiply the eigenvectors of $B$ by $M$.
