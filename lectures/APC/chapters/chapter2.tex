@@ -1,4 +1,443 @@
-\section{JAJAJA}
-\subsection{JAJAJAJA}
+\chapter{Pointers, references and function parameters}
 
-HOLA HOLA 2
+\section{Pointers}
+
+Declaring a variable means reserving a memory area, including several locations.
+The number of locations depends on the type of the variable. For example, an
+\texttt{int} variable occupies 4 bytes, a \texttt{float} variable occupies 4
+bytes, and a \texttt{double} variable occupies 8 bytes. \\
+
+Each memory location has a physicall address, which is a number that identifies
+it. The address of a variable can be obtained by using the \texttt{\&} operator.
+For example, the following code prints the address of the variable \texttt{a}:
+
+\begin{lstlisting}[language=C++]
+#include <iostream>
+using namespace std;
+
+int main() {
+    int a = 10;
+    cout << &a << endl;
+    return 0;
+}
+
+// Output: 0x7fffbf7b3b7c (a mem address, it may vary)
+\end{lstlisting}
+
+The \texttt{\&} operator is called the \textbf{address-of operator}.\\
+
+A pointer is a variable that stores the address of another variable. The type of
+the pointer must be the same as the type of the variable whose address it will
+store. For example, the following code declares a pointer to an integer variable
+and assigns the address of the variable \texttt{a} to it:
+
+\begin{lstlisting}[language=C++]
+#include <iostream>
+using namespace std;
+
+int main() {
+    int a = 10;
+    int *p = &a;
+    cout << p << endl;
+    cout << *p << endl;
+    return 0;
+}
+
+// Output: 
+0x7fffbf7b3b7c (a mem address, it may vary)
+10
+\end{lstlisting}
+
+
+The \texttt{*} operator is called the \textbf{dereference operator}. It is used
+to access the value stored in the memory location pointed by the pointer. In the
+example above, \texttt{*p} is equivalent to \texttt{a}. Note that the operator is
+used to declare a pointer, but it is also used to access the value stored in the
+memory location pointed by the pointer. This is a common source of confusion.\\
+
+The following code shows how to declare a pointer to a \texttt{float} variable:
+
+\begin{lstlisting}[language=C++]
+#include <iostream>
+using namespace std;
+
+int main() {
+    float b = 3.14;
+    float *q = &b;
+    cout << q << endl;
+    cout << *q << endl;
+    return 0;
+}
+
+// Output:
+0x7fffbf7b3b7c (a mem address, it may vary)
+3.14
+\end{lstlisting}
+
+As you can see, the code is very similar to the previous example. The only
+difference is that the type of the pointer is \texttt{float *} instead of
+\texttt{int *}. Pointers can store the address of any variable, regardless of its
+type, but the type of the pointer must match the type of the variable whose
+address it will store.\\
+
+\section{Function parameters}
+
+The general form of a function is:
+
+\begin{lstlisting}[language=C++]
+// function declaration
+return_type function_name(type1 parameter1, type2 parameter2, ...)
+
+// function definition
+return_type function_name(type1 parameter1, type2 parameter2, ...)
+{
+    // function body
+}
+\end{lstlisting}
+
+In a function definition, we use formal parameters represeinting a symbolic
+reference (identifier) to objects used within the function. The initial value of
+formal parameters is defined when the function is called using the actual 
+parameters specified by the caller. Let us see an example:
+
+\begin{lstlisting}[language=C++]
+#include <iostream>
+using namespace std;
+
+double circ(double radius) {
+    double res;
+    res = 2 * 3.1416 * radius;
+    return res;
+}
+
+int main() {
+    double r = 5.0;
+    double c = circ(r);
+    cout << c << endl;
+    return 0;
+}
+
+// Output: 31.416
+\end{lstlisting}
+
+In the example above, the function \texttt{circ} calculates the circumference of
+a circle given its radius. Here, \texttt{radius} is a formal parameter, while
+\texttt{r} is an actual parameter. The function is called with the actual
+parameter \texttt{r}, and the value of \texttt{r} is copied to the formal
+parameter \texttt{radius}.\\
+
+The exchange of information with the passing of parameters between the caller and callee
+can take place in two ways:
+
+\begin{itemize}
+    \item \textbf{Passing by value}
+    \item \textbf{Passing by reference}
+\end{itemize}
+
+\subsection{Passing by value}
+
+When passing by value, the actual parameter is copied to the formal parameter.
+This means that any changes made to the formal parameter do not affect the 
+actual parameter. For example:
+
+\begin{lstlisting}[language=C++]
+#include <iostream>
+using namespace std;
+
+void swap(int x, int y) {
+    int temp;
+    temp = x;
+    x = y;
+    y = temp;
+}
+
+int main() {
+    int a = 10, b = 20;
+    swap(a, b);
+    cout << a << " " << b << endl;
+    return 0;
+}
+
+// Output: 10 20
+\end{lstlisting}
+
+In the example above, the function \texttt{swap} is supposed to swap the values
+of the variables \texttt{x} and \texttt{y}. However, the function does not work
+as expected because the parameters are passed by value. The function receives
+copies of the actual parameters, so any changes made to the formal parameters do
+not affect the actual parameters.\\
+
+\subsection{Passing by reference}
+
+When passing by reference, the address of the actual parameter is passed to the
+formal parameter. This means that the formal parameter is an alias of the actual
+parameter. In other words, the formal and the actual parameters refer to the same
+memory location. Any changes made to the formal parameter affect the actual
+parameter. For example:\\
+
+\begin{lstlisting}[language=C++]
+#include <iostream>
+using namespace std;
+
+void swap(int* x, int* y) {
+    int temp;
+    temp = *x;
+    *x = *y;
+    *y = temp;
+}
+
+int main() {
+    int a = 10, b = 20;
+    swap(&a, &b);
+    cout << a << " " << b << endl;
+    return 0;
+}
+
+// Output: 20 10
+\end{lstlisting}
+
+In the example above, the function \texttt{swap} receives the addresses of the
+variables \texttt{x} and \texttt{y}. The function swaps the values of the
+variables by dereferencing the pointers. The function works as expected because
+the parameters are passed by reference.\\
+
+An important observation: arrays are always passed by reference. This means that
+any changes made to an array in a function affect the original array. This is 
+because the name of an array is a pointer to the first element of the array. For
+example:\\
+
+\begin{lstlisting}[language=C++]
+#include <iostream>
+using namespace std;
+
+void change(int* arr, int n) {
+    for (int i = 0; i < n; i++) {
+        arr[i] = arr[i] * 2;
+    }
+}
+
+int main() {
+    int arr[] = {1, 2, 3, 4, 5};
+    int n = sizeof(arr) / sizeof(arr[0]);
+    change(arr, n);
+    for (int i = 0; i < n; i++) {
+        cout << arr[i] << " ";
+    }
+    cout << endl;
+    return 0;
+}
+
+// Output: 2 4 6 8 10
+\end{lstlisting}
+
+In the example above, the function \texttt{change} receives the address of the
+array \texttt{arr} and the size of the array \texttt{n}. The function multiplies
+each element of the array by 2. The function works as expected because the array
+is passed by reference.\\
+
+\subsection{Passing by value vs passing by reference}
+
+When you pass by value:
+
+\begin{itemize}
+    \item The actual parameter is copied to the formal parameter.
+    \item It requires a lot of time to perform the copy if the parameter is large.
+    \item Actual parameters and formal parameters are different.
+    \item You cannot return a value to the caller without a return statement.
+\end{itemize}
+
+When you pass by reference:
+
+\begin{itemize}
+    \item The address of the actual parameter is passed to the formal parameter.
+    \item It requires less time to pass the address than to copy the parameter,
+    since the address has a fixed size.
+    \item Actual parameters and formal parameters are the same.
+    \item You can return a value to the caller by changing the value of the
+    formal parameter.
+\end{itemize}
+
+\section{References}
+
+A reference is an alias for a variable. It is a constant pointer that is
+automatically dereferenced. A reference is declared by using the \texttt{\&}
+operator. It must be always initialized when declared, and it cannot be changed
+after initialization. For example:\\
+
+\begin{lstlisting}[language=C++]
+#include <iostream>
+using namespace std;
+
+int main() {
+    int a = 10;
+    int &b = a;
+    cout << a << " " << b << endl;
+    b = 20;
+    cout << a << " " << b << endl;
+}
+
+// Output:
+10 10
+20 20
+\end{lstlisting}
+
+In the example above, the reference \texttt{b} is an alias for the variable
+\texttt{a}. This means that \texttt{b} and \texttt{a} refer to the same memory
+location. Any changes made to \texttt{b} affect \texttt{a}, and vice versa.\\
+
+When we initialize a variable, the value of the inititializer is copied into
+the object we are creating. When we define a reference, instead of copying
+the initializer value, we bind the reference to its initializer. Once initialized,
+a reference cannot be reseated to refer to a different object, and that is why
+references must be initialized when declared.\\
+
+When we fetch the value of a reference, we are actually fetching the value of
+the object to which the reference is bound. When we use a reference as an
+initializer, we are actually using the value of the object to which the reference
+is bound. For example:\\
+
+\begin{lstlisting}[language=C++]
+int i = 7;
+int &r = i; // r is a reference to i
+int &r2 = r; // r2 is a reference to the object to which r is bound
+int j = r; // j is initialized by the value in i
+\end{lstlisting}
+
+\subsection{References vs pointers}
+
+References and pointers are similar in that they both provide an alternative way
+to access an object. However, there are some differences between them:
+
+\begin{itemize}
+    \item A pointer is a compound type that holds a memory address. A reference
+    just is an alias for an already existing object.
+    \item Like references, pointers can be used for indirect access to an object.
+    \item Unlike a reference, a pointer is an object that has its own address and
+    can be assigned and copied to other pointers. A single pointer can point to
+    different objects during its lifetime.
+    \item Like other built-in types, pointers have undefined values if they are
+    not initialized, so we have to be careful when using them.
+    \item A reference is an alias for an object, and once a reference is initialized,
+    it cannot be made to refer to a different object. A reference must be initialized
+    when it is defined.
+\end{itemize}
+
+Note that the operators \texttt{*} and \texttt{\&} are used as both an operator in an
+expression and as part of a declaration. The context in which the operator is used
+determines what the symbol means.\\
+
+\subsection{References as function parameters}
+
+\texttt{C++} relies on references to implement pass by reference mechanism. This
+simplifies the syntax for the caller and the callee. When a reference is passed
+to a function, the function receives an alias to the actual parameter. This means
+that any changes made to the formal parameter affect the actual parameter.\\
+
+Let us see an example:\\
+
+\begin{lstlisting}[language=C++]
+#include <iostream>
+using namespace std;
+
+void swap(int &x, int &y) {
+    int temp;
+    temp = x;
+    x = y;
+    y = temp;
+}
+
+int main() {
+    int a = 10, b = 20;
+    swap(a, b);
+    cout << a << " " << b << endl;
+    return 0;
+}
+
+// Output: 20 10
+\end{lstlisting}
+
+In the example above, the function \texttt{swap} receives references to the
+variables \texttt{x} and \texttt{y}. The function swaps the values of the
+variables. The function works as expected because the parameters are passed by
+reference.\\
+
+\subsection{\texttt{const} references}
+
+We might want to define a variable whose value cannot be changed, for example,
+to refer to the size of a buffer. We can make a variable unchangeable by using
+the \texttt{const} keyword. For example:\\
+
+\begin{lstlisting}[language=C++]
+const int bufSize = 512;
+bufSize = 512; // error: cannot assign to a const object
+\end{lstlisting}
+
+Since we can't change the value of a \texttt{const} object, it must be always
+initialized when declared. By default, \texttt{const} objects are local to the
+file in which they are defined. When a \texttt{const} object is initialized from 
+a compile-time constant, our compiler will usually substitute the uses of the 
+variable with the value of the constant during compilation.\\
+
+We can also define a reference to a \texttt{const} object. To do so, we use a 
+reference to \texttt{const} type. Unlike an ordinary reference, a reference to
+\texttt{const} cannot be used to change the value of the object to which it is
+bound.\\
+
+This is useful when we want to pass an argument to a function by reference, 
+but we don't want the function to change the value of the argument. In other
+words, \texttt{const} references can be used to pass large objects to functions
+in read-only mode, obtaining the benefits of pass by reference without the risk
+of changing the value of the object.\\
+
+Let us see an example:\\ \\
+
+\begin{lstlisting}[language=C++]
+#include <iostream>
+using namespace std;
+
+double circ(const double &radius) {
+    double res;
+    res = 2 * 3.1416 * radius;
+    //radius = 10;  --> f we try to change the value of radius, we get an error 
+    return res;
+}
+
+int main() {
+    double r = 5.0;
+    double c = circ(r);
+    cout << c << endl;
+    return 0;
+}
+
+// Output: 31.416
+\end{lstlisting}
+
+In the example above, the function \texttt{circ} receives a reference to a
+\texttt{const} variable. The function calculates the circumference of a circle
+given its radius. In this case, we protect the value of the radius from being
+changed by using a reference to a \texttt{const} variable.\\
+
+\section{Guidelines for passing parameters}
+
+When passing parameters to a function, we have to decide whether to pass by
+value, by reference, or by \texttt{const} reference. Here are some guidelines:
+
+\begin{itemize}
+    \item If the parameter is small and we don't want the function to change its
+    value, we can pass by value.
+    \item If the parameter is large and we don't want the function to change its
+    value, we can pass by \texttt{const} reference.
+    \item If the parameter is large and we want the function to change its value,
+    we can pass by reference.
+\end{itemize}
+
+In other words:
+
+\begin{itemize}
+    \item Use call-by-value for very small objects (base types).
+    \item Use call-by-const-reference for large objects.
+    \item Use call-by-reference only when you must return a result,
+    rather than modify an object through a reference argument.
+\end{itemize}
+
+
