@@ -281,9 +281,15 @@ an eigenpair of $B$, then we have:
 This means that $M y$ is an eigenvector of $A$ associated with the eigenvalue $\lambda$. So, to obtain
 the eigenvectors of $A$ from the eigenvectors of $B$, we need to multiply the eigenvectors of $B$ by $M$.\\
 
+This property can be useful. For example, if we want to compute the eigenvalues of a matrix $A$, we can find
+some transformation $M$ such that $M^{-1} A M = B$ is a simpler matrix to work with, usually a lower triangular
+matrix. Then we can compute the eigenvalues of $B$ and obtain the eigenvalues of $A$. $M$ is obtained by the permutation
+matrices to get from $A$ to $B$. The Givens and Householder transformations are examples of such method.
+
 \section{Power method}
 
-The power method is an iterative algorithm to compute the largest eigenvalue of a matrix. The algorithm is as follows:
+The power method is an iterative algorithm to compute the dominant eigenvalue of a matrix (i.e., the eigenvalue with the largest
+magnitude). The algorithm is as follows:
 
 \begin{algorithm}[H]
     \caption{Power method}
@@ -297,9 +303,273 @@ The power method is an iterative algorithm to compute the largest eigenvalue of 
     \end{algorithmic}
 \end{algorithm}
 
-The power method converges to the eigenvector associated with the largest eigenvalue 
-of $A$. The convergence rate is determined by the ratio of the largest eigenvalue to the 
+The convergence rate is determined by the ratio of the largest eigenvalue to the 
 second largest eigenvalue.
+
+\subsection{Rayleigh quotient}
+
+The Rayleigh quotient is the base of the power method algorithm. Given a matrix $A \in \mathbb{R}^{n \times n}$ and
+a vector $x \in \mathbb{R}^n$, the Rayleigh quotient is defined as:
+
+\begin{equation}
+    R(x) = \frac{x^T A x}{x^T x}
+\end{equation}
+
+For every eigenpair $(\lambda, v)$ of $A$, we have that:
+
+\begin{equation}
+    R(v) = \frac{v^T A v}{v^T v} = \frac{v^T \lambda v}{v^T v} = \lambda
+\end{equation}
+
+This means that the Rayleigh quotient is equal to the eigenvalue associated with the eigenvector $v$. This property
+is used in the power method to compute the dominant eigenvalue of a matrix.
+
+\subsection{Proof of convergence for the power method}
+
+The power method converges to the dominant eigenvalue of a matrix. The sketch proof is as follows:\\
+
+Let $x^{(0)}$ be our initial vector, and let $\{v_1, \ldots, v_n\}$ be the eigenvectors of $A$. We can write $x^{(0)}$ as a linear
+combination of the eigenvectors of $A$ (since the eigenvectors of $A$ form a basis of $\mathbb{R}^n$):
+
+\begin{equation}
+    x^{(0)} = \sum_{i=1}^{n} \alpha_i v_i
+\end{equation}
+
+Then we have that:
+
+\begin{equation}
+    A x^{(0)} = \sum_{i=1}^{n} \alpha_i A v_i = \sum_{i=1}^{n} \alpha_i \lambda_i v_i
+\end{equation}
+
+Since in every iteration $k$ of the power method we apply the matrix $A$ to the vector $x^{(k-1)}$, we have that:
+
+\begin{equation}
+    A x^{(k-1)} = A^k x^{(0)} = \sum_{i=1}^{n} \alpha_i \lambda_i^k v_i
+\end{equation}
+
+Now, let us factorize the previous equation by the dominant eigenvalue $(\lambda_1)^k$:
+
+\begin{equation}
+    A^k x^{(0)} = (\lambda_1)^k \left( \alpha_1 v_1 + \sum_{i=2}^{n} \alpha_i \left( \frac{\lambda_i}{\lambda_1} \right)^k v_i\right)
+\end{equation}
+
+Note that the term inside the parenthesis converges to zero as $k \rightarrow \infty$, since the ratio of the other eigenvalues
+to the dominant eigenvalue is less than 1. This means that $x^(k)$ converges to the direction of the dominant eigenvector $v_1$.
+When it is normalized, its Rayleigh quotient converges to the dominant eigenvalue $\lambda_1$.
+
+\subsection{Inverse power method}
+
+The inverse power method is an iterative algorithm to compute the eigenvalue with the smalles magnitude of a matrix. Note that the smallest
+eigenvalue of a matrix is the largest eigenvalue of its inverse, since:
+
+\begin{equation}
+    A x = \lambda x \Rightarrow A^{-1} x = \frac{1}{\lambda} x
+\end{equation}
+
+The algorithm is similar to the power method, but instead of applying the matrix $A$ to the vector $x$, we apply the inverse
+of the matrix $A$:
+
+\begin{algorithm}[H]
+    \caption{Inverse power method}
+    \begin{algorithmic}[1]
+        \State Choose a random vector $x^{(0)}$, s.t. $\|x^{(0)}\| = 1$
+        \For{$k = 1, 2, \ldots$}
+            \State $y^{(k)} = A^{-1} x^{(k-1)}$
+            \State $x^{(k)} = \frac{y^{(k)}}{\|y^{(k)}\|}$
+            \State $\lambda^{(k)} = x^{(k)T} A x^{(k)}$
+        \EndFor
+    \end{algorithmic}
+\end{algorithm}
+
+In practice, we normally don't compute the inverse of the matrix $A$, but instead solve the linear system $A x = y^{(k)}$ in each
+iteration.
+
+\subsection{Shifted inverse power method}
+
+The shifted inverse power method is an iterative algorithm to compute the eigenvalue with the smalles magnitude of a matrix, but
+with a shift $\mu$ added to the matrix $A$. The algorithm is as follows:
+
+\begin{algorithm}[H]
+    \caption{Shifted inverse power method}
+    \begin{algorithmic}[1]
+        \State Choose a random vector $x^{(0)}$, s.t. $\|x^{(0)}\| = 1$
+        \For{$k = 1, 2, \ldots$}
+            \State $y^{(k)} = (A - \mu I)^{-1} x^{(k-1)}$
+            \State $x^{(k)} = \frac{y^{(k)}}{\|y^{(k)}\|}$
+            \State $\lambda^{(k)} = x^{(k)T} A x^{(k)}$
+        \EndFor
+    \end{algorithmic}
+\end{algorithm}
+
+Note that with this algorithm, we are computing the eigenvalue of $A$ that is closest to the shift $\mu$. This can be useful
+to compute the eigenvalues of a matrix that are close to a given value.
+
+\section{Symmetric matrices}
+
+A matrix $A \in \mathbb{R}^{n \times n}$ is called symmetric if $A = A^T$. Symmetric matrices have important properties:
+
+\begin{itemize}
+    \item The eigenvectors of a symmetric matrix form an orthonormal basis of $\mathbb{R}^n$.
+    \item All the eigenvalues of a symmetric matrix are real.
+\end{itemize}
+
+Let us prove the first property:\\
+
+Let $A$ be a symmetric matrix, and let $\lambda_1, \ldots, \lambda_n$ be its eigenvalues. Let $v_1, \ldots, v_n$ be the eigenvectors
+associated with the eigenvalues $\lambda_1, \ldots, \lambda_n$. Let us take two eigenvectors $v_i$ and $v_j$, such that $i \neq j$.
+Then we have that:
+
+\begin{equation}
+    A v_i = \lambda_i v_i \quad \text{and} \quad A v_j = \lambda_j v_j
+\end{equation}
+
+Then we have that:
+
+\begin{equation*}
+    (A - \lambda_i I) v_i = 0 \quad \text{and} \quad (A - \lambda_i I) v_j = (\lambda_j - \lambda_i) v_j 
+\end{equation*}
+
+\begin{equation}
+    \Rightarrow v_i \in N(A - \lambda_i I) \quad \text{and} \quad v_j \in C(A - \lambda_i I)
+\end{equation}
+
+Since $A$ is symmetric, we have that $A - \lambda_i I$ is also symmetric. Then we have that:
+
+\begin{equation}
+    N(A - \lambda_i I) = N((A - \lambda_i)^T) \perp C(A - \lambda_i I)
+\end{equation}
+
+Concluding that $v_i$ and $v_j$ are orthogonal. Since this holds for all pairs of eigenvectors, we have that the eigenvectors
+of a symmetric matrix form an orthonormal basis of $\mathbb{R}^n$.\\
+
+Now, let us prove the second property:\\
+
+Since $A$ is symmetric, we have that $A = A^T$. Then we have that:
+
+\begin{equation}
+    \begin{aligned}
+        A x &= \lambda x \\
+        A \bar{x} &= \bar{\lambda} \bar{x}
+    \end{aligned}
+\end{equation}
+
+Then we have that:
+
+\begin{equation}
+    \begin{aligned}
+        \bar{x}^T A x &= \lambda x^T x = \lambda \|x\|^2 \\
+        x^T A \bar{x} &= \bar{\lambda} x^T \bar{x} = \bar{\lambda} \|x\|^2
+    \end{aligned}
+\end{equation}
+
+Since $A = A^T$, we have that:
+
+\begin{equation}
+    \bar{x}^T A x = (A x)^T \bar{x} = x^T A^T \bar{x} = x^T A \bar{x}
+\end{equation}
+
+Then we have that:
+
+\begin{equation}
+    \lambda \|x\|^2 = \bar{\lambda} \|x\|^2 \Rightarrow \lambda = \bar{\lambda}
+\end{equation}
+
+This means that the eigenvalues of a symmetric matrix are real.
+
+\subsection{Symmetric positive definite matrices}
+
+A matrix $A \in \mathbb{R}^{n \times n}$ is called symmetric positive definite if it is symmetric and if for every vector $x \in \mathbb{R}^n$
+we have that:
+
+\begin{equation}
+    x^T A x > 0 \quad \forall x \neq 0
+\end{equation}
+
+Symmetric positive definite matrices have important properties:
+
+\begin{itemize}
+    \item All the eigenvalues of a symmetric positive definite matrix are positive.
+    \item The Cholesky factorization of a symmetric positive definite matrix exists and is unique:
+    \begin{equation}
+        A = L^T L
+    \end{equation}
+\end{itemize}
+
+In fact, a symmetric matrix is positive definite if and only if all its eigenvalues are positive, so:
+
+\begin{equation}
+    x^T A x > 0 \quad \forall x \neq 0 \quad \Leftrightarrow \quad \lambda_i > 0 \quad \forall i
+\end{equation}
+
+Note that the quantity $x^T A x$ is called the energy of the vector $x$ with respect to the matrix $A$. This quantity is always positive
+for a symmetric positive definite matrix.\\
+
+
+\section{Singular Value Decomposition (SVD)}
+
+The Singular Value Decomposition (SVD) is a factorization of a matrix $A \in \mathbb{R}^{m \times n}$ as:
+
+\begin{equation}
+    A = U \Sigma V^T
+\end{equation}
+
+where $U \in \mathbb{R}^{m \times m}$ and $V \in \mathbb{R}^{n \times n}$ are orthogonal matrices, and $\Sigma \in \mathbb{R}^{m \times n}$
+is a quasi-diagonal matrix with the singular values of $A$. The singular values of $A$ are the square roots of the eigenvalues of $A^T A$.\\
+
+Note that if $rank(A) = r$, then the matrix $\Sigma$ has $r$ non-zero singular values, and the remaining singular values are zero. Assume that
+the singular values of $A$ are $\sigma_1 \geq \sigma_2 \geq \ldots \geq \sigma_r > 0$. Then we have that:
+
+\begin{equation}
+    \begin{aligned}
+        A v_i &= \sigma_i u_i \quad \forall i = 1, \ldots, r \\
+        A v_i &= 0 \quad \forall i = r+1, \ldots, n \\
+    \end{aligned}
+\end{equation}
+
+where $u_i$ and $v_i$ are the columns of $U$ and $V$, respectively. The vectors $u_i$ and $v_i$ are called the left and right singular vectors
+of $A$, respectively.\\
+
+The SVD can also be written as:
+
+\begin{equation}
+    A = \sum_{i=1}^{r} \sigma_i u_i v_i^T
+\end{equation}
+
+\subsection{Economy SVD}
+
+The economy SVD is a factorization of a matrix $A \in \mathbb{R}^{m \times n}$ as:
+
+\begin{equation}
+    A = U_r \Sigma_r V_r^T
+\end{equation}
+
+where $U \in \mathbb{R}^{m \times r}$, $V \in \mathbb{R}^{n \times r}$ and $\Sigma \in \mathbb{R}^{r \times r}$, with $r = rank(A)$.\\
+
+The economy SVD is useful when we are only interested in the first $r$ singular values of $A$, which are the non-zero singular values.\\
+
+\subsection{Low-rank approximation}
+
+The SVD can be used to compute a low-rank approximation of a matrix $A \in \mathbb{R}^{m \times n}$. Given a rank $k$, with $k < r = rank(A)$,
+the low-rank approximation of $A$ is given by:
+
+\begin{equation}
+    A_k = U_k \Sigma_k V_k^T = \sum_{i=1}^{k} \sigma_i u_i v_i^T
+\end{equation}
+
+where $U_k \in \mathbb{R}^{m \times k}$, $V_k \in \mathbb{R}^{n \times k}$ and $\Sigma_k \in \mathbb{R}^{k \times k}$, with $k < r = rank(A)$.\\
+
+Because the singular values of $A$ are sorted in decreasing order, the low-rank approximation only considers the first $k$ singular values of $A$,
+as they are the components of $A$ with the largest contribution.\\
+
+The low-rank approximation of a matrix is useful for data compression, as it allows to represent a matrix with a smaller number of parameters. 
+Note that the low-rank approximation of a matrix is the best rank-$k$ approximation of the matrix in the Frobenius norm. This is called 
+the Eckart-Young theorem.
+
+
+
+
+
+
 
 
 
