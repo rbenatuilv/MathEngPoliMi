@@ -1,0 +1,170 @@
+\chapter{Pointers and memory allocation}
+
+\section{Classifications of pointers}
+
+Pointers are classified into two main categories:
+
+\begin{itemize}
+    \item \textbf{Raw pointers}: They are the most basic form of pointers, already present in \texttt{C} language. 
+    They manually manage the memory allocation and deallocation.
+    When using them, we have to be extremely careful to avoid memory leaks.
+    \item \textbf{Smart pointers}: They are a part of the \texttt{C++11} standard, and are used to automate the memory management process.
+    We wil come back to this later.
+\end{itemize}
+
+\section{Computer's memory}
+
+The computer's memory is divided into four main sections:
+
+\begin{itemize}
+    \item \textbf{Code section}: It contains the program's executable code.
+    \item \textbf{Static Data section}: It contains the global and static variables.
+    \item \textbf{Heap section}: It is used for dynamic memory allocation. It is also called the \textit{free store}. It is
+    managed by the \texttt{new} and \texttt{delete} operators.
+    \item \textbf{Stack section}: It is used for local variables and function calls.
+\end{itemize}
+
+\begin{figure}[ht]
+    \centering
+    \includegraphics[width=4.5cm]{figures/image_memory.png}
+    \caption{Memory layout}
+    \label{fig:memory}
+\end{figure}
+
+\subsection{Heap section (free store)}
+
+You request memory to be allocated in the heap using the \texttt{new} operator. This operator returns a pointer to the allocated memory,
+which is just the address of the first byte of that memory block. For example:\\
+
+\begin{lstlisting}
+int *p = new int; // allocate one uninitialized integer
+int *q = new int[10]; // allocate an array of 10 uninitialized integers
+double *r = new double[4]; // allocate an array of 4 uninitialized doubles
+\end{lstlisting}
+
+A pointer points to an object of its specific type, but it does not know how many elements it points to.\\
+
+To deallocate memory in the heap, you use the \texttt{delete} operator. For example:\\
+
+\begin{lstlisting}
+delete p; // deallocate the memory pointed by p
+delete[] q; // deallocate the memory pointed by q
+delete[] r; // deallocate the memory pointed by r
+\end{lstlisting}
+
+\section{Pointer states}
+
+The value (i.e., the address) stored in a pointer can be in one of the following four states:
+
+\begin{enumerate}
+    \item It can point to an object.
+    \item It can point to the location just past the end of an object.
+    \item It can be a null pointer, indicating that it does not point to any object.
+    \item It can be an invalid pointer; that is, values that are not any of the above.
+\end{enumerate}
+
+It is an error to copy or try to access the value of an invalid pointer. As when we use an uninitialized pointer,
+this error is one that the compiler is unlikely to detect. The result of using an invalid pointer is undefined, so
+we must always ensure that a pointer is valid before using it.\\
+
+\subsection{Null pointers}
+
+A null pointer is a pointer that does not point to any object. It is represented by the literal \texttt{nullptr}.
+The code can check if a pointer is null by comparing it to \texttt{nullptr}. For example:\\
+
+\begin{lstlisting}
+int *p = nullptr; // p is a null pointer
+if (p == nullptr) {
+    std::cout << "p is a null pointer" << std::endl;
+}
+\end{lstlisting}
+
+The \texttt{nullptr} is a keyword that represents a null pointer. It is a pointer literal that can be converted to any pointer type.
+Be aware that a better practice is to rely on short-circuit evaluation to check if a pointer is null. For example:\\
+
+\begin{lstlisting}
+// some code...
+if (p != nullptr && *p == 10) {
+    std::cout << "p is not null and points to 10" << std::endl;
+}
+// some more code...
+\end{lstlisting}
+
+\section{Pointer arithmetic and array access}
+
+We can perform arithmetic operations on pointers. For example, we can increment or decrement a pointer, or add or subtract an integer
+from a pointer. When doing so, the compiler automatically scales the integer by the size of the type the pointer points to. This is the 
+way that arrays are accessed in \texttt{C++}. For example:\\
+
+\begin{lstlisting}
+int arr[5] = new int[5];
+int *p = arr; // p points to the first element of arr
+std::cout << *p << std::endl; // prints 1
+p++; // p now points to the second element of arr
+std::cout << *p << std::endl; // prints 2
+\end{lstlisting}
+
+Note that when we try to access a specific element of an array, we can use the subscript operator \texttt{[]}. For example:\\
+
+\begin{lstlisting}
+int arr[5] = new int[5];
+std::cout << arr[0] << std::endl; // prints 1
+std::cout << arr[1] << std::endl; // prints 2
+\end{lstlisting}
+
+This is equivalent to the following code:\\
+
+\begin{lstlisting}
+int arr[5] = new int[5];
+int *p = arr; // p points to the first element of arr
+std::cout << *p << std::endl; // prints 1
+std::cout << *(p + 1) << std::endl; // prints 2
+\end{lstlisting}
+
+We have to be careful, as the pointer itself does not know how many elements it points to. So, although it is valid to
+subscript a negative index, or an out of bounds index (since it is just an arithmetic operation), it is not safe to do so, and
+it leads to undefined behavior and undetectable errors. Let us see an example:\\
+
+\begin{lstlisting}
+int arr[5] = new int[5];
+arr[-1] = 10; // undetected error
+arr[5] = 10; // undetected error
+\end{lstlisting}
+
+Note that \texttt{arr[-1]} is equivalent to \texttt{*(arr - 1)}, and \texttt{arr[5]} is equivalent to \texttt{*(arr + 5)}, but
+they both are pointers to memory that has not been allocated for the array \texttt{arr}.\\
+
+A pointer does know the size of the type it points to, and that is why we can use pointer arithmetic to access the elements of an array.
+Unlike other types (e.g. \texttt{int} and \texttt{double}), there is no implicit conversion between pointers to different types.
+
+\section{Why use pointers and free store?}
+
+With the \texttt{C} language, we use the heap memory when we don't know a priori the size of the data structure and 
+we don't want to waste memory. For example, when we want to create a linked list, we don't know how many elements
+it will have, so we use the heap memory to allocate memory for each element.\\
+
+Note that with pointers and arrays, we are "touching" the hardware directly, so we have to be careful when using them.
+Here is where serious programming errors can most easily occur, resulting in malfuntioning programs, or even worse,
+programs that appear to work correctly but are subtly incorrect (obscure bugs). If we get "segmentation fault",
+"bus error", or "core dumped", it is likely that we are using pointers incorrectly.\\
+
+In \texttt{C++}, we have the STL containers, like \texttt{std::vector}, which automatically manage 
+the memory for us. We will come back to this later.\\
+
+We mainly use free store to allocate objects that have to outlive the scope in which they are created. For example, when we
+want to return a pointer to an object from a function, we have to allocate memory in the heap, as the stack memory is deallocated
+when the function returns. This is an example of this case:\\
+
+\begin{lstlisting}
+// some code...
+double *create_array(int n) {
+    double *arr = new double[n];
+    return arr;
+}
+// some more code...
+\end{lstlisting}
+
+We mainly use raw pointers when we want to share large data structures and avoid multiple copies of them. Note that copies not only waste
+memory, but also need to be kept in sync, introducing additional overhead.
+
+\section{Memory leaks}

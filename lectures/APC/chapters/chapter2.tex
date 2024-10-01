@@ -78,7 +78,7 @@ As you can see, the code is very similar to the previous example. The only
 difference is that the type of the pointer is \texttt{float *} instead of
 \texttt{int *}. Pointers can store the address of any variable, regardless of its
 type, but the type of the pointer must match the type of the variable whose
-address it will store.\\
+address it will store.
 
 \section{Function parameters}
 
@@ -98,7 +98,7 @@ return_type function_name(type1 parameter1, type2 parameter2, ...)
 In a function definition, we use formal parameters represeinting a symbolic
 reference (identifier) to objects used within the function. The initial value of
 formal parameters is defined when the function is called using the actual 
-parameters specified by the caller. Let us see an example:
+parameters specified by the caller. Let us see an example:\\
 
 \begin{lstlisting}[language=C++]
 #include <iostream>
@@ -138,7 +138,7 @@ can take place in two ways:
 
 When passing by value, the actual parameter is copied to the formal parameter.
 This means that any changes made to the formal parameter do not affect the 
-actual parameter. For example:
+actual parameter. For example:\\
 
 \begin{lstlisting}[language=C++]
 #include <iostream>
@@ -165,7 +165,7 @@ In the example above, the function \texttt{swap} is supposed to swap the values
 of the variables \texttt{x} and \texttt{y}. However, the function does not work
 as expected because the parameters are passed by value. The function receives
 copies of the actual parameters, so any changes made to the formal parameters do
-not affect the actual parameters.\\
+not affect the actual parameters.
 
 \subsection{Passing by reference}
 
@@ -233,7 +233,7 @@ int main() {
 In the example above, the function \texttt{change} receives the address of the
 array \texttt{arr} and the size of the array \texttt{n}. The function multiplies
 each element of the array by 2. The function works as expected because the array
-is passed by reference.\\
+is passed by reference.
 
 \subsection{Passing by value vs passing by reference}
 
@@ -415,7 +415,7 @@ int main() {
 In the example above, the function \texttt{circ} receives a reference to a
 \texttt{const} variable. The function calculates the circumference of a circle
 given its radius. In this case, we protect the value of the radius from being
-changed by using a reference to a \texttt{const} variable.\\
+changed by using a reference to a \texttt{const} variable.
 
 \section{Guidelines for passing parameters}
 
@@ -441,3 +441,136 @@ In other words:
 \end{itemize}
 
 
+\section{Variables scope}
+
+The scope of an identifier (to a variable, a function, etc) is the region of the program in which the identifier
+can be referenced. Some identifiers can be referenced throughout the program, while others can only be referenced
+within a specific portion of the program. For example, when we declare a local variable in a block (e.g., in a for loop),
+it can be referenced only in that block or blocks nested within it.
+
+\subsection{Methods of variable creation}
+
+There are three methods of creating variables in \texttt{C++}:
+
+\subsubsection{Global variables}
+
+Global variables are declared outside of all functions. They can be referenced throughout the whole program. They are
+stored in the static data. For example:\\
+
+\begin{lstlisting}[language=C++]
+#include <iostream>
+using namespace std;
+
+int x = 10; // global variable (bad practice)
+
+int main() {
+    cout << x << endl;
+    return 0;
+}
+
+// Output: 10
+\end{lstlisting}
+
+These variables are difficult to debug and maintain, so in general, it is considered a bad practice to use them.
+However, global constants are an exception to this rule. For example:\\
+
+\begin{lstlisting}[language=C++]
+#include <iostream>
+using namespace std;
+
+const double PI = 3.1416; // global constant
+
+int main() {
+    cout << PI << endl;
+    return 0;
+}
+
+// Output: 3.1416
+\end{lstlisting}
+
+In this case, the global constant \texttt{PI} is used to store the value of $\pi$. This is an accepted practice because
+the value of $\pi$ is constant and will not change throughout the program, and will probably be used in many parts 
+of the program.
+
+\subsubsection{Local on the fly variables}
+
+This type of variables are simply created right when they are needed. They are only available within the block in which
+they were created, and are stored in the stack. For example:\\
+
+\begin{lstlisting}[language=C++]
+#include <iostream>
+using namespace std;
+
+int main() {
+    for (int i = 0; i < 5; i++) { // i is a local on the fly variable
+        cout << i << " ";
+    }
+}
+
+// Output: 0 1 2 3 4
+\end{lstlisting}
+
+\subsubsection{Local defined variables}
+
+These variables are created at the beginning of the block in which they are defined, and are available throughout the block.
+They are stored in the stack. This is the most common way of creating variables. For example:\\
+
+\begin{lstlisting}[language=C++]
+#include <iostream>
+using namespace std;
+
+int main() {
+    int x = 10; // local defined variable
+    cout << x << endl;
+    return 0;
+}
+
+// Output: 10
+\end{lstlisting}
+
+\subsection{Global and local declarations}
+
+When a local variable has the same name as a global variable, the local variable takes precedence. For example:\\
+
+\begin{lstlisting}[language=C++]
+#include <iostream>
+using namespace std;
+
+int x = 10; // global variable
+
+int main() {
+    int x = 20; // local variable
+    cout << x << endl;
+    return 0;
+}
+
+// Output: 20
+\end{lstlisting}
+
+In the example above, the local variable \texttt{x} takes precedence over the global variable \texttt{x}. Be aware
+that function parameters are also local variables, so the same rule applies. For example:\\
+
+\begin{lstlisting}[language=C++]
+#include <iostream>
+using namespace std;
+
+int x = 10; // global variable
+
+void f(int x) {
+    cout << x << endl;
+}
+
+int main() {
+    f(20); // local variable
+    return 0;
+}
+
+// Output: 20
+\end{lstlisting}
+
+\subsection{Lifetime of variables}
+
+The lifetime of a variable is the period during which the variable exists in memory. The lifetime of a global variable
+is the entire execution of the program, while the lifetime of a local variable is the period during which the function is
+executed. When you call a function, memory will be allocated for all local variables defined inside the function. When the
+function returns, the memory will be deallocated.\\

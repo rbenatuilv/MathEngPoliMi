@@ -34,6 +34,9 @@
 \usepackage{listings} % Paquete para incluir código fuente
 \usepackage{xcolor}   % Paquete para definir colores (opcional, para personalización)
 
+\usepackage{algorithm} % Paquete para escribir algoritmos
+\usepackage{algpseudocode} % Paquete para escribir algoritmos
+
 % Definir el estilo del código
 \lstset{
   language=C++,               % Lenguaje de programación
@@ -61,7 +64,7 @@
 % Definir el estilo del capítulo usando tcolorbox
 \titleformat{\chapter}[display]
   {\normalfont\huge\bfseries\centering} % Estilo de la fuente
-  {\large\chaptertitlename\ \thechapter} % Texto que aparece antes del título
-  {5pt} % Espacio entre el título y el capítulo
-  {\huge} % Estilo del título
-  [\vspace{2pt} \rule{\textwidth}{1pt}] % Línea horizontal después del título
+  {\normalsize\chaptertitlename\ \thechapter} % Texto que aparece antes del título
+  {1pt} % Espacio entre el título y el capítulo
+  {\LARGE} % Estilo del título
+  [\rule{\textwidth}{1pt}] % Línea horizontal después del título

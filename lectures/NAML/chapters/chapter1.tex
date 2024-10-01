@@ -279,4 +279,27 @@ an eigenpair of $B$, then we have:
 \end{equation}
 
 This means that $M y$ is an eigenvector of $A$ associated with the eigenvalue $\lambda$. So, to obtain
-the eigenvectors of $A$ from the eigenvectors of $B$, we need to multiply the eigenvectors of $B$ by $M$.
+the eigenvectors of $A$ from the eigenvectors of $B$, we need to multiply the eigenvectors of $B$ by $M$.\\
+
+\section{Power method}
+
+The power method is an iterative algorithm to compute the largest eigenvalue of a matrix. The algorithm is as follows:
+
+\begin{algorithm}[H]
+    \caption{Power method}
+    \begin{algorithmic}[1]
+        \State Choose a random vector $x^{(0)}$, s.t. $\|x^{(0)}\| = 1$
+        \For{$k = 1, 2, \ldots$}
+            \State $y^{(k)} = A x^{(k-1)}$
+            \State $x^{(k)} = \frac{y^{(k)}}{\|y^{(k)}\|}$
+            \State $\lambda^{(k)} = x^{(k)T} A x^{(k)}$
+        \EndFor
+    \end{algorithmic}
+\end{algorithm}
+
+The power method converges to the eigenvector associated with the largest eigenvalue 
+of $A$. The convergence rate is determined by the ratio of the largest eigenvalue to the 
+second largest eigenvalue.
+
+
+
