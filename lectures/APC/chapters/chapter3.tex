@@ -36,7 +36,7 @@ The computer's memory is divided into four main sections:
 You request memory to be allocated in the heap using the \texttt{new} operator. This operator returns a pointer to the allocated memory,
 which is just the address of the first byte of that memory block. For example:\\
 
-\begin{lstlisting}
+\begin{lstlisting}[language=C++]
 int *p = new int; // allocate one uninitialized integer
 int *q = new int[10]; // allocate an array of 10 uninitialized integers
 double *r = new double[4]; // allocate an array of 4 uninitialized doubles
@@ -46,7 +46,7 @@ A pointer points to an object of its specific type, but it does not know how man
 
 To deallocate memory in the heap, you use the \texttt{delete} operator. For example:\\
 
-\begin{lstlisting}
+\begin{lstlisting}[language=C++]
 delete p; // deallocate the memory pointed by p
 delete[] q; // deallocate the memory pointed by q
 delete[] r; // deallocate the memory pointed by r
@@ -72,7 +72,7 @@ we must always ensure that a pointer is valid before using it.\\
 A null pointer is a pointer that does not point to any object. It is represented by the literal \texttt{nullptr}.
 The code can check if a pointer is null by comparing it to \texttt{nullptr}. For example:\\
 
-\begin{lstlisting}
+\begin{lstlisting}[language=C++]
 int *p = nullptr; // p is a null pointer
 if (p == nullptr) {
     std::cout << "p is a null pointer" << std::endl;
@@ -82,7 +82,7 @@ if (p == nullptr) {
 The \texttt{nullptr} is a keyword that represents a null pointer. It is a pointer literal that can be converted to any pointer type.
 Be aware that a better practice is to rely on short-circuit evaluation to check if a pointer is null. For example:\\
 
-\begin{lstlisting}
+\begin{lstlisting}[language=C++]
 // some code...
 if (p != nullptr && *p == 10) {
     std::cout << "p is not null and points to 10" << std::endl;
@@ -96,7 +96,7 @@ We can perform arithmetic operations on pointers. For example, we can increment 
 from a pointer. When doing so, the compiler automatically scales the integer by the size of the type the pointer points to. This is the 
 way that arrays are accessed in \texttt{C++}. For example:\\
 
-\begin{lstlisting}
+\begin{lstlisting}[language=C++]
 int arr[5] = new int[5];
 int *p = arr; // p points to the first element of arr
 std::cout << *p << std::endl; // prints 1
@@ -106,7 +106,7 @@ std::cout << *p << std::endl; // prints 2
 
 Note that when we try to access a specific element of an array, we can use the subscript operator \texttt{[]}. For example:\\
 
-\begin{lstlisting}
+\begin{lstlisting}[language=C++]
 int arr[5] = new int[5];
 std::cout << arr[0] << std::endl; // prints 1
 std::cout << arr[1] << std::endl; // prints 2
@@ -114,7 +114,7 @@ std::cout << arr[1] << std::endl; // prints 2
 
 This is equivalent to the following code:\\
 
-\begin{lstlisting}
+\begin{lstlisting}[language=C++]
 int arr[5] = new int[5];
 int *p = arr; // p points to the first element of arr
 std::cout << *p << std::endl; // prints 1
@@ -125,7 +125,7 @@ We have to be careful, as the pointer itself does not know how many elements it 
 subscript a negative index, or an out of bounds index (since it is just an arithmetic operation), it is not safe to do so, and
 it leads to undefined behavior and undetectable errors. Let us see an example:\\
 
-\begin{lstlisting}
+\begin{lstlisting}[language=C++]
 int arr[5] = new int[5];
 arr[-1] = 10; // undetected error
 arr[5] = 10; // undetected error
@@ -155,7 +155,7 @@ We mainly use free store to allocate objects that have to outlive the scope in w
 want to return a pointer to an object from a function, we have to allocate memory in the heap, as the stack memory is deallocated
 when the function returns. This is an example of this case:\\
 
-\begin{lstlisting}
+\begin{lstlisting}[language=C++]
 // some code...
 double *create_array(int n) {
     double *arr = new double[n];
@@ -168,3 +168,101 @@ We mainly use raw pointers when we want to share large data structures and avoid
 memory, but also need to be kept in sync, introducing additional overhead.
 
 \section{Memory leaks}
+
+A memory leak occurs when a program allocates memory in the heap and does not deallocate it. This memory is not available for
+other programs, and it is lost. This is a serious problem, as it can lead to the exhaustion of the available memory, and the program
+can crash.\\
+
+Let us see an example:
+
+\begin{lstlisting}[language=C++]
+double *calc(int result_size, int max){
+    int *p = new double[max];
+    double *result = new double[result_size];
+    // use p to calculate results to be put in result...
+    return result;
+}
+
+int main(){
+    double *res = calc(10, 100); // we forgot to deallocate p
+    return 0; // we forgot to deallocate res
+}
+\end{lstlisting}
+
+In this case, we have a memory leak, as we forgot to deallocate the memory pointed by \texttt{p}. To avoid memory leaks, we have to
+always deallocate the memory we allocate in the heap, by using the \texttt{delete} operator. Here is the fixed code:\\
+
+\begin{lstlisting}
+double *calc(int result_size, int max){
+    int *p = new double[max];
+    double *result = new double[result_size];
+    // use p to calculate results to be put in result...
+    delete[] p; // deallocate p
+    return result;
+}
+
+int main(){
+    double *res = calc(10, 100);
+    delete[] res; // deallocate res (this is easy to forget)
+    return 0;
+}
+\end{lstlisting}
+
+A program that needs to run for a long time can't afford any memory leaks, as they accumulate over time. An example of
+this is an operating system, which has to run for a long time without crashing.\\
+
+Nonetheless, programs that run to completion with predictable memory usage may leak without causing problems, i.e., memory
+leaks aren't "good/bad", but they can be a major problem in specific circumstances.\\
+
+Another way of getting memory leaks is when we overwrite the pointer to the allocated memory before deallocating it. For example:\\
+
+\begin{lstlisting}[language=C++]
+double *p = new double[10];
+p = new double[20]; // we lost the pointer to the first memory block
+delete[] p; // we deallocate the memory pointed by p, but it is not the memory we allocated
+\end{lstlisting}
+
+In this case, we have a memory leak, as we lost the pointer to the first memory block. To avoid this, we have to always deallocate
+the memory before overwriting the pointer.\\
+
+\subsection{How to avoid memory leaks}
+
+To systematically avoid memory leaks, we can follow these rules:
+
+\begin{itemize}
+    \item Don't mess directly with \texttt{new} and \texttt{delete}, unless you have to. Try to use the STL containers.
+    \item Use a garbage collector. This is a program that keeps track of all the memory you allocated dynamically.
+    \item In \texttt{C++}, use smart pointers. They are a part of the \texttt{C++11} standard, and are used to automate 
+    the memory management process (more on this later).
+\end{itemize}
+
+Unfortunately, not even garbage collectors or smart pointers can prevent all memory leaks.
+
+\section{Free store summary}
+
+\begin{itemize}
+    \item Allocate using \texttt{new}:\\
+    \texttt{new} allocates an object on the free store, sometimes initializes it, and returns a pointer to it.
+
+    \begin{lstlisting}[language=C++]
+        int *p = new int; // allocate one uninitialized integer
+        char *q = new char('a'); // allocate one initialized char
+        double *r = new double[10]; // allocate an array of 10 uninitialized doubles
+    \end{lstlisting}
+
+    \item Deallocate using \texttt{delete} and \texttt{delete[]}:\\
+    \texttt{delete} deallocates an object on the free store, and \texttt{delete[]} deallocates an array of objects on the free store.
+
+    \begin{lstlisting}[language=C++]
+        delete p; // deallocate p
+        delete q; // deallocate q
+        delete[] r; // deallocate array r
+    \end{lstlisting}
+
+    \item Delete of null pointers does nothing:
+    \begin{lstlisting}[language=C++]
+        int *p = nullptr;
+        delete p; // harmless
+    \end{lstlisting}
+
+\end{itemize}
