@@ -1,0 +1,107 @@
+\chapter{Introduction}
+
+In streaming data engineering, continuity of data analysis is a key concept. To process
+large amounts of data, we have two main approaches:
+
+\begin{itemize}
+    \item Batch processing: this is the traditional approach where data is collected and stored, 
+    then processed in a batch to obtain insights.
+    \item Stream processing: in this approach, data is processed as it arrives, allowing for real-time
+    insights.
+\end{itemize}
+
+In some cases, batch processing is enough, like when we need to process data that is not time-sensitive, such
+as historical data. However, in many cases, we need to process data in real-time, like in fraud detection or
+monitoring systems like fire alarms. In these cases, stream processing is the way to go. But, how do 
+we enable this continuity of data flow?
+
+\section{Enabling Continuity}
+
+To enable continuity of data processing, we need four main components:
+
+\begin{itemize}
+    \item Sensors and actuators
+    \item Connectivity
+    \item Streaming data engineering
+    \item Streaming data science
+\end{itemize}
+
+\subsection{Sensors and Actuators}
+
+Sensors are devices that collect data from the environment, like temperature sensors, cameras, etc. Actuators
+are devices that can act on the environment, like turning on a light, opening a door, etc. These devices
+are the first step in the data processing pipeline. They are a way of giving the computers the means to gather 
+data from the environment and act on it.\\
+
+\textit{[...] sensor technology enable computers to observe, identify and understand the world - without
+the limitations of human-entered data.} - \textbf{Kevin Ashton, the brander of "Internet of Things"}\\
+
+\subsection{Connectivity}
+
+This is the enabling and constraninig factor of the Internet of Things. It is the way that sensors and actuators
+communicate with the rest of the system. This can be done through a variety of means, like WiFi, Bluetooth, etc.\\
+
+In this case, the distance and the use case are the main factors that determine the type of connectivity that
+we need. For example, if we need to connect a sensor to a computer that is far away, we might need to use a
+cellular network, while if we need to connect a sensor to a computer that is close, we might use Bluetooth.\\
+
+Also, bandwidth is a factor that we need to consider. If we need to send a lot of data, we might need a high
+bandwidth connection, while if we need to send a small amount of data, we might use a low bandwidth connection.
+Another important factor is the latency of the connection. If we need to send data in real-time,
+we need a low latency connection, while if we don't need to send data in real-time, we might use a high latency
+connection.\\
+
+Note that most of the times, it comes down to a trade-off between these factors, so we need to choose the
+right connectivity for our use case.
+
+\subsection{Streaming Data Engineering}
+
+This is the main topic of this chapter. This area focuses on the systems and infrastructure that we need to
+manage various types of data streams efficiently. We have four main concepts:
+
+\begin{itemize}
+    \item Event-based systems: to tame myriads of tiny flows of data
+    \item Data Stream Management Systems (DSMS): to handle continuos massive flows of unstoppable data
+    \item Complex Event Processing (CEP): to manage continuos numerous flows of data that can turn into a torrent
+    \item Event-driven architecture: to tame the forming of an inmense delta made of myriads of flows of any size and speed.
+\end{itemize}
+
+We will cover these concepts in more detail in the next sections.
+
+\subsection{Streaming Data Science}
+
+This is the area that focuses on the algorithms and techniques that we need to analyze data streams efficiently.
+Note that changes in the data stream can happen at any time, and they cause ML models to lose accuracy. This is
+why we need to use techniques to adapt to these changes. The three main components of this section are:
+
+\begin{itemize}
+    \item Time series analytics: to explain the past and forecast the future of a continuos
+    flow of data without assuming data independence
+    \item Streaming machine learning: to learn one data at a time from a continuos flow of data without
+    assuming identically distributed data
+    \item Continual learning: to do a long-life learning from a sequence of experiences without 
+    forgetting past knowledge
+\end{itemize}
+
+This is the second topic of this course, and we will cover it in more detail in the next chapters.
+
+\section{Importance of Streaming Data Analytics}
+
+One idea: value is about time. Traditionally, data processing creates value by providing insights that
+are generated with months or years of data gathering. However, in many cases, we need to process data in real-time
+to create value. \\
+
+Continuos streaming analysis creates value by providing insights that are generated within seconds
+or minutes, allowing for real-time decision making, in other words, reactive applications that can respond to
+events as they happen.\\
+
+Streaming data analytics is important, as it can:
+
+\begin{itemize}
+    \item Provide real-time insights
+    \item Reduce costs
+    \item Improve efficiency
+    \item Create innovative products
+    \item Generate new revenue streams
+\end{itemize}
+
