@@ -565,11 +565,221 @@ The low-rank approximation of a matrix is useful for data compression, as it all
 Note that the low-rank approximation of a matrix is the best rank-$k$ approximation of the matrix in the Frobenius norm. This is called 
 the Eckart-Young theorem.
 
+\subsection{Existance of the SVD}
+
+The SVD of a matrix $A \in \mathbb{R}^{m \times n}$ always exists. The proof is as follows:\\
+
+Let $A \in \mathbb{R}^{m \times n}$ be a matrix. Then we have that $A^T A \in \mathbb{R}^{n \times n}$.
+We have that $A^T A$ is symmetric and positive semidefinite. In fact:
+
+\begin{itemize}
+    \item $A^T A$ is symmetric: $(A^T A)^T = A^T (A^T)^T = A^T A$
+    \item $A^T A$ is positive semidefinite: $x^T A^T A x = (A x)^T A x = \|A x\|^2 \geq 0$
+\end{itemize}
+
+Therefore, $A^T A$ has an eigendecomposition:
+
+$$A^T A = V \Lambda V^T \quad \text{s.t. } V^T V = I$$
+
+Let us show now that $rank(A) = rank(A^T A)$. We can prove this by showing that the null space of $A$ 
+is the same as the null space of $A^T A$. Let $x \in N(A)$, then we have that:
+
+$$A x = 0 \Rightarrow A^T A x = 0$$
+
+This means that $N(A) \subseteq N(A^T A)$. Now, let $x \in N(A^T A)$, then we have that:
+
+$$A^T A x = 0 \Rightarrow x^T A^T A x = 0 \Rightarrow \|A x\|^2 = 0 \Rightarrow A x = 0$$
+
+This means that $N(A^T A) \subseteq N(A)$. Therefore, $N(A) = N(A^T A)$, and we have 
+that $rank(A) = rank(A^T A)$.\\
+
+Now, let us consider the eigenpairs $(\lambda_i, v_i)$ of $A^T A$. Then let us define $u_i$ as:
+
+$$u_i = \frac{1}{\sqrt{\lambda_i}} A v_i$$
+
+We will prove that each $u_i$ is a unitary vector, and that the vectors $u_i$ are mutually orthogonal. 
+Let us first show that each $u_i$ is a unitary vector:
+
+$$\|u_i\|^2 = \left\| \frac{1}{\sqrt{\lambda_i}} A v_i \right\|^2 = \frac{1}{\lambda_i} v_i^T A^T A v_i = \frac{1}{\lambda_i} \lambda_i = 1$$
+
+Now, let us show that the vectors $u_i$ are mutually orthogonal. Let $i \neq j$, then we have that:
+
+$$u_i^T u_j = \frac{1}{\sqrt{\lambda_i}} v_i^T A^T \frac{1}{\sqrt{\lambda_j}} A v_j = \frac{1}{\sqrt{\lambda_i \lambda_j}} v_i^T A^T A v_j$$
+$$= \frac{1}{\sqrt{\lambda_i \lambda_j}} \lambda_j v_i^T v_j = 0$$
+
+Now, we can show that the vectors $u_i$ are the eigenvectors of $A A^T$, with eigenvalues
+$\lambda_i$:
+
+$$A A^T u_i = A A^T \frac{1}{\sqrt{\lambda_i}} A v_i = $$
+$$\frac{1}{\sqrt{\lambda_i}} A A^T A v_i = \frac{1}{\sqrt{\lambda_i}} A \lambda_i v_i = \lambda_i u_i$$
+
+Therefore, we have that $A A^T = U \Lambda U^T$, where $U$ is the matrix whose columns are the vectors $u_i$.
+Now, let us define $\Sigma$ as the diagonal matrix whose diagonal elements are the square roots of the eigenvalues of $A^T A$:
+
+$$\Sigma = \begin{bmatrix}
+    \sqrt{\lambda_1} & 0 & \ldots & 0 \\
+    0 & \sqrt{\lambda_2} & \ldots & 0 \\
+    \vdots & \vdots & \ddots & \vdots \\
+    0 & 0 & \ldots & \sqrt{\lambda_n}
+\end{bmatrix}$$
+
+Then we have that:
+
+$$A = U \Sigma V^T$$
+
+where $V$ is the matrix whose columns are the eigenvectors of $A^T A$. Therefore, the SVD of $A$ exists.
+
+\subsection{Computation of the SVD}
+
+The SVD of a matrix can be computed using the following steps:
+
+\begin{enumerate}
+    \item Compute the eigendecomposition of $A^T A$.
+    \item Compute the singular values of $A$ as the square roots of the eigenvalues of $A^T A$.
+    \item Compute the right singular vectors of $A$ as the eigenvectors of $A^T A$.
+    \item Compute the left singular vectors of $A$ as $u_i = \frac{1}{\sqrt{\lambda_i}} A v_i$.
+\end{enumerate}
+
+\subsection{Geometrical interpretation of the SVD}
+
+The SVD of a matrix $A \in \mathbb{R}^{m \times n}$ can be interpreted geometrically as a composition of three transformations:
+
+\begin{itemize}
+    \item The matrix $V$ represents a rotation in $\mathbb{R}^n$.
+    \item The matrix $\Sigma$ represents a scaling in $\mathbb{R}^{m \times n}$.
+    \item The matrix $U$ represents a rotation in $\mathbb{R}^m$.
+\end{itemize}
+
+In $\R^2$, the SVD of a matrix $A$ can be interpreted as a rotation of the unit circle, followed by a scaling along the axes, 
+followed by another rotation. So this transformation can be represented with 4 parameters: two angles and two scaling factors.
+In $\R^3$, its the same idea, but with 6 parameters: three angles and three scaling factors.
+
+\subsection{Polar decomposition}
+
+Let $A \in \R^{n \times n}$ be a symmetric matrix. The polar decomposition of $A$ is a factorization of $A$ as:
+
+\begin{equation}
+    A = Q S
+\end{equation}
+
+where $Q$ is an orthogonal matrix and $S$ is a symmetric positive definite matrix. 
+The polar decomposition can be derived from the SVD of $A$ as:
+
+\begin{equation}
+    A = U \Sigma V^T = (U V^T) (V \Sigma V^T) = Q S
+\end{equation}
+
+where $Q = U V^T$ and $S = V \Sigma V^T$. So, the polar decomposition of a symmetric matrix
+always exists.
+
+\subsection{Eckart-Young theorem}
+
+The Eckart-Young theorem states that the best rank-$k$ approximation of a matrix $A \in \mathbb{R}^{m \times n}$ in the Frobenius norm
+is given by the low-rank approximation of $A$, denoted as $A_k$:
+
+\begin{equation}
+    \min_{rank(B) = k} \|A - B\|_F = \|A - A_k\|_F
+\end{equation}
+
+This also applies to the spectral norm $\| \cdot \|_2$. To prove this, let us define the mentioned
+norms:
+
+\subsubsection{Frobenius norm}
+
+The Frobenius norm of a matrix $A \in \mathbb{R}^{m \times n}$ is defined as:
+
+\begin{equation}
+    \|A\|_F = \sqrt{\sum_{i=1}^{m} \sum_{j=1}^{n} A_{ij}^2}
+\end{equation}
+
+The Frobenius norm is the Euclidean norm of the vector obtained by stacking the columns of $A$.
+It is also equal to:
+
+\begin{equation}
+    \|A\|_F = \sqrt{tr(A^T A)}
+\end{equation}
+
+It has 3 important properties:
+
+\begin{enumerate}
+    \item $\|A\|_F = \|A^T\|_F$
+    \item It is invariant under orthogonal transformations: $\|Q A\|_F = \|A\|_F$
+    \item It is equal to the square root of the sum of the squared singular values of $A$: 
+    \begin{equation}
+        \|A\|_F = \sqrt{\sum_{i=1}^{r} \sigma_i^2}
+    \end{equation}
+\end{enumerate}
+
+\subsubsection{Spectral norm}
+
+The spectral norm of a matrix $A \in \mathbb{R}^{n \times n}$ is defined as:
+
+\begin{equation}
+    \|A\|_2 = \sup_{\|x\|_2 = 1} \|A x\|_2
+\end{equation}
+
+It is equal to the largest singular value of $A$. This is denoted as:
+
+\begin{equation}
+    \|A\|_2 = \sigma_1
+\end{equation}
+
+\subsubsection{Proof of the Eckart-Young theorem}
+
+For both norms $\| \cdot \|_F$ and $\| \cdot \|_2$, we will prove that:
+
+$$\| A - A_k \| \leq \| A - B \| \quad \forall B \in \mathbb{R}^{m \times n} \quad \text{s.t.} \quad rank(B) = k$$
+
+Let $B \in \mathbb{R}^{m \times n}$ be a matrix such that $rank(B) = k$. Then we have that:
+
+$$dim(N(B)) = n - k$$
+
+Let us consider the matrix $V_{k+1}$ whose columns are the vectors $v_{1}, \ldots, v_{k+1}$ 
+from the SVD of $A$. Then we have that:
+
+$$rank(V_{k+1}) = k+1 \Rightarrow dim(C(V_{k+1})) = k + 1$$
+$$\Rightarrow dim(N(B)) + dim(C(V_{k+1})) = n - k + k + 1 = n + 1$$
 
 
+This means that $N(B) \cap C(V_{k+1}) \neq \emptyset$. Let $w \in N(B) \cap C(V_{k+1})$, 
+such that $\|w\| = 1$. Then we have that, for coefficients $\alpha_i$:
 
+$$w = \sum_{i=1}^k \alpha_i v_i \quad \wedge \quad B w = 0$$
 
+Since $\|w\| = 1$, then $\sum_{i=1}^k \alpha_i^2 = 1$. Now, we have that, for the 
+spectral norm:
 
+$$\|A - B\|_2^2 \geq \|(A - B) w\|_2^2 = \|A w\|_2^2 = w^T A^T A w$$
+$$= w^T V \Sigma^2 V^T w = \sum_{i=1}^k \sigma_i^2 \alpha_i^2 \geq$$
+$$\geq \sigma_{k+1}^2 \sum_{i=1}^k \alpha_i^2 = \sigma_{k+1}^2$$
+$$= \|A - A_k\|_2^2$$
 
+Therefore:
 
+$$\|A - A_k\|_2 \leq \|A - B\|_2 \quad \forall B \in \mathbb{R}^{m \times n} \quad \text{s.t.} \quad rank(B) = k$$
 
+For the Frobenius norm, we need to use the Weyl's inequality:
+
+\begin{equation}
+    \sigma_{i + j - 1}(X + Y) \leq \sigma_i(X) + \sigma_j(Y)
+\end{equation}
+
+where $\sigma_i(X)$ denotes the $i$-th singular value of a matrix $X$. Using this inequality, 
+let us define $X = A - B$ and $Y = B$. Then we have that:
+
+$$\sigma_{i + k}(A) \leq \sigma_i(A - B) + \sigma_{k + 1}(B)$$
+
+Note that $\sigma_{k+1}(B) = 0$, since $B$ has rank $k$. Therefore:
+
+$$\sigma_{i + k}(A) \leq \sigma_i(A - B)$$
+
+Then, we have that:
+
+$$\|A - A_k\|_F^2 = \sum_{i=k+1}^r \sigma_i^2(A) = \sum_{i=1}^{r - k} \sigma_{i+k}^2(A) \leq$$
+$$\leq \sum_{i=1}^{r - k} \sigma_i^2(A - B) \leq \sum_{i=1}^n \sigma_i^2(A - B) = \|A - B\|_F^2$$
+
+Therefore:
+
+$$\|A - A_k\|_F \leq \|A - B\|_F \quad \forall B \in \mathbb{R}^{m \times n} \quad \text{s.t.} \quad rank(B) = k$$
+
+This completes the proof.
