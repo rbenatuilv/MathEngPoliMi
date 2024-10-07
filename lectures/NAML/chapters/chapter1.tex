@@ -565,6 +565,68 @@ The low-rank approximation of a matrix is useful for data compression, as it all
 Note that the low-rank approximation of a matrix is the best rank-$k$ approximation of the matrix in the Frobenius norm. This is called 
 the Eckart-Young theorem.
 
+\subsubsection{Optimal thresholding for low-rank approximation}
+
+There are several methods to determine the optimal rank $k$ for the low-rank approximation of a matrix. A common heuristic approach
+is to graph the singular values of the matrix and choose the rank $k$ as the point where the singular values start to decay rapidly.\\
+
+We can see the idea of this method in the following figure:\\
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.4\textwidth]{figures/image_opt_thresh_1.jpg}
+    \caption{Heuristic method for choosing $k$}
+    \label{fig:heur_k_choose}
+\end{figure}
+
+Another common method is to use the cumulative energy of the singular values. The cumulative energy is defined as:
+
+\begin{equation}
+    \frac{\sum_{i=1}^{k} \sigma_i^2}{\sum_{i=1}^{r} \sigma_i^2}
+\end{equation}
+
+The cumulative energy measures the proportion of the total energy of the matrix that is captured by the first $k$ singular values. A common
+heuristic is to choose the rank $k$ as the smallest value such that the cumulative energy is above a certain threshold, e.g., 90\%.\\
+
+However, the optimal rank $k$ for the low-rank approximation of a matrix is a complex problem that depends on the specific application.
+For example, we can use the following model:
+
+\begin{equation}
+    A = A_{TRUE} + \gamma A_{NOISE}
+\end{equation}
+
+where $A_{TRUE}$ is the true low-rank matrix that we want to approximate, $A_{NOISE}$ is the noise matrix, and $\gamma$ is the noise level.
+In this case, the optimal rank $k$ is the one that minimizes the error of the low-rank approximation of $A_{TRUE}$.\\
+
+For this case, depending of the knowledge of the noise level, we can use the following methods to compute a threshold.
+
+\begin{enumerate}
+    \item If the noise level is known, and $A \in \R^{n \times n}$ is a square matrix, then we can use the following threshold:
+    
+    \begin{equation}
+        \tau = \frac{4}{\sqrt{3}} \sqrt{n} \gamma
+    \end{equation}
+
+    \item If $n << m$:
+    
+    \begin{equation}
+        \tau = \lambda{\frac{n}{m}} \sqrt{n}
+    \end{equation}
+
+    Where $\lambda(\cdot)$ is a computable function (specific for this model, we don't care about it).
+
+    \item $\gamma$ is unknown:
+    
+    \begin{equation}
+        \tau = \omega(\frac{n}{m}) \sigma_{med}
+    \end{equation}
+
+    Where $\sigma_{med}$ is the median of the singular values of $A$, and $\omega(\cdot)$ is a computable function 
+    (specific for this model, we don't care about it).
+\end{enumerate}
+
+The idea is to select the singular values that are above the threshold.
+
 \subsection{Existance of the SVD}
 
 The SVD of a matrix $A \in \mathbb{R}^{m \times n}$ always exists. The proof is as follows:\\
@@ -783,3 +845,94 @@ Therefore:
 $$\|A - A_k\|_F \leq \|A - B\|_F \quad \forall B \in \mathbb{R}^{m \times n} \quad \text{s.t.} \quad rank(B) = k$$
 
 This completes the proof.
+
+\subsection{Principal Component Analysis (PCA)}
+
+Principal Component Analysis (PCA) is a technique to reduce the dimensionality of a dataset. Given a dataset $X \in \mathbb{R}^{m \times n}$,
+PCA computes the SVD of the centered data matrix $\bar{B}$, where $\bar{B}$ is obtained by subtracting the mean of each column of $X$.
+Then, the principal components of the dataset are the right singular vectors of $\bar{B}$. The principal components are the directions
+of the dataset with the largest variance.\\
+
+In detail, let $X \in \R^{m \times n}$ the dataset, with $m$ samples and $n$ features. Let $\bar{x}$ be mean vector of the data samples.
+Then, we define $\bar{X}$ as:
+
+\begin{equation}
+    \bar{X} = \begin{bmatrix}
+        1 \\
+        \vdots \\
+        1
+    \end{bmatrix} \bar{x}^T
+\end{equation}
+
+Then, we define the centered data matrix $\bar{B}$ as:
+
+\begin{equation}
+    \bar{B} = X - \bar{X}
+\end{equation}
+
+The covariance matrix is then defined as:
+
+\begin{equation}
+    C = \frac{1}{m - 1} \bar{B}^T \bar{B}
+\end{equation}
+
+We observe that the eigendecomposition of the covariance matrix $C$ is as follows:
+
+\begin{equation}
+    C = V \Lambda V^T
+\end{equation}
+
+We can obtain the principal components of the dataset as the columns of $V$. The principal components are the directions of the dataset
+with the largest variance. The first principal component is the direction with the largest variance, the second principal component is
+the direction with the second largest variance, and so on.\\
+
+By doing the SVD of the centered data matrix $\bar{B}$, we can obtain the principal components of the dataset, such that:
+
+\begin{equation}
+    \bar{B} = U \Sigma V^T
+    \Rightarrow V = \text{principal components} \quad \wedge \quad \Lambda = \frac{1}{m - 1} \Sigma^2 
+\end{equation}
+
+\subsection{Data pre-processing: sensitivity to transformations}
+
+The SVD is specially sensitive to scaling, rotating and translating the data. This is because the SVD
+is a geometrical transformation of the data, and these transformations change the geometry of the data.
+For that reason, if we want to apply the SVD to a dataset, we need to pre-process the data to remove or somehow
+filter the effects of these transformations.\\
+
+For example, if we have a dataset that consist of face images, and we want to apply the SVD to this dataset,
+we need to pre-process the images to remove the effects of scaling, rotating and translating the faces. This can
+be done by aligning the faces to a common reference frame, and by normalizing the faces to have the same size and
+orientation.\\
+
+In general, the pre-processing of the data is an important step in the application of the SVD to a dataset. The
+pre-processing step can have a significant impact on the results of the SVD, and it is important to carefully
+choose the pre-processing steps to obtain meaningful results.
+
+\subsection{Randomized SVD}
+
+The SVD of a matrix can be computed using the randomized SVD algorithm. The randomized SVD is an iterative algorithm
+that approximates the SVD of a matrix using random projections. The algorithm is as follows:
+
+\begin{algorithm}[H]
+    \caption{Randomized SVD}
+    \begin{algorithmic}[1]
+        \State Choose a random matrix $Y \in \mathbb{R}^{n \times k}$, with $k \ll n$.
+        \State Compute the matrix $Z = A Y$.
+        \State Compute the QR factorization of $Z = Q R$.
+        \State Compute the matrix $B = Q^T A$.
+        \State Compute the SVD of $B = \hat{U} \Sigma V^T$.
+        \State Obtain $U$ as $U = Q \hat{U}$.
+        \State The approximate SVD of $A$ is given by $A \approx U \Sigma V^T$.
+    \end{algorithmic}
+\end{algorithm}
+
+The randomized SVD algorithm is a fast and efficient way to compute the SVD of a matrix. The algorithm is based on the
+fact that the SVD of a matrix can be approximated using random projections. The algorithm is especially useful when
+the matrix is large and when only an approximate SVD is needed.\\
+
+The idea behind this algorithm is a sampling of the column space of the matrix $A$ using the matrix $Y$.\\
+
+This method is most widely used in the context of large-scale data analysis, where the matrix $A$ is too large to be
+stored in memory. In this case, the randomized SVD algorithm can be used to compute an approximate SVD of the matrix
+using only a small amount of memory.
