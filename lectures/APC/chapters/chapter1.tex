@@ -1194,7 +1194,7 @@ definition is in the header file, while the class implementation is in the sourc
 Vectors are a sequence container that encapsulates dynamic size arrays. They can resize themselves automatically when
 inserting elements. To use a vector, you need to include the \texttt{vector} header file.\\
 
-A vector is a class template, which means that you can create vectors of any type. It is provided by the Standard Template
+A vector is a class template, which means that you can create vectors of any assignable type. It is provided by the Standard Template
 Library (STL), which is a collection of classes and functions that are used to implement common data structures and algorithms.
 Templates are not themselves classes or functions, but they instead can be thought of as the instructions to the compiler for 
 generating classes or functions. This process is called instantiation.\\
@@ -1253,6 +1253,10 @@ There are several ways to initialize a vector in \texttt{C++}:\\
 \caption{Vector Initialization in C++}
 \label{tab:vector_init}
 \end{table}
+
+Note that we can only create vectors that contain values with assignable types.
+That is, values that can be reassignable throughout the code. Types like references
+and \texttt{const} are non-assignable, so they cannot be used to construct vectors.\\
 
 Vectors grow efficiently, and because of this, it is often unnecessary to specify the size of a vector when it is created,
 since it can lead to poorer performance. The exception of this is when you know the size of the vector in advance.\\

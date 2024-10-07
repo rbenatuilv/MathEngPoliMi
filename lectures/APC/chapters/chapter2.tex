@@ -80,6 +80,33 @@ difference is that the type of the pointer is \texttt{float *} instead of
 type, but the type of the pointer must match the type of the variable whose
 address it will store.
 
+\subsection{Pointers to pointers}
+
+There are no limits to how many type modifiers can be applied to a declarator.
+When there is more than one modifier, they combine in ways that are logical, but
+not always obvious. The \textbf{dereference operator} is a type modifier when 
+it is used in a declaration. As such, it can be used multiple times.\\
+
+A pointer is an object in memory, so like any other object, it has an address.
+Therefore, we can store the address of a pointer on another pointer. For this,
+we use two dereferencing operators \texttt{**}. There is no limit to how many 
+of \texttt{*} we can stack, and each one will refer to a new pointer level.\\
+
+\begin{lstlisting}[language=C++]
+int val = 1024;
+int *pi = &ival;
+int **ppi = &pi;
+
+cout << "direct value: " << val << "\n";
+cout << "indirect value: " << *pi << "\n";
+cout << "double indirect value: " << **ppi << "\n" << endl;
+
+// Output
+// direct value: 1024
+// indirect value: 1024
+// double indirect value: 1024
+\end{lstlisting}
+
 \section{Function parameters}
 
 The general form of a function is:
@@ -289,7 +316,8 @@ When we initialize a variable, the value of the inititializer is copied into
 the object we are creating. When we define a reference, instead of copying
 the initializer value, we bind the reference to its initializer. Once initialized,
 a reference cannot be reseated to refer to a different object, and that is why
-references must be initialized when declared.\\
+references must be initialized when declared. This is what we call a non-assignable
+type.\\
 
 When we fetch the value of a reference, we are actually fetching the value of
 the object to which the reference is bound. When we use a reference as an
@@ -324,7 +352,7 @@ to access an object. However, there are some differences between them:
 
 Note that the operators \texttt{*} and \texttt{\&} are used as both an operator in an
 expression and as part of a declaration. The context in which the operator is used
-determines what the symbol means.\\
+determines what the symbol means.
 
 \subsection{References as function parameters}
 
@@ -359,7 +387,7 @@ int main() {
 In the example above, the function \texttt{swap} receives references to the
 variables \texttt{x} and \texttt{y}. The function swaps the values of the
 variables. The function works as expected because the parameters are passed by
-reference.\\
+reference.
 
 \subsection{\texttt{const} references}
 
@@ -373,7 +401,8 @@ bufSize = 512; // error: cannot assign to a const object
 \end{lstlisting}
 
 Since we can't change the value of a \texttt{const} object, it must be always
-initialized when declared. By default, \texttt{const} objects are local to the
+initialized when declared, i.e., this is also a non-assignable type. 
+By default, \texttt{const} objects are local to the
 file in which they are defined. When a \texttt{const} object is initialized from 
 a compile-time constant, our compiler will usually substitute the uses of the 
 variable with the value of the constant during compilation.\\
@@ -389,7 +418,7 @@ words, \texttt{const} references can be used to pass large objects to functions
 in read-only mode, obtaining the benefits of pass by reference without the risk
 of changing the value of the object.\\
 
-Let us see an example:\\ \\
+Let us see an example:\\
 
 \begin{lstlisting}[language=C++]
 #include <iostream>
@@ -415,7 +444,21 @@ int main() {
 In the example above, the function \texttt{circ} receives a reference to a
 \texttt{const} variable. The function calculates the circumference of a circle
 given its radius. In this case, we protect the value of the radius from being
-changed by using a reference to a \texttt{const} variable.
+changed by using a reference to a \texttt{const} variable.\\
+
+An important thing we need to notice is that the reference to \texttt{const}
+restricts only what we can do through that reference. Binding a reference to
+\texttt{const} to an object says nothing about whether the underlying object 
+itself is \texttt{const}, and because of this, it might be changed by other means:\\
+
+\begin{lstlisting}[language=C++]
+int i = 42;
+int &r1 = i;
+const int &r2 = i;
+
+r1 = 0; // r1 is not const, so i is now 0
+r2 = 0; // error: r2 is a reference to const
+\end{lstlisting}
 
 \section{Guidelines for passing parameters}
 
@@ -439,7 +482,6 @@ In other words:
     \item Use call-by-reference only when you must return a result,
     rather than modify an object through a reference argument.
 \end{itemize}
-
 
 \section{Variables scope}
 
@@ -530,7 +572,7 @@ int main() {
 
 \subsection{Global and local declarations}
 
-When a local variable has the same name as a global variable, the local variable takes precedence. For example:\\
+When a local variable has the same name as a global variable, the local variable takes precedence. For example:
 
 \begin{lstlisting}[language=C++]
 #include <iostream>
@@ -573,4 +615,140 @@ int main() {
 The lifetime of a variable is the period during which the variable exists in memory. The lifetime of a global variable
 is the entire execution of the program, while the lifetime of a local variable is the period during which the function is
 executed. When you call a function, memory will be allocated for all local variables defined inside the function. When the
-function returns, the memory will be deallocated.\\
+function returns, the memory will be deallocated.
+
+\section{\texttt{auto} specifier and range-for loops}
+
+It is not uncommon to want to store the value of an expression in a variable declaration.
+But to declare the variable, we have to know the type of that expression. 
+Since \texttt{C++ 11}, we can let the compiler figure out the type for us, using
+the \texttt{auto} type specifier.\\
+
+Unlike other type specifiers, such as \texttt{double} or \texttt{int}, that name a
+specific type, \texttt{auto} tells the compiler to deduce the type from the initializer.
+That means that a variable using \texttt{auto} as its type specifier must have an 
+initializer. Let us see an example:\\
+
+\begin{lstlisting}[language=C++]
+auto item = val1 + val2;
+// item will be initialized to the result type of val1 + val2
+\end{lstlisting}
+
+\subsection{Range-for loops}
+
+A range-for loop is a very useful tool to iterate over a container of elements (e.g.,
+an array or a vector). Its sytax is similar to the simple for loop, but the iterator
+variable gets the value of each element in the container, instead of each position
+index. For example:\\
+
+\begin{lstlisting}[language=C++]
+std::vector<int> v = {10, 20, 30};
+
+for (int i: v) {
+    std::cout << i << " ";
+}
+// Output: 10 20 30
+\end{lstlisting}
+
+Note that in this case, every element of \texttt{v} is copied into \texttt{i}.
+Sometimes, we might want to avoid the copy of each element, since they could
+be large. For that, we can use references as such:\\
+
+\begin{lstlisting}[language=C++]
+// Assume that v is a vector of Strings
+for (string &s : v) {
+    cout << s << "\n";
+}
+\end{lstlisting}
+
+In this way, we avoid the copy of each element to the iteration variable. We might even
+want to avoid modyfing any element of the vector inside the range-for loop. In that
+case, we could use a reference to \texttt{const}, instead of just a reference.\\
+
+Sometimes, we might not be sure of the type of the objects inside a certain vector,
+but we still want to iterate over them. For that, we can use the \texttt{auto} specifier
+in the same way as before:\\
+
+\begin{lstlisting}[language=C++]
+for (auto e : v) {cout << e << "\n"} // e is a copy of all v[i]
+
+for (auto &e : v) {cout << e << "\n"} // no copy
+
+for (const auto &e : v) {cout << e << "\n"} // unmodifiable
+\end{lstlisting}
+
+\section{Iterators}
+
+Until now, we have been using subscripts (\texttt{[n]}) to access the elements of
+a container. There is a more general mechanism, the \textbf{iterators}, that we can
+use for the same purpose.\\
+
+The STL library defines several kinds of containers, and all of them have iterators,
+but only a few support the subscript operator. We can think of an iterator as a 
+pointer to access any container. Using iterators instead of subscripts allows us to
+change the container type without changing our code.\\
+
+Like pointers, iterators give us indirect access to an object, and they have also
+operations to move from one element to another.\\
+
+Types that have iterators have also members to return those iterators. These are
+\texttt{begin()} and \texttt{end()}. The first one returns an iterator that denotes the
+first element of the container, if there is one, while the second one returns an 
+iterator positioned "one past the end" of the associated container. Let us see
+an example:\\
+
+\begin{lstlisting}
+std::vector<int> v = {1, 2, 3};
+
+auto b = v.begin();
+auto e = v.end();
+
+// The type should be vector::iterator, but we let the compiler deduce it
+\end{lstlisting}
+
+If the container is empty, the iterators returned by both methods are equal,
+they are both off-the-end iterators. Here is another example:\\
+
+\begin{lstlisting}[language=C++]
+string s("some string");
+
+for (auto it = s.begin(); it != s.end() && !isspace(*it); ++it) {
+    *it = toupper(*it);
+}
+\end{lstlisting}
+
+\subsection{Standard container iterator operations}
+
+These operations apply to all STL iterators:
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.7\textwidth]{figures/image_STL_it_op.png}
+\caption{STL iterator operations}
+\label{fig:STL_it_op}
+\end{figure}
+
+These operations apply only to vectors and strings:
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.7\textwidth]{figures/image_vec_str_it_op.png}
+    \caption{Vector and String iterator operations}
+    \label{fig:vec_str_it_op}
+\end{figure}
+
+\subsection{Constant iterators}
+
+These type of iterators, called \texttt{const\_iterator}, are used when we 
+need to read but not write to an object. To access these, the standard containers
+have the methods \texttt{cbegin()} and \texttt{cend()}. They are used in the same
+way as the other iterators, but the only constraint is that we cannot use them to
+modify the elements inside the container.\\
+
+\begin{lstlisting}[language=C++]
+string s = "hello world";
+
+for (auto it = s.cbegin(); it != s.cend(); ++it) {
+    cout << *it;
+}
+\end{lstlisting}

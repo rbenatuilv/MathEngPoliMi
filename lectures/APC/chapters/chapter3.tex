@@ -24,7 +24,7 @@ The computer's memory is divided into four main sections:
     \item \textbf{Stack section}: It is used for local variables and function calls.
 \end{itemize}
 
-\begin{figure}[ht]
+\begin{figure}[H]
     \centering
     \includegraphics[width=4.5cm]{figures/image_memory.png}
     \caption{Memory layout}
@@ -97,7 +97,8 @@ from a pointer. When doing so, the compiler automatically scales the integer by 
 way that arrays are accessed in \texttt{C++}. For example:\\
 
 \begin{lstlisting}[language=C++]
-int arr[5] = new int[5];
+int *arr = new int[5];
+*arr = {1, 2, 3, 4, 5};
 int *p = arr; // p points to the first element of arr
 std::cout << *p << std::endl; // prints 1
 p++; // p now points to the second element of arr
@@ -107,7 +108,8 @@ std::cout << *p << std::endl; // prints 2
 Note that when we try to access a specific element of an array, we can use the subscript operator \texttt{[]}. For example:\\
 
 \begin{lstlisting}[language=C++]
-int arr[5] = new int[5];
+int *arr = new int[5];
+*arr = {1, 2, 3, 4, 5};
 std::cout << arr[0] << std::endl; // prints 1
 std::cout << arr[1] << std::endl; // prints 2
 \end{lstlisting}
@@ -115,7 +117,6 @@ std::cout << arr[1] << std::endl; // prints 2
 This is equivalent to the following code:\\
 
 \begin{lstlisting}[language=C++]
-int arr[5] = new int[5];
 int *p = arr; // p points to the first element of arr
 std::cout << *p << std::endl; // prints 1
 std::cout << *(p + 1) << std::endl; // prints 2
@@ -126,7 +127,6 @@ subscript a negative index, or an out of bounds index (since it is just an arith
 it leads to undefined behavior and undetectable errors. Let us see an example:\\
 
 \begin{lstlisting}[language=C++]
-int arr[5] = new int[5];
 arr[-1] = 10; // undetected error
 arr[5] = 10; // undetected error
 \end{lstlisting}
@@ -136,6 +136,38 @@ they both are pointers to memory that has not been allocated for the array \text
 
 A pointer does know the size of the type it points to, and that is why we can use pointer arithmetic to access the elements of an array.
 Unlike other types (e.g. \texttt{int} and \texttt{double}), there is no implicit conversion between pointers to different types.
+
+\subsection{\texttt{begin()} and \texttt{end()} on arrays}
+
+To avoid errors and make it easier for us to use pointers and arrays,
+\texttt{C++ 11} library includes 2 functions: \texttt{begin()} and \texttt{end()}.
+These allow us to obtain the pointers to the first and just past the last element of an
+array, respectively.\\
+
+\begin{lstlisting}[language=C++]
+int arr[] = {0, 1, 2, 3, 4, 5, 6, 7, 8, 9};
+int *beg = begin(arr);
+int *last = end(arr);
+
+for (int *b = beg; b != last; ++b) {
+    cout << *b << endl;
+}
+
+// Output: 0 1 2 3 4 5 6 7 8 9
+\end{lstlisting}
+
+It can also be used to compute the length of an array:\\
+
+\begin{lstlisting}[language=C++]
+int arr[] = {0, 1, 2, 3, 4, 5, 6, 7, 8, 9};
+int *beg = begin(arr);
+int *last = end(arr);
+
+auto n = last - beg;
+cout << n << endl;
+
+// Output: 10
+\end{lstlisting}
 
 \section{Why use pointers and free store?}
 
