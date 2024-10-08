@@ -1,0 +1,505 @@
+\chapter{Classes}
+
+\section{What is a class?}
+
+A class is a user-defined type. It specifies a blueprint for the creation of
+objects. A class consists of a set of members:
+
+\begin{itemize}
+    \item Data members: variables that store the state of the object.
+    \item Member functions (methods): functions that operate on the object.
+\end{itemize}
+
+The methods of a class can define the meaning of creation (constructor),
+initialization, assignment, copy and cleanup (destructor), among other
+operations, that determine the behavior of the objects of that class.
+
+\section{Classes: \texttt{C++} general syntax}
+
+In order to define a class in \texttt{C++}, we use the following syntax:\\
+
+\begin{lstlisting}[language=C++]
+class ClassName {
+    public: // Accesible by all
+        // functions
+        // types
+        // data (often best kept private!)
+
+    private: // Accessible only by members of the class
+        // functions
+        // types
+        // data
+};
+\end{lstlisting}
+
+Notice that the members of a class can be public or private. Public members are
+accessible from outside the class, while private members are only accessible
+from within the class. A good practice is to keep the data members private and
+provide public member functions to access and modify them. In that way, we can
+control the access to the data and ensure that it is always in a valid state.\\
+
+For example, we can define a class \texttt{Point} as follows:\\
+
+\begin{lstlisting}[language=C++]
+class Point {
+    public:
+        Point(int xx, int yy) : x(xx), y(yy) {} // Constructor
+        int getX() { return x; }
+        int getY() { return y; }
+        void setX(int xx) { this->x = xx; }
+        void setY(int yy) { this->y = yy; }
+    private:
+        int x;
+        int y;
+};
+\end{lstlisting}
+
+In this example, we define a class \texttt{Point} with two data members \texttt{x}
+and \texttt{y} and four member functions: a constructor, two getter functions
+\texttt{getX} and \texttt{getY}, and two setter functions \texttt{setX} and
+\texttt{setY}.The members of a class can be accessed using the dot operator 
+\texttt{.} for objects, and the arrow operator \texttt{->} for pointers to objects. 
+Also, common operators such as \texttt{+}, \texttt{-}, \texttt{*}, \texttt{/}, 
+among others, can be defined for a class.\\
+
+Note that the public members of a class provide the class interface, while the private
+members provide the class implementation. The class interface defines the
+operations that can be performed on the objects of that class, while the class
+implementation defines how those operations are performed.\\
+
+Generally, we want to define the class interface, with all the public and private
+member declarations, on a \texttt{.h} header file, while having the implementation of each 
+function (including constructor and destructor) on a source \texttt{.cpp} file that 
+includes this header. For example:
+
+\begin{lstlisting}[language=C++]
+// Point.h
+#pragma once
+
+class Point {
+    public:
+        Point(int xx, int yy); // Constructor
+        int getX();
+        int getY();
+        void setX(int xx);
+        void setY(int yy);
+    private:
+        int x;
+        int y;
+};
+\end{lstlisting}
+
+\begin{lstlisting}
+// Point.cpp
+#include "Point.h"
+
+Point::Point(int xx, int yy) : x(xx), y(yy) {}
+Point::getX() { return x; };
+Point::getY() { return y; };
+Point::setX(int xx) { x = xx };
+Point::setY(int yy) { y = yy };
+\end{lstlisting}
+
+\section{Structs vs Classes}
+
+In \texttt{C++}, the only difference between a \texttt{struct} and a \texttt{class}
+is that the members of a \texttt{struct} are public by default, while the members
+of a \texttt{class} are private by default. In general, we use \texttt{structs}
+to define simple data structures, while we use \texttt{classes} to define more
+complex data structures with associated operations.
+
+\subsection{Structs in \texttt{C++}}
+
+Structs are the simplest user-defined data structure that we have. As we said before, all its
+members are public by default. This structure is inherited from the \texttt{C} language.
+Its main syntax is:
+
+\begin{lstlisting}[language=C++]
+struct StructName {
+    // data
+    // Constructor
+    // functions
+};
+\end{lstlisting}
+
+For example, we can define a struct \texttt{Point} as follows:
+
+\begin{lstlisting}[language=C++]
+struct Point {
+    int x;
+    int y;
+};
+\end{lstlisting}
+
+In general, we use structs to define simple data structures that group related
+data together. Unlike classes, structs cannot define private members, so all
+the date members of a struct are accessible from outside the struct.
+
+\subsection{Public/private benefits}
+
+The main benefit of using private members is that we can control the access to
+the data and ensure that it is always in a valid state. For example, we can
+define a class \texttt{Point} with private data members \texttt{x} and \texttt{y}
+and provide public member functions to access and modify them. In that way, we
+can ensure that the \texttt{x} and \texttt{y} coordinates of a point are always
+non-negative.\\
+
+In general, we use the public/private paradigm to:
+
+\begin{itemize}
+    \item Provide a clean interface to the users of the class.
+    \item Hide the implementation details of the class.
+    \item Allow the class to change its implementation without affecting its users.
+    \item Easier to support code evolution.
+    \item Mantain the class \textbf{invariants.}
+\end{itemize}
+
+\subsection{Invariants}
+
+An invariant is a condition that must always be true for an object of a class.
+It helps to ensure that the object is always in a valid state. For example, if we
+define a class \texttt{Date} with data members \texttt{day}, \texttt{month} and
+\texttt{year}, we can define, for example, the following invariants:
+
+\begin{itemize}
+    \item The day must be between 1 and 31.
+    \item The month must be between 1 and 12.
+    \item The year must be greater than 0.
+\end{itemize}
+
+We can enforce these invariants by defining the data members as private and
+providing public member functions to access and modify them. In that way, we can
+ensure that the \texttt{day}, \texttt{month} and \texttt{year} of a date are
+always in a valid state.\\
+
+In general, invariants help to ensure that the data that an object stores is always
+correct and meaningful for its context. They help to prevent bugs and make the code 
+easier to understand and maintain.\\
+
+If we can't think of a good invariant for our data structure, we are probably dealing
+with plain data, and if so, we may use a \texttt{struct} instead. But generally,
+we should try to find good invariants for our user-defined types, so we can regularize
+the behavior of our objects and prevent buggy code.
+
+\section{\texttt{this} parameter}
+
+When we call a member function, we do so on behalf of an specific object (an instance
+of our class). Member functions access the object on which they were called through
+an extra, implicit parameter named \texttt{this}. This parameter will be initialized
+with the address of that object, so its data will be accesible from within the member
+function.\\
+
+For example, let us define a class that stores a date:\\
+
+\begin{lstlisting}[language=C++]
+class Date {
+    public:
+        Date(int dd, int mm, int yy) : d(dd), m(mm), y(yy) {}
+        int day() { return d; }
+        int month() { return m; }
+        int year() { return y; }
+    private:
+        int d;
+        int m;
+        int y;
+}
+\end{lstlisting}
+
+Then, when we call \texttt{object.month()} on a certain \texttt{object}, the compiler
+automatically passes the address of that object to the method. Its if like the method 
+were defined as:\\
+
+\begin{lstlisting}[language=C++]
+Date::month(Date *this) // Just a representation of what is happening
+\end{lstlisting}
+
+So, we have:
+
+\begin{lstlisting}[language=C++]
+Date my_birthday(26, 2, 2001);
+int m = my_birthday.month()
+// It is like we were writing Date::month(&my_birthday)
+\end{lstlisting}
+
+Note that inside the member functions, we are refering directly to the members of
+the object on which the function was called, without using \texttt{this}.
+Any direct use of a member of the class is assumed to be an implicit reference through
+\texttt{this}. That is, when \texttt{month} uses \texttt{m}, it is as if we had
+written \texttt{this -> m}.\\
+
+It is then obvious that, when we define members methods of a class, it is forbidden to
+use the keyword \texttt{this} for naming a parameter or a variable. Note that \texttt{this}
+is a \texttt{const} pointer, meaning that we cannot change the address that it holds.
+
+\section{\texttt{const} member functions}
+
+When we define a member function of a class, we can specify that it is a \texttt{const}
+member function by appending the \texttt{const} keyword to the function declaration.
+A \texttt{const} member function is a member function that cannot modify the object
+on which it was called.\\
+
+For example, we can define a class \texttt{Date} with a \texttt{const} member function
+\texttt{year} as follows:\\
+
+\begin{lstlisting}[language=C++]
+class Date {
+    public:
+        Date(int dd, int mm, int yy) : d(dd), m(mm), y(yy) {} // Constructor
+
+        // ... Non-const member functions ...
+
+        int year() const {
+            ++y // (Imagine we do this by mistake)
+            return y; 
+        }
+    private:
+        int d;
+        int m;
+        int y;
+}
+
+Date my_birthday(26, 2, 2001);
+int y = my_birthday.year(); // Will result in an error
+\end{lstlisting}
+
+In this example, we define a class \texttt{Date} with a \texttt{const} member function
+\texttt{year} that tries to increment the year of the date. Since \texttt{year} is a
+\texttt{const} member function, it cannot modify the object on which it was called.
+Therefore, the statement \texttt{++y} will result in a compilation error.\\
+
+In general, we use \texttt{const} member functions to ensure that the object on which
+they were called is not modified. This helps to prevent bugs and make the code easier
+to understand and maintain.\\
+
+\section{Helper functions}
+
+Helper functions are functions that are not members of a class, but that operate on
+objects of that class. They are useful to define operations that are not part of the
+class interface, but that are related to the class.\\
+
+Usually, we want to keep the class interface clean and simple, and as minimal as
+posible, so we define helper functions as non-member functions (outside the class) to
+avoid cluttering the class interface, and when we need to define more complex operations.\\
+
+For examplee, if we continue with the \texttt{Date} class, we can define a helper
+function \texttt{next\_sunday()} that returns the next Sunday after a given date. We can
+define this function as follows:\\
+
+\begin{lstlisting}[language=C++]
+class Date {
+    // ... previous implementation ...
+}
+
+Date next_sunday(const Date &d) {
+    // ... Implementation ...
+    // returns a new Date object
+}
+\end{lstlisting}
+
+Usually, we declare helper functions in the header file as the class, and define them
+in the source file that includes the header. This way, we can keep the class interface
+clean and simple, and provide the implementation details in the source file.
+
+\section{Operator overloading}
+
+In \texttt{C++}, we can define the behavior of operators for a class by overloading
+them. Operator overloading allows us to define the meaning of operators such as
+\texttt{+}, \texttt{-}, \texttt{*}, \texttt{/}, among others, for objects of a class.\\
+
+When defining an operator for a class, we must define a member function or a non-member
+function that specifies the behavior of that operator for objects of that class. The 
+operator must have at leat one operand of the class for which it is defined.\\
+
+Some advices for operator overloading are:
+
+\begin{itemize}
+    \item Define operators only when they make sense for the class.
+    \item Define operators only with their conventional meaning.
+    \item Don't overload operators like \texttt{*}, \texttt{\&\&}, \texttt{||}, \texttt{!}
+\end{itemize}
+
+\subsection{Operators as member functions}
+
+When we define an operator as a member function, the object on which the operator
+was called is the left operand of the operator, and the right operand is passed as
+an argument to the member function.\\
+
+For example, we can define the operator \texttt{+} for a class \texttt{Point} as a
+member function as follows:\\
+
+\begin{lstlisting}[language=C++]
+class Point {
+    public:
+        // ... previous implementation ...
+
+        Point operator+(const Point &p) {
+            return Point(x + p.x, y + p.y);
+        }
+
+    private:
+        // ... previous implementation ...
+}
+\end{lstlisting}
+
+Note that the syntax for overloading an operator as a member function is to define
+a member function with the name \texttt{operator} followed by the operator that we
+want to overload. In this case, we define the operator \texttt{+} for the class
+\texttt{Point} that adds two points.\\
+
+We can also define operators between our class and other types. For example, when defining
+the \texttt{[]} operator for a class, we can define it as a member function that takes
+an integer as an argument. Let us see an implementation of this operator for a class
+\texttt{Vector}:\\
+
+\begin{lstlisting}[language=C++]
+class Vector {
+    public:
+        // ... some implementation ...
+
+        double &operator[](size_t i) const;
+
+    private:
+        std::vector<double> data;
+}
+
+double &Vector::operator[](size_t i) const { // Obs: returning a reference
+    while (data.size() <= i) {
+        data.push_back(0.);
+    }
+    return data[i];
+}
+\end{lstlisting}
+
+In this example, we define the operator \texttt{[]} for the class \texttt{Vector} that
+returns a reference to the element at the given index. If the index is out of bounds,
+we push back zeros to the vector until the index is valid.\\
+
+For operators as member functions, the left operand is always bounded to \texttt{this}.
+
+\subsection{Operators as non-member functions}
+
+When we define an operator as a non-member function, the object on which the operator
+was called is passed as an argument to the function. This overloading is useful when
+we want to define operators that are symmetric between two objects of the same class.\\
+
+The syntax for overloading an operator as a non-member function is to define a non-member
+function that takes two arguments of the class for which we want to overload the operator.\\
+
+For example, we can define the operator \texttt{+} for a class \texttt{Point} as a
+non-member function as follows:\\
+
+\begin{lstlisting}[language=C++]
+class Point {
+        // ... some implementation ...
+}
+
+Point operator+(const Point &p1, const Point &p2) {
+    return Point(p1.x + p2.x, p1.y + p2.y);
+}
+\end{lstlisting}
+
+In this example, we define the operator \texttt{+} for the class \texttt{Point} as a
+non-member function that adds two points. We have a problem here, because the operator 
+\texttt{+} is not a member of the class \texttt{Point}, so it cannot access the private 
+members of the class (in this case, \texttt{x} and \texttt{y}). To solve this, we can 
+declare the operator \texttt{+} as a friend function of the class \texttt{Point}. 
+It goes as follows:
+
+\subsubsection{Friend functions}
+
+When we define an operator as a non-member function, we can specify that the function
+is a friend of the class. A friend function is a function that is not a member of the
+class, but that has access to the private members of the class.\\
+
+The syntax for defining a friend function is to declare the function as a friend of
+the class in the class definition, and to define the function as a non-member function.\\
+
+For example, we can define the operator \texttt{+} for a class \texttt{Point} as a
+friend function as follows:\\
+
+\begin{lstlisting}[language=C++]
+class Point {
+    public:
+        // ... some implementation ...
+
+        friend Point operator+(const Point &p1, const Point &p2);
+}
+
+Point operator+(const Point &p1, const Point &p2) {
+    return Point(p1.x + p2.x, p1.y + p2.y);
+}
+\end{lstlisting}
+
+In this example, we define the operator \texttt{+} for the class \texttt{Point} as a
+friend function that adds two points. Now the operator \texttt{+} has access to the
+private members of the class \texttt{Point}, so we can add two points without any
+problem:\\
+
+\begin{lstlisting}[language=C++]
+    Point p1(1, 2);
+    Point p2(3, 4);
+    
+    Point p3 = p1 + p2;
+\end{lstlisting}
+
+\subsection{Member vs non-member}
+
+When we define an operator for a class, we can define it as a member function or as
+a non-member function. The choice between the two depends on the context and the
+semantics of the operator.\\
+
+Here are some general guidelines for choosing between a member function and a non-member
+function:
+
+\begin{itemize}
+    \item Must be member: \texttt{= [] () ->}
+    \item Should be member:
+        \begin{itemize}
+            \item Compound assignments: \texttt{+= -= *= /=}, etc.
+            \item Modify operator: \texttt{++ --}
+        \end{itemize}
+    \item Better non-member:
+        \begin{itemize}
+            \item Arithmetic operators: \texttt{+ - * /}
+            \item Bitwise operators: \texttt{\& | \^}, etc.
+            \item Comparison operators: \texttt{== != < >}, etc.
+        \end{itemize}
+    \item Better not overloaded: \texttt{* \&\& || !}
+    \item Cannot be overloaded: \texttt{:: ?: .* .}
+\end{itemize}
+
+\subsection{Returning \texttt{this} object}
+
+When we define an operator for a class, we can return the object on which the operator
+was called by reference. This allows us to chain multiple operators together.\\
+
+This is usually done when overloading the assignment operator \texttt{=} or the
+compound assignment operators such as \texttt{+=}, \texttt{-=}, \texttt{*=}, \texttt{/=}.
+For example, we can define the operator \texttt{+=} for a class \texttt{Point} as a
+member function that returns the object on which the operator was called by reference:\\
+
+\begin{lstlisting}[language=C++]
+class Point {
+    public:
+        // ... some implementation ...
+
+        Point &operator+=(const Point &p) {
+            x += p.x;
+            y += p.y;
+            return *this;
+        }
+}
+\end{lstlisting}
+
+In this example, we define the operator \texttt{+=} for the class \texttt{Point} as a
+member function that adds a point to another point and returns the object on which the
+operator was called by reference. This allows us to chain multiple operators together:\\
+
+\begin{lstlisting}[language=C++]
+Point p1(1, 2);
+Point p2(3, 4);
+Point p3(5, 6);
+
+p1 += p2 += p3;
+\end{lstlisting}
+
