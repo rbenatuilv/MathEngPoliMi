@@ -936,3 +936,111 @@ The idea behind this algorithm is a sampling of the column space of the matrix $
 This method is most widely used in the context of large-scale data analysis, where the matrix $A$ is too large to be
 stored in memory. In this case, the randomized SVD algorithm can be used to compute an approximate SVD of the matrix
 using only a small amount of memory.
+
+\subsection{Least Squares}
+
+The least squares problem is a problem to find the vector $x$ that minimizes the residual of a linear system $A x = b$.
+The least squares solution is given by:
+
+\begin{equation}
+    x = (A^T A)^{-1} A^T b
+\end{equation}
+
+Here, we are assuming that $A \in \mathbb{R}^{m \times n}$, with $m > n$ and $rank(A) = n$. The least squares solution
+is the solution that minimizes the residual $\|A x - b\|_2$. We can prove this in 2 different ways:
+
+\begin{itemize}
+    \item \textbf{Geometrical interpretation}:
+    
+    The least squares solution is the solution that minimizes the residual $\|A x - b\|_2$. This means that the residual
+is orthogonal to the column space of $A$. Let $r = A x - b$ be the residual, then we have that:
+
+$$r \perp C(A) \Rightarrow r \in N(A^T) \Rightarrow A^T r = 0$$
+$$\Rightarrow A^T (A x - b) = 0 \Rightarrow A^T A x = A^T b$$
+
+Note that $A$ has full column rank, so $A^T A$ is invertible (in fact, it is s.d.p). Therefore, we have that:
+
+$$x = (A^T A)^{-1} A^T b$$
+
+    \item \textbf{Derivation}:
+    
+    The least squares solution is the solution that minimizes the residual $\|A x - b\|_2$. This means that the least squares
+    solution is the solution that minimizes the function:
+    
+    $$\mathcal{L}(x) = \|A x - b\|_2^2 = (A x - b)^T (A x - b) = x^T A^T A x - 2 b^T A x + b^T b$$
+    
+    To find the minimum of this function, we need to find the critical points of the function. Let us take the derivative
+    of the function with respect to $x$:
+    
+    $$\frac{\partial \mathcal{L}(x)}{\partial x} = 2 A^T A x - 2 A^T b = 0$$
+    $$\Rightarrow A^T A x = A^T b$$
+    
+    By the same argument as before, we have that:
+    
+    $$x = (A^T A)^{-1} A^T b$$
+
+\end{itemize}
+
+In the context of data analysis, we often have a matrix $X \in \R^{n \times p}$ that represents $n$ samples of $p$ features.
+In this case, the least squares solution is used to find the coefficients $w$ of a linear model that best fits the data. The
+system of equations is given by:
+
+\begin{equation}
+    X w = y
+\end{equation}
+
+where $X$ is the matrix of features, $w$ is the vector of coefficients, and $y$ is the vector of labels. Note that an exact 
+solution may not exist, so we need to find the least squares solution. The least squares solution, as we deduced before,
+would be given by:
+
+\begin{equation}
+    w = (X^T X)^{-1} X^T y
+\end{equation}
+
+Note that the matrix $(X^T X)^{-1} X^T$ is called the pseudo-inverse of $X$, and it is denoted as $X^{\dagger}$.
+
+\subsubsection{Least squares and SVD}
+
+Computing the inverse of the matrix $X^T X$ can be computationally expensive, especially when the matrix $X$ is large.
+In this case, the least squares solution can be computed using the SVD of the matrix $X$. In fact, we have that:
+
+\begin{equation}
+    w = V \Sigma^{\dagger} U^T y
+\end{equation}
+
+where $U$, $\Sigma$ and $V$ are the SVD of $X$, and $\Sigma^{\dagger}$ is the pseudo-inverse of $\Sigma$. The pseudo-inverse
+of $\Sigma$ is obtained by taking the reciprocal of the non-zero singular values of $\Sigma$, and then taking the transpose of
+the resulting matrix. The pseudo-inverse of $\Sigma$ is denoted as $\Sigma^{\dagger}$. Visually, the pseudo-inverse of $\Sigma$
+is as follows:
+
+\begin{equation}
+    \Sigma^{\dagger} = \begin{bmatrix}
+        \frac{1}{\sigma_1} & 0 & \ldots & 0 & \ldots & 0 \\
+        0 & \frac{1}{\sigma_2} & \ldots & 0 & \ldots & 0 \\
+        \vdots & \vdots & \ddots & \vdots & \ldots & \vdots \\
+        0 & 0 & \ldots & \frac{1}{\sigma_p} & \ldots & 0
+    \end{bmatrix}
+\end{equation}
+
+\subsubsection{Underdetermined system case (wide matrix)}
+
+In the previous case, we assumed that $n > p$, and $rank(X) = p$. However, in some cases, we have that $n < p$, and
+$rank(X) = n$. In this case, the system of equations $X w = y$ is underdetermined, and there are infinitely many solutions.
+Still, the least square solution is still useful, as it gives the solution that minimizes the norm of the coefficients.\\
+
+We can prove this as follows. Let $w$ be a solution of the system of equations $X w = y$ and let $w_0$ be the least squares
+solution. Then we have that:
+
+$$\|w\|^2 = \|(w - w_0) + w_0\| = [(w - w_0) + w_0]^T [(w - w_0) + w_0]$$
+$$= \|w - w_0\|^2 - 2 (w - w_0)^T w_0 + \|w_0\|^2$$
+
+Note that 
+$$(w - w_0)^T w_0 = (w - w_0)^T X^T(X X^T)^{-1} y$$
+$$= (X (w - w_0))^T (X X^T)^{-1} y$$
+
+And since $X w = y$ and $X w_0 = y$, we have that $X (w - w_0) = 0$. Therefore, we have that:
+
+$$\|w\|^2 = \|w - w_0\|^2 + \|w_0\|^2 \geq \|w_0\|^2$$
+
+This means that the least squares solution is the solution that minimizes the norm of the coefficients.
+We often use this in practice to avoid error amplification in our calculations.
