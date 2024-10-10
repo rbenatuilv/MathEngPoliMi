@@ -534,3 +534,267 @@ from FireEvent.win:time(10 minutes);
 In this query, we are counting the number of fire events detected in the last
 10 minutes. This way, we can use the results of the first query as input for the
 second query.
+
+
+\section{Joins in EPL}
+
+In SQL, joins are performed on tables, whic are static data structures. The semantics
+of SQL joins are based on relational data model and queries that work with complete 
+data sets. These joins do not consider the time dimension of the data.\\
+
+In EPL, joins are performed on event streams, which are dynamic data structures. The
+semantics of EPL joins are based on event streams and queries that work with continuous
+data. These joins intrinsically consider the time dimension of the data.\\
+
+Generally, joins are classified in 3 main types:
+
+\begin{itemize}
+    \item Inner join: it returns only the rows that have matching values in both tables.
+    \item Left/ight join: it returns all the rows from the left/right table, and the matched rows from the other table.
+    \item Full join: it returns all the rows when there is a match in one of the tables.
+\end{itemize}
+
+Note that this is true for SQL and EPL. Also based on the structure on which the join is 
+performed, in EPL we can distinguish between 3 types of joins:
+
+\begin{itemize}
+    \item Stream to stream joins
+    \item Table to table joins
+    \item Stream to table joins (and viceversa)
+\end{itemize}
+
+Note that complex event pattern matching (CEP), seen in the previous section, is a form of join, 
+where the join condition is based on the temporal order of the events.
+
+\subsection{Stream to stream joins}
+
+Stream to stream joins are used to join 2 event streams. In each stream, we specify
+a window to define the time frame in which the join is performed. For example,
+if we use a window of 5 seconds, we will only consider the events that arrive in
+the last 5 seconds. Its syntax is as follows:\\
+
+\begin{lstlisting}[language=SQL]
+select *
+from View#time(9 sec) as v
+    inner join
+    Click#time(9 sec) as c
+    on v.id = c.id;
+\end{lstlisting}
+
+In this query, we are joining the \texttt{View} and \texttt{Click} streams on the
+\texttt{id} field. We are using a window of 9 seconds for each stream. This way,
+we are only considering the events that arrive in the last 9 seconds.\\
+
+Consider that the queries are only executed when an event arrives in the stream, 
+and only returns the new results that match the join condition. The following figure 
+describes the process of a stream to stream (inner) join:
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.7\textwidth]{figures/image_stream_stream_join.png}
+    \caption{Stream to stream join}
+    \label{fig:stream_stream_join}
+\end{figure}
+
+Note that we can also perform left/right outer joins and full outer joins. The
+syntax is similar to the inner join, but we use the \texttt{left outer join},
+\texttt{right outer join}, and \texttt{full outer join} statements, respectively.\\
+
+Joins among streams have profoundly different semantics, because they are designed to
+run on real-time data streams, essentially unbounded record sequences. Events are joined
+only if they arrive within a specific time window. This temporal aspect is central and 
+instrinsic to the join semantics of streams. The concept of time is crucial, as Joins
+depend on the time synchronization of the events in the streams, which instroduces a 
+significant difference with respect to traditional SQL joins.
+
+\subsection{Table to table joins}
+
+EPL offers 3 ways to build a table from an event stream:
+
+\begin{itemize}
+    \item \texttt{KEEP ALL}: this window is one that retains all arriving events. However,
+    take should be taken to remove events from the window, in a timely manner.
+    \item \texttt{UNIQUE}: this window is one that retains only the most recent event for
+    each unique key. 
+    \item \texttt{CREATE TABLE} with \texttt{INSERT INTO}: this window is one that retains
+    all arriving events, but it is not a window in the sense of a time window.
+\end{itemize}
+
+We will mainly use the \texttt{UNIQUE} window to build tables from event streams. This
+window is one that retains only the most recent event for each unique key. Its syntax is
+as follows:\\
+
+\begin{lstlisting}[language=SQL]
+select *
+from View#unique(id) as v
+    inner join
+    Click#unique(id) as c
+    on v.id = c.id;
+\end{lstlisting}
+
+In this query, we are joining the \texttt{View} and \texttt{Click} streams on the
+\texttt{id} field. We are using the \texttt{unique} window to build tables from the
+event streams. This way, we are only considering the most recent event for each unique
+key, in this case, the \texttt{id} field.\\
+
+Note that we are not actually joining tables, but event streams. The tables are built
+from the event streams, and the join is performed on these tables. So we call them 
+"tables" as they seem to inherit the unique key constraint from the SQL tables. The
+following figure describes the process of a table to table (inner) join:
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.6\textwidth]{figures/image_table_table_join.png}
+    \caption{Table to table join}
+    \label{fig:table_table_join}
+\end{figure}
+
+Note that the events persist over time, only being replaced by newer events with the same
+key. This is a key difference with respect to stream to stream joins, where the events are
+only considered within a specific time window.\\
+
+We can also perform left/right outer joins and full outer joins. The syntax is similar to
+the inner join, but we use the \texttt{left outer join}, \texttt{right outer join}, and
+\texttt{full outer join} statements, respectively.
+
+\subsection{Stream to table joins}
+
+These type of joins introduce a new keyword: \texttt{UNIDIRECTIONAL}. This keyword is used in
+the \texttt{JOIN} clause to identify streams that provide the events to execute the join. If
+the keyword is present for a stream, all other streams in the \texttt{FROM} clause become
+passive streams. That means that when a new event arrives or leaves a data window of a passive
+stream, the join does not generate new results.\\
+
+Therefore, the \texttt{UNIDIRECTIONAL} keyword makes the stream-to-table join asymmetric: only
+the input from the stream with the \texttt{UNIDIRECTIONAL} keyword will trigger the join. And 
+because the join is not-windowed, this stream is stateless; thus join lookups from the table 
+to the stream are not possible.\\
+
+The syntax for a stream to table join is as follows:\\
+
+\begin{lstlisting}[language=SQL]
+select *
+from View as v
+    unidirectional inner join
+    Click#unique(id) as c
+    on v.id = c.id;
+\end{lstlisting}
+
+In this query, we are joining the \texttt{View} stream with the \texttt{Click} table on the
+\texttt{id} field. We are using the \texttt{unique} window to build the table from the
+\texttt{Click} stream. This way, we are only considering the most recent event for each
+unique key, in this case, the \texttt{id} field. In this case, a new click event won't
+trigger the join, but a new view event will, and because the stream is stateless, join
+lookups from the Click table to the View stream are not possible.\\
+
+The following figure describes the process of a stream to table (inner) join:
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.62\textwidth]{figures/image_stream_table_join.png}
+    \caption{Stream to table join}
+    \label{fig:stream_table_join}
+\end{figure}
+
+We can also perform left/right outer joins and full outer joins. The syntax is similar to
+the inner join, but we use the \texttt{left outer join}, \texttt{right outer join}, and
+\texttt{full outer join} statements, respectively.
+
+\section{Contexts in EPL}
+
+In EPL, we can also define contexts. A context enables more flexible and stateful processing
+in scenarios requiring grouping or conditions that go beyond simple event windows. In fact, 
+contexts define a new type of window (different than tumbling and hopping windows), which we 
+will name a session window.\\
+
+Why use contexts? Here is a list of advantages:
+
+\begin{itemize}
+    \item[$\rightarrow$] Better control: context gives fine-grained control over how events are processed.
+
+    \item[$\rightarrow$] Stateful processing: handles cases where the state is important, e.g., sessions or
+    transactions.
+
+    \item[$\rightarrow$] Efficient partitioning: it helps reduce complexity in event, partitioning by user, 
+    session, or custom logic.
+\end{itemize}
+
+We have three main types of contexts:
+
+\begin{itemize}
+    \item Context by key: partitions events based on a key, e.g., \texttt{userId}.
+
+    \item Context by start/end conditions: defined by specific events or triggers.
+
+    \item Context by time: defines temporal windows (generalizes logical windows, e.g., it allows
+    to declare session windows).
+\end{itemize}
+
+\subsection{Context by key}
+
+Context by key is used to partition events based on a key. It is useful when we want to group
+events by a specific attribute, e.g., \texttt{userId}. Its syntax is as follows:\\
+
+\begin{lstlisting}[language=SQL]
+create context UserSessionContext
+partition by userId from UserActionEvent;
+\end{lstlisting}
+
+In this context, we are partitioning events by the \texttt{userId} attribute from the
+\texttt{UserActionEvent} stream. This way, we are grouping events by the \texttt{userId}
+attribute. Note that this process is highly parallelizable, as each partition can be processed
+independently.
+
+\subsection{Context by start/end conditions}
+
+Context by start/end conditions is defined by specific events or triggers. It is useful when we
+want to group events based on specific conditions, e.g., when a session starts or ends. Its syntax
+is as follows:\\
+
+\begin{lstlisting}[language=SQL]
+create context OrderContext
+initiated by OrderEvent(orderStatus = 'NEW')
+terminated by OrderEvent(orderStatus = 'COMPLETED');
+\end{lstlisting}
+
+In this context, we are defining a session window that starts when an \texttt{OrderEvent} with
+\texttt{orderStatus = 'NEW'} arrives and ends when an \texttt{OrderEvent} with \texttt{orderStatus
+= 'COMPLETED'} arrives. This way, we are grouping events based on the start and end conditions.\\
+
+Note that we could use this context along with the context by key to partition events based on a key
+and start/end conditions. Look at the following example:\\
+
+\begin{lstlisting}[language=SQL]
+create context OrderContext;
+partition by userId from UserActionEvent;
+initiated by UserActionEvent(action = 'start_order');
+terminated by UserActionEvent(action = 'complete_order');
+\end{lstlisting}
+
+\subsection{Context by time}
+
+Context by time allows us to track actions within fixed periods of time. They are triggered by some
+condition and last for a specific time. Its syntax is as follows:\\
+
+\begin{lstlisting}[language=SQL]
+create context TimeBatchContext
+partition by userId from UserActionEvent;
+initiated by UserActionEvent(action = 'start_order');
+terminated after 10 minutes;
+\end{lstlisting}
+
+In this context, we are defining a session window that starts when an \texttt{UserActionEvent} with
+\texttt{action = 'start\_order'} arrives and ends after 10 minutes. This way, we are grouping events
+based on the time window. Note that we are also partitioning events by the \texttt{userId} attribute.
+
+\subsection{Comparison: Windows vs. Contexts}
+
+Windows and contexts are both used to group events, but they have different semantics. Let us look
+at the following figure that shows the main differences between windows and contexts:
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.8\textwidth]{figures/image_windows_vs_context.png}
+    \caption{Windows vs. Contexts}
+    \label{fig:windows_vs_contexts}
+\end{figure}
