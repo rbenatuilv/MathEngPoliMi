@@ -503,3 +503,370 @@ Point p3(5, 6);
 p1 += p2 += p3;
 \end{lstlisting}
 
+\section{Functions overloading}
+
+In \texttt{C++}, we can define multiple functions with the same name, as long as they
+have different parameter lists. This is called function overloading. Function overloading
+allows us to define multiple functions with the same name that perform different operations
+depending on the arguments that they receive.\\
+
+When we call an overloaded function, the compiler selects the function that best matches
+the arguments that we pass to the function. The selection is based on the number and
+types of the arguments that we pass to the function.\\
+
+Note that the return type of a function is not considered when selecting an overloaded
+function. Therefore, we cannot define two functions with the same name and parameter
+list that differ only in their return type, as this would result in a compilation error.
+To overload a function, we must define it with a different parameter list. Let us see
+an example:\\
+
+\begin{lstlisting}[language=C++]
+int f(int x);
+int f(int x, int y); // This is ok, because the number of parameters is different
+
+int g(int x);
+void g(int x); // This is not ok, because we are only changing the return type
+\end{lstlisting}
+
+Note also that the compiler will always choose the most specific function that matches
+the arguments that we pass to the function. If there is no exact match, the compiler
+will try to find the best match by performing implicit conversions on the arguments.
+Look at the following example:\\
+
+\begin{lstlisting}[language=C++]
+void f(int x);
+void f(double x);
+
+f(1); // Calls f(int x)
+f(1.0); // Calls f(double x)
+\end{lstlisting}
+
+In this example, we define two overloaded functions \texttt{f} that take an integer
+and a double as arguments. When we call \texttt{f(1)}, the compiler selects the function
+\texttt{f(int x} because the argument is an integer. When we call \texttt{f(1.0)}, the
+compiler selects the function \texttt{f(double x} because the argument is a double.\\
+
+It is important to notice that sometimes we can have ambiguity when calling an overloaded
+function. This happens when the compiler cannot determine the best match for the arguments
+that we pass to the function. In this case, the compiler will issue a compilation error.
+For example, look at the following code:\\
+
+\begin{lstlisting}[language=C++]
+void f(int x, int y);
+void f(double x, double y);
+
+f(1, 2.6); // Ambiguity, in both cases we have to perform a conversion
+\end{lstlisting}
+
+We could also define default arguments for a function. This is useful when we want to
+provide default values for some of the arguments of a function. For example, we can
+define a function \texttt{f} with default arguments as follows:\\
+
+\begin{lstlisting}[language=C++]
+void f(int x, int y = 0, int z = 0) {
+    // ... Implementation ...
+}
+\end{lstlisting}
+
+In this example, we define a function \texttt{f} with three arguments \texttt{x}, \texttt{y}
+and \texttt{z}, where \texttt{y} and \texttt{z} have default values of 0. This means that
+we can call the function \texttt{f} with one, two or three arguments, and the missing
+arguments will be replaced by their default values. For example, we can call the function
+\texttt{f} as follows:\\
+
+\begin{lstlisting}[language=C++]
+f(1); // Calls f(1, 0, 0)
+f(1, 2); // Calls f(1, 2, 0)
+f(1, 2, 3); // Calls f(1, 2, 3)
+\end{lstlisting}
+
+\subsection{Overloading and \texttt{const} parameters}
+
+When we are overloading a function, we have to be careful with the \texttt{const}
+qualifier. If we define two functions with the same name and parameter list, but
+one of them takes a \texttt{const} parameter, the compiler will consider them as
+the same function. In other words, a parameter that has a top-level \texttt{const}
+is indistinguishable from one that does not have it. For example:\\
+
+\begin{lstlisting}[language=C++]
+void f(int x);
+void f(const int x); // This is not ok, because the compiler will consider them as the same function
+\end{lstlisting}
+
+Nonetheless, there is a distinction when the \texttt{const} qualifier is applied to
+a pointer or a reference. In this case, the compiler will consider them as different
+functions. For example:\\
+
+\begin{lstlisting}[language=C++]
+void f(int &x);
+void f(const int &x); // This is ok
+\end{lstlisting}
+
+\subsection{Overloading a member function}
+
+As with non-member functions, member functions can also be overloaded. The same function-matching
+process is used for calls to member functions. The compiler will select the most specific
+function that matches the arguments that we pass to the function.\\
+
+In this case, we can overload member functions based on whether they are \texttt{const} or not.
+For example, we can define a class \texttt{Point} with two member functions \texttt{getX}
+that differ in their \texttt{const} qualifier as follows:\\
+
+\begin{lstlisting}[language=C++]
+class Point {
+    public:
+        int getX() { return x; }
+        int getX() const { return x; }
+    private:
+        int x;
+}
+\end{lstlisting}
+
+In this example, we define a class \texttt{Point} with two member functions \texttt{getX}
+that differ in their \texttt{const} qualifier. The first function \texttt{getX} is a
+non-const member function that returns the x-coordinate of the point, while the second
+function \texttt{getX} is a \texttt{const} member function that returns the x-coordinate
+of the point.\\
+
+When we call the function \texttt{getX} on a \texttt{const} object of the class \texttt{Point},
+the compiler will select the \texttt{const} member function \texttt{getX}. When we call the
+function \texttt{getX} on a non-\texttt{const} object of the class \texttt{Point}, the compiler
+will select the non-\texttt{const} member function \texttt{getX}.
+
+\section{Constructors}
+
+A constructor is a special member function that is called when an object of a class is
+created. It is used to initialize the object and set its initial state. A constructor
+has the same name as the class and no return type.\\
+
+As other functiones in \texttt{C++}, constructors have a (possibly empty) parameter list, and
+a (possibly empty) function body. A constructor may also be overloaded, meaning that we can
+define multiple constructors for a class with different parameter lists. Unlike other functions,
+constructors cannot be declared \texttt{const}.\\
+
+\subsection{Default constructors}
+
+Classes control default initialization by defining a special constructor known as the
+default constructor. This constructor takes no arguments, and if it is not explicitly defined
+by the programmer, the compiler will generate one.\\
+
+The compiled-generated constructor is known as the synthesized default constructor. For most cases,
+this constructor initializes each data member of the class as follows:
+
+\begin{itemize}
+    \item If there is an in-class initializer, it is used to initialize the data member.
+    \item Otherwise, default-initialize the data member.
+\end{itemize}
+
+Note that the synthesized default constructor is generated only if no other constructors are
+defined for the class. If we define any constructor for the class, the synthesized default
+constructor will not be generated.\\
+
+We cannot always rely on the synthesized default constructor, because it may not initialize
+the data members of the class as we expect. For example, objects of built-in or compound types
+(such as arrays and pointers) have undefined values when default-initialized. Therefore, we should
+initialize those members inside the class or provide a user-defined default constructor.\\
+
+Sometimes, the compiler is unable to generate a default constructor. This happens when the class
+has a reference member, a const member, or a member of a class that has no default constructor.\\
+
+Let us see an example of a class \texttt{Point} with a constructor:\\
+
+\begin{lstlisting}[language=C++]
+class Point {
+    public:
+        Point(int xx, int yy) {
+            x = xx;
+            y = yy;
+        }
+    private:
+        int x;
+        int y;
+}
+\end{lstlisting}
+
+In this example, we define a class \texttt{Point} with a constructor that takes two integers
+\texttt{xx} and \texttt{yy} as arguments and initializes the data members \texttt{x} and \texttt{y}
+with those values. When we create an object of the class \texttt{Point}, the constructor is called
+to initialize the object. If we do not define a constructor for the class, the compiler will generate
+a default constructor that initializes the object with undefined values. In this case, because the
+data members are \texttt{int}, they will be initialized with garbage values.
+
+\subsection{Initialization lists}
+
+In \texttt{C++}, we can initialize the data members of a class in the constructor using an
+initialization list. An initialization list is a comma-separated list of data members of the
+class followed by their initial values enclosed in parentheses.\\
+
+The syntax for an initialization list is to define the data members of the class followed by
+a colon and the initial values of the data members enclosed in parentheses. For example, we
+can define a class \texttt{Point} with a constructor that initializes the data members \texttt{x}
+and \texttt{y} using an initialization list as follows:\\
+
+\begin{lstlisting}[language=C++]
+class Point {
+    public:
+        Point(int xx, int yy) : x(xx), y(yy) {}
+    private:
+        int x;
+        int y;
+}
+\end{lstlisting}
+
+This is specially useful when we have const members, or references, or when we want to initialize
+the members with a value that is not the default one. In that case, we need to use the initialization
+list, because we cannot assign a value to a const member in the constructor body. For example:\\
+
+\begin{lstlisting}[language=C++]
+class ConstRef {
+    public:
+        ConstRef(int ii);
+    private:
+        const int i;
+        int &ri;
+}
+
+// This is not ok
+ConstRef::ConstRef(int ii) {
+    i = ii; // Error, we cannot assign a value to a const member
+    ri = ii; // Error, we cannot assign a value to a reference member
+}
+
+// This is ok
+ConstRef::ConstRef(int ii) : i(ii), ri(i) {} // Ok
+\end{lstlisting}
+
+\subsection{Delegating constructors}
+
+In \texttt{C++11}, we can define a constructor that delegates its initialization to another
+constructor of the same class. This is known as a delegating constructor. A delegating
+constructor is useful when we want to avoid code duplication by reusing the initialization
+logic of another constructor.\\
+
+The syntax for a delegating constructor is to call another constructor of the same class
+using the constructor initializer syntax. For example, we can define a class \texttt{Point}
+with two constructors that delegate their initialization to a third constructor as follows:\\
+
+\begin{lstlisting}[language=C++]
+class Point {
+    public:
+        Point() : Point(0, 0) {} // Delegating constructor
+        Point(int xx, int yy) : x(xx), y(yy) {}
+    private:
+        int x;
+        int y;
+}
+\end{lstlisting}
+
+In this example, we define a class \texttt{Point} with two constructors: a default constructor
+that delegates its initialization to another constructor that takes two integers as arguments,
+and a constructor that takes two integers as arguments and initializes the data members \texttt{x}
+and \texttt{y} with those values. When we create an object of the class \texttt{Point} using the
+default constructor, the delegating constructor is called to initialize the object with the values
+\texttt{0} and \texttt{0}.
+
+\subsection{Copy, assignment and destruction}
+
+When we define a class in \texttt{C++}, we must consider how the objects of that class are
+copied, assigned and destroyed. By default, the compiler will generate a copy constructor, an
+assignment operator and a destructor for the class.\\
+
+The copy constructor is a special member function that is called when an object is copied. It
+is used to create a new object that is a copy of an existing object. The assignment operator
+is a special member function that is called when an object is assigned. It is used to assign
+the value of one object to another object. The destructor is a special member function that
+is called when an object is destroyed. It is used to clean up the resources that the object
+has acquired.
+
+\subsection{Defining a type member}
+
+A type alias is a name that is a synonym for another type. We can define a type alias in one of 
+two ways:
+
+\begin{itemize}
+    \item Using the \texttt{typedef} keyword:
+    
+    \begin{lstlisting}[language=C++]
+    typedef double d; // d is a synonym for double
+    typedef double *dp; // dp is a synonym for double*
+    \end{lstlisting}
+
+    \item Using the \texttt{using} keyword:
+    
+    \begin{lstlisting}[language=C++]
+    using d = double; // d is a synonym for double
+    using dp = double*; // dp is a synonym for double*
+    \end{lstlisting}
+
+\end{itemize}
+
+We can define a type member inside a class to define a type alias that is specific to that class.
+A type member is a type alias that is a member of a class. For example:\\
+
+\begin{lstlisting}[language=C++]
+class Screen {
+    public:
+        using pos = std::string::size_type;
+    private:
+        pos cursor = 0;
+        pos height = 0, width = 0;
+}
+\end{lstlisting}
+
+In this example, we define a class \texttt{Screen} with a type member \texttt{pos} that is a synonym
+for \texttt{std::string::size\_type}. We can use the type member \texttt{pos} to define the type of
+the data members \texttt{cursor}, \texttt{height} and \texttt{width} of the class \texttt{Screen}.
+This way, we can ensure that the data members have the same type and are consistent with each other.
+
+
+\section{\texttt{static} members}
+
+Classes sometimes need members that are associated with the class itself, rather than with individual
+objects of the class. For example, a bank account class might need a data member that holds the interest
+rate for all accounts. In that case, we would want to associate the rate with the class, not with each 
+individual account.\\
+
+These members are called \texttt{static} members. When we declare a member of a class as \texttt{static},
+it means that the member is shared by all objects of the class. This means that there is only one copy
+of the \texttt{static} member, regardless of how many objects of the class are created.\\
+
+Like any other member, static members can be either public or private. The type of a static data member
+can also be \texttt{const}, reference, array, class type, and so on, and we can also define static methods.\\
+
+Let us see an example of a class \texttt{Account} with a static data member \texttt{interestRate}:\\
+
+\begin{lstlisting}[language=C++]
+class Account {
+    public:
+        void calculate() { amount += amount * interestRate; }
+        static double rate() { return interestRate; }
+        
+    private:
+        std::string owner;
+        double amount;
+        static double interestRate;
+}
+\end{lstlisting}
+
+Note that static member functions are not associated with any object. Therefore, they do not have a
+\texttt{this} pointer. This means that they cannot access non-static members of the class. So, for 
+this same reason, declaring a static member function as \texttt{const} is meaningless.\\
+
+Even though static members are not part of the objects of its class, we can use an object, reference or pointer
+of the class to access the static members. For example:\\
+
+\begin{lstlisting}[language=C++]
+Account myAccount;
+double r = myAccount.rate(); // Ok
+\end{lstlisting}
+
+Because static data members are not part of individual objects of the class type, they are not defined
+when we create objects of the class. As a result, they are not initialized by the class cosntructors.
+We may not initialize a static data member inside the class, instead we must define and initialize each
+static data member outside the class body, and like any other object, a static data member may be 
+defined only once.\\
+
+Like global objects, static data members are defined outside any function. Once they are defined, they
+continue to exist until the program completes.
+
+
