@@ -937,6 +937,63 @@ This method is most widely used in the context of large-scale data analysis, whe
 stored in memory. In this case, the randomized SVD algorithm can be used to compute an approximate SVD of the matrix
 using only a small amount of memory.
 
+\section{Matrix completion}
+
+Let $X \in \R^{n \times p}$ be a matrix that is partially observed. That is, we only know $X_{ij}$ for
+$(i,j) \in \Omega$, where $\Omega$ is the set of observed entries. Assume that $rank(X) = r << \min(n,p)$.
+Our goal is to estimate $X_{ij}$ for every $(i,j) \notin \Omega$.\\
+
+Formally, we express this as:
+
+\begin{equation}
+    \hat{X} = \text{argmin}_{Z} \; \{rank(Z)\} \quad \text{s.t.} \quad Z_{ij} = X_{ij} \quad \forall (i,j) \in \Omega
+\end{equation}
+
+However, this formulation is a non-convex optimization problem, and it is not solvable in practical
+cases. Instead, we can use the following convex optimization problem:
+
+\begin{equation}
+    \hat{X} = \text{argmin}_{Z} \; \{\|Z\|_*\} \quad \text{s.t.} \quad Z_{ij} = X_{ij} \quad \forall (i,j) \in \Omega
+\end{equation}
+
+where $\|Z\|_*$ is the nuclear norm of $Z$, defined as:
+
+\begin{equation}
+    \|Z\|_* = \sum_{i=1}^r \sigma_i(Z)
+\end{equation}
+
+It is possible to prove that minimizing the nuclear norm of $Z$ is highly probable to be equivalent to
+minimizing the rank of $Z$. This is because the nuclear norm is the convex relaxation of the rank function.\\
+
+There are many ways of solving this optimization problem. One of the most common methods is the Singular Value
+Thresholding (SVT) algorithm. The SVT algorithm is an iterative algorithm that approximates the solution of the
+optimization problem. The algorithm is as follows:
+
+\begin{algorithm}[H]
+    \caption{Singular Value Thresholding (SVT)}
+    \begin{algorithmic}[1]
+        \State Initialize $Z_0 = X$.
+        \For{$k = 1, 2, \ldots$}
+            \State Compute the SVD of $Z_{k-1} = U \Sigma V^T$.
+            \State Compute the singular value thresholding of $\Sigma$ as $\Sigma_{\lambda} = \text{max}(\Sigma - \lambda, 0)$.
+            \State Compute the matrix $Z_k = U \Sigma_{\lambda} V^T$.
+            \State Make $Z_k$ satisfy the constraints $Z_k = X$ for $(i,j) \in \Omega$.
+            \State If $\|Z_k - Z_{k-1}\| < \epsilon$, then stop.
+        \EndFor
+    \end{algorithmic}
+\end{algorithm}
+
+The SVT algorithm is a fast and efficient way to solve the matrix completion problem. The algorithm is based on the
+fact that the nuclear norm of a matrix is the sum of its singular values. The algorithm iteratively computes the
+singular value thresholding of the matrix, and then makes the matrix satisfy the constraints. The algorithm converges
+to the solution of the optimization problem, and it is guaranteed to converge to the global minimum.
+
+\section{Regression Methods}
+
+Regression methods are a class of machine learning algorithms that are used to predict the value of a continuous
+variable based on the value of one or more input variables. Regression methods are widely used in data analysis,
+and they are used to model the relationship between the input variables and the output variable.
+
 \subsection{Least Squares}
 
 The least squares problem is a problem to find the vector $x$ that minimizes the residual of a linear system $A x = b$.
@@ -1044,3 +1101,190 @@ $$\|w\|^2 = \|w - w_0\|^2 + \|w_0\|^2 \geq \|w_0\|^2$$
 
 This means that the least squares solution is the solution that minimizes the norm of the coefficients.
 We often use this in practice to avoid error amplification in our calculations.
+
+\subsection{Ridge regression}
+
+Let $w_{LS} = (X^T X)^{-1} X^T y$ be the least squares solution of the system of equations $X w = y$. 
+Then, let us assume the following model:
+
+\begin{equation}
+    y = X w^{*} + \varepsilon
+\end{equation}
+
+where $w^{*}$ is the true coefficients of the model, and $\varepsilon$ is the noise. Then:
+
+\begin{equation}
+    w_{LS} = (X^T X)^{-1} X^T (X w^{*} + \varepsilon) = w^{*} + (X^T X)^{-1} X^T \varepsilon
+\end{equation}
+
+Note that $X = U \Sigma V^T$, so we have that $(X^T X)^{-1} X^T = V \Sigma^{\dagger} U^T$. Then:
+
+\begin{equation}
+    w_{LS} = w^{*} + V \Sigma^{\dagger} U^T \varepsilon
+\end{equation}
+
+The least squares solution is the true coefficients plus a term that depends on the noise. Let us
+suppose that for some $p$, we have that $\sigma_p \approx 0$. Then we have that $\Sigma^{\dagger}_{pp} = 1 / \sigma_p >> 0$,
+and this will amplify the noise.\\
+
+To avoid this, we can use the ridge regression. The ridge regression is a technique that adds a 
+regularization term to the least squares solution. The optimization problem of the ridge regression is as follows:
+
+\begin{equation}
+    w_{R} = argmin \; \{ \|X w - y\|_2^2 + \lambda \|w\|_2^2 \}
+\end{equation}
+
+where $\lambda$ is the regularization parameter. The solution of the ridge regression is given by:
+
+\begin{equation}
+    w_{R} = (X^T X + \lambda I)^{-1} X^T y
+\end{equation}
+
+Let us analyse this solution with the SVD of $X$:
+
+$$w_R = (V \Sigma^T U^T U \Sigma V^T + \lambda V V^T)^{-1} V \Sigma U^T y$$
+$$(V (\Sigma^T \Sigma + \lambda I) V^T)^{-1} V \Sigma U^T y$$
+$$V (\Sigma^T \Sigma + \lambda I)^{-1} \Sigma U^T y$$
+
+Note that, if $S = (\Sigma^T \Sigma + \lambda I)^{-1} \Sigma^T$, then we have that:
+
+$$S_{pp} = \frac{\sigma_p}{\sigma_p + \lambda}$$
+
+So we have 2 cases:
+
+\begin{itemize}
+    \item If $\sigma_p >> 0$, then $S_{pp} \approx 1/\sigma_p \approx 0$.
+    \item If $0 < \sigma_p << 1$, then $S_{pp} \approx 0$.
+\end{itemize}
+
+In both cases, the ridge regression avoids the error amplification of the noise. However, notice
+that the ridge regression introduces a bias in the coefficients. This bias is controlled by the
+regularization parameter $\lambda$. The larger the value of $\lambda$, the larger the bias in the
+coefficients.\\
+
+In general, when we know that $\varepsilon = 0$, the least squares solution is the best solution.
+However, when we have noise in the data, the ridge regression is a better solution, as it avoids
+the error amplification of the noise.\\
+
+The ridge regression is a special case of the Tikhonov regularization, which is a general technique
+to regularize ill-posed problems. The Tikhonov regularization adds a regularization term to the
+least squares solution, which is controlled by the regularization parameter $\lambda$.
+
+\subsection{LASSO regression}
+
+The LASSO regression is a technique that adds a regularization term to the least squares solution. The optimization
+problem of the Lasso regression is as follows:
+
+\begin{equation}
+    w_{L} = argmin \; \{ \|X w - y\|_2^2 + \lambda \|w\|_1 \}
+\end{equation}
+
+where $\lambda$ is the regularization parameter. Notice that the Lasso regression adds a regularization term
+that is the $L_1$ norm of the coefficients. This approach is useful when we want to find a sparse solution,
+i.e., a solution with few non-zero coefficients.\\
+
+LASSO stands for Least Absolute Shrinkage and Selection Operator. In general, we have that:
+
+\begin{itemize}
+    \item When $\lambda$ is large, we tend to have a higher sparsity in the solution.
+    \item When $\lambda$ is small, we tend to have a solution that is closer to the least squares solution.
+\end{itemize}
+
+We can mix both LASSO and Ridge regression in the Elastic Net regression. The Elastic Net regression is a technique
+that adds both $L_1$ and $L_2$ regularization terms to the least squares solution. The optimization problem of the
+Elastic Net regression is as follows:
+
+\begin{equation}
+    w_{E} = argmin \; \{ \|X w - y\|_2^2 + \lambda_1 \|w\|_1 + \lambda_2 \|w\|_2^2 \}
+\end{equation}
+
+where $\lambda_1$ and $\lambda_2$ are the regularization parameters. The Elastic Net regression is useful when we want
+to find a solution that is both sparse and close to the least squares solution.
+
+\subsection{Kernel methods}
+
+Let us formulate the Ridge Regression solution in terms of the SVD of $X$. We have that:
+
+$$w_R = V \Sigma^T U^T U (\Sigma \Sigma^T + \lambda I)^{-1} U^T y$$
+$$= X^T \beta$$
+
+where $\beta = U (\Sigma \Sigma^T + \lambda I)^{-1} \Sigma U^T y = (X X^T + \lambda I)^{-1} y$. In general, we can have a linear 
+separator in the input space, given by:
+
+$$y = f(x) = w^T x = x_{i1} w_1 + \ldots + x_{ip} w_p$$
+
+But we could also have a linear separator in a new feature space $\phi(\cdot)$, given by:
+
+$$y = f(x) = w^T \phi(x) = \phi(x)_{i1} w_1 + \ldots + \phi(x)_{id} w_d$$
+
+where $\phi(x)$ is a non-linear transformation of the input space. This is the idea behind the kernel methods.
+Notice that the dimension of the feature space can be larger than the dimension of the input space. For example:
+
+$$\phi(x) = (x_1, x_2, x_1^2, x_2^2, x_1 x_2)$$
+
+In this case, the dimension of the feature space is 5, larger than the dimension of the input space,
+which is 2. Note that the feature space adds non-linear features to the input space.\\
+
+In this sense, we can create the following matrix:
+
+$$\Phi = \begin{bmatrix}
+    \phi(x_1)^T \\
+    \vdots \\
+    \phi(x_n)^T
+\end{bmatrix}$$
+
+Then, to find the coefficients $w$ of the linear separator in the feature space, we can use the Ridge Regression
+solution:
+
+$$w = \Phi^T \beta$$
+
+where $\beta = (\Phi \Phi^T + \lambda I)^{-1} y$. To avoid the computation of the feature space, we can use
+kernel functions. A kernel function is a function that computes the inner product of two vectors in the feature
+space without computing the feature space. Formally:
+
+\begin{equation}
+    K(x, x') = \phi(x)^T \phi(x')
+\end{equation}
+
+The most common kernel functions are:
+
+\begin{itemize}
+    \item Linear kernel: $K(x, x') = x^T x'$
+    \item Polynomial kernel: $K(x, x') = (x^T x' + c)^d$
+    \item Gaussian kernel: $K(x, x') = \exp(-\frac{\|x - x'\|^2}{2 \sigma^2})$
+\end{itemize}
+
+In the previous case for $\phi(x) = (x_1, x_2, x_1^2, x_2^2, x_1 x_2)$, we have that:
+
+$$K(x, x') = (x^T x')^2$$
+$$\Rightarrow K(x, x') = (x_1 x_1' + x_2 x_2' + x_1^2 x_1'^2 + x_2^2 x_2' + x_1 x_2 x_1' x_2') = \phi(x)^T \phi(x')$$
+
+Now, notice that: 
+
+$$[\Phi \Phi^T]_{ij} = \phi(x_i)^T \phi(x_j) = K(x_i, x_j)$$ 
+
+Therefore, we have that:
+
+\begin{equation}
+    \beta = (K + \lambda I)^{-1} y
+\end{equation}
+
+where $K$ is the kernel matrix, defined as $K_{ij} = K(x_i, x_j)$. Then, the coefficients $w$ of the linear separator
+in the feature space are given by:
+
+\begin{equation}
+    w = \Phi^T \beta
+\end{equation}
+
+Suppose now that we have a new sample $x$ and we want to predict its label $y$. Then, we have that:
+
+$$y = w_{R}^T \cdot \phi(x) = \beta^T \phi(x) = \sum_{i=1}^n \beta_i K(x_i, x)$$
+
+Note that the magnitude of the coefficients $\beta_i$ is related to the importance of the sample $x_i$ in the prediction
+of the label $y$. The larger the magnitude of $\beta_i$, the more important the sample $x_i$ is in the prediction of $y$.
+
+\subsection{Support Vector Regression (SVR)}
+
+
+
+
