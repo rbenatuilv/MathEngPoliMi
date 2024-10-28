@@ -1208,8 +1208,10 @@ Let us formulate the Ridge Regression solution in terms of the SVD of $X$. We ha
 $$w_R = V \Sigma^T U^T U (\Sigma \Sigma^T + \lambda I)^{-1} U^T y$$
 $$= X^T \beta$$
 
-where $\beta = U (\Sigma \Sigma^T + \lambda I)^{-1} \Sigma U^T y = (X X^T + \lambda I)^{-1} y$. In general, we can have a linear 
-separator in the input space, given by:
+where $\beta = U (\Sigma \Sigma^T + \lambda I)^{-1} \Sigma U^T y = (X X^T + \lambda I)^{-1} y$. 
+We call $\beta$ the dual coefficients of the Ridge Regression.\\
+
+In general, we can have a linear separator in the input space, given by:
 
 $$y = f(x) = w^T x = x_{i1} w_1 + \ldots + x_{ip} w_p$$
 
@@ -1285,6 +1287,110 @@ of the label $y$. The larger the magnitude of $\beta_i$, the more important the 
 
 \subsection{Support Vector Regression (SVR)}
 
+Until now, we have used the following loss function to obtain the coefficients of the linear separator:
 
+\begin{equation}
+    \mathcal{L}(w) = \|X w - y\|_2^2 + \lambda \|w\|_2^2
+\end{equation}
+
+With $\lambda = 0$, we have the least squares solution. With $\lambda > 0$, we have the Ridge Regression solution.
+Now, let us propose a new loss function:
+
+\begin{equation}
+    \mathcal{L}(w) = \frac{1}{n} \sum_{i=1}^n \max(0, |y_i - w^T x_i| - \varepsilon) + \lambda \|w\|_2^2
+\end{equation}
+
+We can even introduce a feature map $\phi(\cdot)$, as in the kernel methods:
+
+\begin{equation}
+    \mathcal{L}(w) = \frac{1}{n} \sum_{i=1}^n \max(0, |y_i - w^T \phi(x_i)| - \varepsilon) + \lambda \|w\|_2^2
+\end{equation}
+
+This loss function is the loss function of the Support Vector Regression (SVR). The SVR is a 
+technique that is used to predict the value of a continuous variable based on the value of one 
+or more input variables. The SVR is similar to the Support Vector Machine (SVM), but it is used for 
+regression problems instead of classification problems.\\
+
+We can reformulate the SVR in terms of the dual coefficients $\beta$:
+
+\begin{equation}
+    \mathcal{L}(\beta) = \frac{1}{2} \beta^T K \beta - \beta^T y + \varepsilon \| \beta \|_1
+    \quad s.t \quad |\beta_i| \leq \frac{1}{2 n \lambda}
+\end{equation}
+
+We say that the support vectors are the samples $x_i$ such that $\beta_i \neq 0$. With a bigger
+value of $\varepsilon$, we have a higher sparsity in the solution, meaning that we have fewer support
+vectors. Notice that when we don't have a feature map, the matrix $K$ is equivalent to
+$X X^T$.\\
+
+\section{Applications: Page Rank}
+
+The Page Rank algorithm is an algorithm that is used to rank the importance of web pages. The Page Rank algorithm
+is based on the idea that the importance of a web page is determined by the number of links that point to the page.
+The Page Rank algorithm is used by search engines to rank web pages in search results.\\
+
+The Page Rank algorithm is based on the idea of random walks on the web graph. The web graph is a directed graph
+where the nodes represent web pages and the edges represent links between web pages. The Page Rank algorithm
+computes the importance of a web page by simulating a random walk on the web graph.\\
+
+Suppose that we have a web graph with $n$ web pages. Let $A \in \{0, 1\}^{n \times n}$ be the adjacency matrix of the
+web graph, where $A_{ij} = 1$ if there is a link from web page $j$ to web page $i$, and $A_{ij} = 0$ otherwise. Now,
+suppose that from each web page $j$, it is equally likely to follow any of the links that point to another web page $i$.
+Then, the probability of following a link from web page $j$ to web page $i$ is given by:
+
+\begin{equation}
+    P_{ij} = \frac{A_{ij}}{\sum_{k=1}^n A_{kj}}
+\end{equation}
+
+The matrix $P \in \mathbb{R}^{n \times n}$ is called the transition matrix of the web graph. Now, suppose that
+we are on a certain page as an initial state, and we want to know the probability of being on each page after
+a certain number of steps. This can be computed by the following equation:
+
+\begin{equation}
+    x^{(t+1)} = P x^{(t)}
+\end{equation}
+
+where $x^{(t)} \in \mathbb{R}^n$ is the probability distribution of being on each page at time $t$. Notice that
+$x^{(0)}$ is the initial state, with $x^{(0)}_i = 1$ if we start on page $i$, and $x^{(0)}_i = 0$ otherwise.\\
+
+Now, we define the steady state probability distribution as the probability distribution of being on each page
+after an infinite number of steps. We call this vector $\pi \in \mathbb{R}^n$. Then, we have that:
+
+\begin{equation}
+    P \pi = \pi
+\end{equation}
+
+Meaning that, the steady state probability distribution is the eigenvector of the transition matrix $P$ with
+eigenvalue 1. But notice that it is not always true that the steady state probability distribution is unique.
+In fact, the transition matrix $P$ is a stochastic matrix, and it is guaranteed to have an eigenvector with
+eigenvalue 1. However, this eigenvector may not be unique. It can even happen that this distribution does 
+not exist.\\
+
+We formulate the Perron-Frobenius theorem, which states that a stochastic matrix has a unique eigenvector
+with eigenvalue 1 if the matrix is in its irreducible form. Formally, a matrix is irreducible if it is not
+in the form of:
+
+\begin{equation}
+    P = \begin{bmatrix}
+        P_{11} & P_{12} \\
+        0 & P_{22}
+    \end{bmatrix}
+\end{equation}
+
+The theorem even states that the dominant eigenvalue is 1, and the other eigenvalues are less than 1.\\
+
+When we have an irreducible form, we can just use the power iteration method to find the eigenvector with
+eigenvalue 1. However, when $P$ is reducible, we need to introduce the following convex combination:
+
+\begin{equation}
+    \hat{P} = \alpha P + (1 - \alpha) \frac{1}{n} \mathbbm{1} \mathbbm{1}^T
+\end{equation}
+
+where $\alpha$ is a damping factor, and $\mathbbm{1}$ is a vector of ones. Notice that now, $\hat{P}$ is
+irreducible. We can think of it as adding a teleportation to the random walk, meaning that
+with probability $\alpha$, we follow a link, and with probability $1 - \alpha$, we teleport to a random page.\\
+
+The Page Rank algorithm is based on the idea of finding the steady state probability distribution of the web graph.
+Naturally, the page with the highest probability is the most important page.
 
 
