@@ -404,6 +404,76 @@ with a shift $\mu$ added to the matrix $A$. The algorithm is as follows:
 Note that with this algorithm, we are computing the eigenvalue of $A$ that is closest to the shift $\mu$. This can be useful
 to compute the eigenvalues of a matrix that are close to a given value.
 
+\subsection{Applications: Page Rank}
+
+The Page Rank algorithm is an algorithm that is used to rank the importance of web pages. The Page Rank algorithm
+is based on the idea that the importance of a web page is determined by the number of links that point to the page.
+The Page Rank algorithm is used by search engines to rank web pages in search results.\\
+
+The Page Rank algorithm is based on the idea of random walks on the web graph. The web graph is a directed graph
+where the nodes represent web pages and the edges represent links between web pages. The Page Rank algorithm
+computes the importance of a web page by simulating a random walk on the web graph.\\
+
+Suppose that we have a web graph with $n$ web pages. Let $A \in \{0, 1\}^{n \times n}$ be the adjacency matrix of the
+web graph, where $A_{ij} = 1$ if there is a link from web page $j$ to web page $i$, and $A_{ij} = 0$ otherwise. Now,
+suppose that from each web page $j$, it is equally likely to follow any of the links that point to another web page $i$.
+Then, the probability of following a link from web page $j$ to web page $i$ is given by:
+
+\begin{equation}
+    P_{ij} = \frac{A_{ij}}{\sum_{k=1}^n A_{kj}}
+\end{equation}
+
+The matrix $P \in \mathbb{R}^{n \times n}$ is called the transition matrix of the web graph. Now, suppose that
+we are on a certain page as an initial state, and we want to know the probability of being on each page after
+a certain number of steps. This can be computed by the following equation:
+
+\begin{equation}
+    x^{(t+1)} = P x^{(t)}
+\end{equation}
+
+where $x^{(t)} \in \mathbb{R}^n$ is the probability distribution of being on each page at time $t$. Notice that
+$x^{(0)}$ is the initial state, with $x^{(0)}_i = 1$ if we start on page $i$, and $x^{(0)}_i = 0$ otherwise.\\
+
+Now, we define the steady state probability distribution as the probability distribution of being on each page
+after an infinite number of steps. We call this vector $\pi \in \mathbb{R}^n$. Then, we have that:
+
+\begin{equation}
+    P \pi = \pi
+\end{equation}
+
+Meaning that, the steady state probability distribution is the eigenvector of the transition matrix $P$ with
+eigenvalue 1. But notice that it is not always true that the steady state probability distribution is unique.
+In fact, the transition matrix $P$ is a stochastic matrix, and it is guaranteed to have an eigenvector with
+eigenvalue 1. However, this eigenvector may not be unique. It can even happen that this distribution does 
+not exist.\\
+
+We formulate the Perron-Frobenius theorem, which states that a stochastic matrix has a unique eigenvector
+with eigenvalue 1 if the matrix is in its irreducible form. Formally, a matrix is irreducible if it is not
+in the form of:
+
+\begin{equation}
+    P = \begin{bmatrix}
+        P_{11} & P_{12} \\
+        0 & P_{22}
+    \end{bmatrix}
+\end{equation}
+
+The theorem even states that the dominant eigenvalue is 1, and the other eigenvalues are less than 1.\\
+
+When we have an irreducible form, we can just use the power iteration method to find the eigenvector with
+eigenvalue 1. However, when $P$ is reducible, we need to introduce the following convex combination:
+
+\begin{equation}
+    \hat{P} = \alpha P + (1 - \alpha) \frac{1}{n} \mathbbm{1} \mathbbm{1}^T
+\end{equation}
+
+where $\alpha$ is a damping factor, and $\mathbbm{1}$ is a vector of ones. Notice that now, $\hat{P}$ is
+irreducible. We can think of it as adding a teleportation to the random walk, meaning that
+with probability $\alpha$, we follow a link, and with probability $1 - \alpha$, we teleport to a random page.\\
+
+The Page Rank algorithm is based on the idea of finding the steady state probability distribution of the web graph.
+Naturally, the page with the highest probability is the most important page.
+
 \section{Symmetric matrices}
 
 A matrix $A \in \mathbb{R}^{n \times n}$ is called symmetric if $A = A^T$. Symmetric matrices have important properties:
@@ -1322,75 +1392,4 @@ We say that the support vectors are the samples $x_i$ such that $\beta_i \neq 0$
 value of $\varepsilon$, we have a higher sparsity in the solution, meaning that we have fewer support
 vectors. Notice that when we don't have a feature map, the matrix $K$ is equivalent to
 $X X^T$.\\
-
-\section{Applications: Page Rank}
-
-The Page Rank algorithm is an algorithm that is used to rank the importance of web pages. The Page Rank algorithm
-is based on the idea that the importance of a web page is determined by the number of links that point to the page.
-The Page Rank algorithm is used by search engines to rank web pages in search results.\\
-
-The Page Rank algorithm is based on the idea of random walks on the web graph. The web graph is a directed graph
-where the nodes represent web pages and the edges represent links between web pages. The Page Rank algorithm
-computes the importance of a web page by simulating a random walk on the web graph.\\
-
-Suppose that we have a web graph with $n$ web pages. Let $A \in \{0, 1\}^{n \times n}$ be the adjacency matrix of the
-web graph, where $A_{ij} = 1$ if there is a link from web page $j$ to web page $i$, and $A_{ij} = 0$ otherwise. Now,
-suppose that from each web page $j$, it is equally likely to follow any of the links that point to another web page $i$.
-Then, the probability of following a link from web page $j$ to web page $i$ is given by:
-
-\begin{equation}
-    P_{ij} = \frac{A_{ij}}{\sum_{k=1}^n A_{kj}}
-\end{equation}
-
-The matrix $P \in \mathbb{R}^{n \times n}$ is called the transition matrix of the web graph. Now, suppose that
-we are on a certain page as an initial state, and we want to know the probability of being on each page after
-a certain number of steps. This can be computed by the following equation:
-
-\begin{equation}
-    x^{(t+1)} = P x^{(t)}
-\end{equation}
-
-where $x^{(t)} \in \mathbb{R}^n$ is the probability distribution of being on each page at time $t$. Notice that
-$x^{(0)}$ is the initial state, with $x^{(0)}_i = 1$ if we start on page $i$, and $x^{(0)}_i = 0$ otherwise.\\
-
-Now, we define the steady state probability distribution as the probability distribution of being on each page
-after an infinite number of steps. We call this vector $\pi \in \mathbb{R}^n$. Then, we have that:
-
-\begin{equation}
-    P \pi = \pi
-\end{equation}
-
-Meaning that, the steady state probability distribution is the eigenvector of the transition matrix $P$ with
-eigenvalue 1. But notice that it is not always true that the steady state probability distribution is unique.
-In fact, the transition matrix $P$ is a stochastic matrix, and it is guaranteed to have an eigenvector with
-eigenvalue 1. However, this eigenvector may not be unique. It can even happen that this distribution does 
-not exist.\\
-
-We formulate the Perron-Frobenius theorem, which states that a stochastic matrix has a unique eigenvector
-with eigenvalue 1 if the matrix is in its irreducible form. Formally, a matrix is irreducible if it is not
-in the form of:
-
-\begin{equation}
-    P = \begin{bmatrix}
-        P_{11} & P_{12} \\
-        0 & P_{22}
-    \end{bmatrix}
-\end{equation}
-
-The theorem even states that the dominant eigenvalue is 1, and the other eigenvalues are less than 1.\\
-
-When we have an irreducible form, we can just use the power iteration method to find the eigenvector with
-eigenvalue 1. However, when $P$ is reducible, we need to introduce the following convex combination:
-
-\begin{equation}
-    \hat{P} = \alpha P + (1 - \alpha) \frac{1}{n} \mathbbm{1} \mathbbm{1}^T
-\end{equation}
-
-where $\alpha$ is a damping factor, and $\mathbbm{1}$ is a vector of ones. Notice that now, $\hat{P}$ is
-irreducible. We can think of it as adding a teleportation to the random walk, meaning that
-with probability $\alpha$, we follow a link, and with probability $1 - \alpha$, we teleport to a random page.\\
-
-The Page Rank algorithm is based on the idea of finding the steady state probability distribution of the web graph.
-Naturally, the page with the highest probability is the most important page.
-
 
