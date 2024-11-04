@@ -339,9 +339,352 @@ is used. Caching can be done at different levels, including memory only, disk on
     \caption{Spark caching}
 \end{figure}
 
-\subsection{Streaming DataFrames}
+\subsection{DataFrames in Spark}
 
-Spark provides a high-level API for streaming called Structured Streaming. Structured Streaming
-allows you to treat streaming data as a series of tables, which can be queried using SQL or DataFrame
-API. This makes it easy to process streaming data using the same tools that are used for batch processing.\\
+DataFrames are a high-level API for working with structured data in Spark. They provide a more
+user-friendly interface than RDDs, and are optimized for performance. DataFrames are built on top
+of RDDs, and provide a more structured way to work with data.\\
 
+DataFrames can be created from a variety of data sources, including JSON, CSV, and Parquet files.
+Once created, DataFrames can be queried using SQL, and transformed using a variety of operations,
+including select, filter, groupBy, and join. These operations are optimized for performance, and
+are executed in parallel across the cluster.\\
+
+Let us see an example of how to create a DataFrame in Spark:
+
+\begin{lstlisting}[language=Python]
+from pyspark.sql import SparkSession
+
+# Create a Spark session
+spark = SparkSession.builder.appName("example").getOrCreate()
+
+# Create a DataFrame from a JSON file
+df = spark.read.json("data.json")
+
+# Show the first 5 rows of the DataFrame
+df.show(5)
+
+# Filter the DataFrame
+filtered_df = df.filter(col("age") > 30)
+
+# Create a temporary view to query the DataFrame using SQL
+filtered_df.createOrReplaceTempView("filtered_df")
+
+# Query the DataFrame using SQL
+query = "SELECT * FROM filtered_df"
+result = spark.sql(query)
+\end{lstlisting}
+
+\subsubsection{Catalyst and Tungsten}
+
+DataFrames in Spark are built on top of two key components: Catalyst and Tungsten. Catalyst is a query
+optimizer that optimizes the execution of DataFrame operations. It uses a rule-based optimizer to
+transform the query plan and generate an optimized plan. Tungsten is a memory-centric execution engine
+that optimizes the execution of DataFrame operations. It uses code generation and memory management
+techniques to improve the performance of the operations.\\
+
+Together, Catalyst and Tungsten provide a high-performance engine for working with structured data in
+Spark. They optimize the execution of DataFrame operations, and provide a more user-friendly interface
+for working with data.
+
+\section{Spark Structured Streaming}
+
+Spark Structured Streaming provides a fast, scalable, fault-tolerant, end-to-end exactly-once stream
+processing engine, without the user having to reason about streaming. It is built on the Spark SQL
+engine, and provides a high-level API for working with streaming data. Structured Streaming allows
+users to write streaming queries in the same way as batch queries, and provides the same fault-tolerance
+and exactly-once guarantees as batch processing.
+
+\subsection{Programming model}
+
+Spark Structured Streaming treats a live data stream as an unbounded table, which is continuously
+updated as new data arrives. As a result of this idea, users can logically express streaming computation
+as a Directed Acyclic Graph (DAG) of standard batch-like queries on static tables. Spark will physically
+run this DAG incrementally and continuously on the streaming data.\\
+
+It uses the model of a DSMS (Data Stream Management System), as we saw in previous chapters. In every 
+micro-batch, Spark will execute the DAG incrementally to update the final result. For each query, it will
+mantain a state, which is updated in each micro-batch. We can see this in the following figure:
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.7\textwidth]{figures/spark_increm_eval.png}
+    \label{fig:spark_increm_eval}
+    \caption{Spark incremental evaluation}
+\end{figure}
+
+It is important to note that Spark Structured Streaming does not materialize the entire table,
+but only the incremental changes to the table. It will read the latest available data from the
+stream, process it incrementally to update the result, and then discard the data. It will only
+keep around the minimal intermediate state data as required to update the result, for example,
+the intermediate counts and average for the above example.\\
+
+This model is very powerful, as it allows users to express complex streaming computations in a
+simple and declarative way, and provides the same fault-tolerance and exactly-once guarantees
+as batch processing. It also allows users to easily integrate streaming and batch processing,
+as the same code can be used for both.
+
+\subsection{Creating streaming DataFrames}
+
+To create a streaming DataFrame, we can use the \texttt{readStream} method of the SparkSession object.
+It can receive as input the following sources:
+
+\begin{itemize}
+    \item File sources, i.e., a folder in which new files get dropped.
+
+    \item Kafka sources, i.e., a Kafka topic.
+    
+    \item Socket sources, i.e., a TCP socket. This is only for testing purposes, as it does not
+    provide fault-tolerance.
+\end{itemize}
+
+Let us see an example of how to create a streaming DataFrame in Spark, reading from a Kafka topic:
+
+\begin{lstlisting}[language=Python]
+from pyspark.sql import SparkSession
+
+# Create a Spark session
+spark = SparkSession.builder.appName("example").getOrCreate()
+
+# Create a streaming DataFrame from a Kafka topic
+raw_df = spark.readStream.format("kafka") \
+    .option("kafka.bootstrap.servers", "localhost:9092") \
+    .option("startingOffsets", "earliest") \
+    .option("subscribe", "topic") \
+    .load()
+
+# Show the first 5 rows of the streaming DataFrame
+raw_df.show(5)
+\end{lstlisting}
+
+In this example, we create a streaming DataFrame from a Kafka topic. We specify the Kafka bootstrap
+servers, the starting offsets, and the topic to subscribe to. We then show the first 5 rows of the
+streaming DataFrame.\\
+
+Note that when extracting data from Kafka, our \texttt{raw\_df} DataFrame will have the following
+schema:
+
+\begin{itemize}
+    \item \texttt{key}: The key of the message, as a binary blob.
+    \item \texttt{value}: The value of the message, as a binary blob.
+    \item \texttt{topic}: The topic of the message, as a string.
+    \item \texttt{partition}: The partition of the message, as an integer.
+    \item \texttt{offset}: The offset of the message, as an integer.
+    \item \texttt{timestamp}: The timestamp of the message, as a timestamp.
+    \item \texttt{timestampType}: The timestamp type of the message, as an integer.
+\end{itemize}
+
+Here, the column that contains the actual data is the \texttt{value} column. We can extract the data
+from this column using the \texttt{select} method, as we will see in the following example:
+
+\begin{lstlisting}[language=Python]
+# Extract the data from the value column
+casting = ("CAST(key AS STRING)", "CAST(value AS STRING)") 
+data_df = raw_df.selectExpr(*casting)
+\end{lstlisting}
+
+In this example, we extract the data from the \texttt{key} and \texttt{value} columns, and cast them
+to strings. This allows us to work with the data as strings, which is more convenient for processing. 
+But the data of value will be a stringified JSON object, so we need to parse it to a DataFrame. 
+We can do this as follows:
+
+\begin{lstlisting}[language=Python]
+from pyspark.sql.functions import from_json
+
+# Parse the data from the value column
+schema = "id STRING, name STRING, age INT"
+parsed_df = data_df.select(from_json("value", schema).alias("data"))
+
+# Obtain the final DataFrame
+final_df = parsed_df.select("data.*")
+\end{lstlisting}
+
+In this example, we parse the data from the \texttt{value} column using the \texttt{from\_json} function,
+and specify the schema of the data as a string. We then select the fields of the data, and obtain the
+final DataFrame. This allows us to work with the data as a structured DataFrame, which is more convenient
+for processing.
+
+\subsection{Writing streaming DataFrames}
+
+We have to remember that Spark is a lazy evaluation engine, so we need to call an action to start the
+execution of the streaming DataFrame. The most common action to start the execution of a streaming
+DataFrame is the \texttt{writeStream} method. This method allows us to write the streaming DataFrame
+to a sink, which can be a file, a Kafka topic, or a console.\\
+
+To do so, we need to specify the following options:
+
+\begin{itemize}
+    \item \textbf{Output sink}: The sink to write the data to.
+    \item \textbf{Output mode}: The mode to use when writing the data, i.e., append, complete, or update.
+    \item \textbf{Query name}: (Optional) Name of the query, which can be used to identify the query in the Spark UI.
+    \item \textbf{Trigger interval}: (Optional) The interval at which to trigger the query, i.e., processing time or event time.
+    \item \textbf{Checkpoint location}: (Optional) The location to store the checkpoint data, which is used to recover from failures.
+\end{itemize}
+
+We have 3 different output modes:
+
+\begin{itemize}
+    \item \textbf{Append}: Only the new rows added to the result table since the last trigger will be written to the sink.
+    This is only supported for queries where rows added to the result table are never updated. For example,
+    queries with only \texttt{select}, \texttt{where}, \texttt{map}, \texttt{filter}, \texttt{flatmap}, \texttt{join}, etc.
+    \item \textbf{Complete}: The entire result table will be written to the sink after every trigger.
+    This is dangerous, as it can cause the sink to grow indefinitely, and can lead to out-of-memory errors.
+    It is only supported for aggregation queries.
+    \item \textbf{Update}: Only the rows in the result table that were updated since the last trigger will be written to the sink.
+    Supported for aggregation queries and few others, not for joins.
+\end{itemize}
+
+
+\subsection{Window operations on Event Time}
+
+Spark Structured Streaming supports only logical windows on event time. It allows for declaring 
+tumbling, hopping and session windows, and it treats windows as a particular grouping criteria.
+For example, suppose we use the example of the fire alarms. We have:\\
+
+\begin{lstlisting}[language=Python]
+temperature_sdf.groupBy(window("TS", "1 minutes", "30 seconds"), "SENSOR")
+\end{lstlisting}
+
+This will group the data in 1-minute windows, with a 30-second slide, and by sensor. This will
+create a new column with the window start and end times, and group the data by this column.\\
+
+It is important to note that Spark Structured Streaming does not support physical windows on event time,
+as it is a continuous processing engine. This means that it does not have the concept of windows in the
+traditional sense, and does not have the notion of window boundaries. Instead, it treats windows as a
+logical grouping criteria, and processes the data continuously as it arrives.
+
+\subsection{Joins}
+
+Spark Structured Streaming supports joins between two streaming DataFrames. The following table describes
+the types of joins that are supported:
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.75\textwidth]{figures/spark_joins.png}
+    \label{fig:spark_joins}
+    \caption{Spark joins}
+\end{figure}
+
+Note that, comparing Spark Structured Streaming with EPL, Spark does not support the "followed by"
+operator (\texttt{->}). This is because Spark is a continuous processing engine, and does not have the
+concept of events that are followed by other events. To achieve the same result, we need to use a 
+stream-to-stream join with temporal constraints on the events timestamps. For example:\\
+
+\begin{lstlisting}[language=Python]
+join_sdf = smoke_events.join(
+    high_temp_events, expr("""
+        (sensorTemp == sensorSmoke) AND
+        (tsTemp > tsSmoke) AND  ## this is the EPL's -> operator
+        (tsTemp < tsSmoke + interval 2 minute)  ## this is the timer:within clause
+    """)
+)
+\end{lstlisting}
+
+Note that this will not tame the torrent effect, as it will report every event that matches the
+condition, but this is expected. These two joins are equivalent:
+
+\begin{lstlisting}[language=Python]
+# Spark
+join_sdf = A.join(B, expr("""
+(idA == idB) AND
+(tsB > tsA ) AND
+(tsB < tsA + interval 2 minute )
+"""))
+\end{lstlisting}
+
+\begin{lstlisting}[language=SQL]
+# EPL
+every x=A -> 
+    every B(id=x.id)
+    where timer:within(2 minutes)
+\end{lstlisting}
+
+Spark Structured Streaming also supports stream-to-table joins, which allow us to join a streaming
+DataFrame with a static DataFrame. This is useful when we have a static lookup table that we want
+to join with a streaming DataFrame. For example, suppose we have a static DataFrame with the sensor
+information, and we want to join it with the streaming DataFrame with the temperature data. We can
+do this as follows:
+
+\begin{lstlisting}[language=Python]
+# Create a static DataFrame with the sensor information
+sensor_df = spark.read.csv("sensor.csv", header=True)
+
+# Join the streaming DataFrame with the static DataFrame
+join_sdf = temperature_sdf.join(sensor_df, "SENSOR")
+\end{lstlisting}
+
+\subsection{Late arrivals}
+
+Late arrivals refer to events that arrive after the expected time window in which they were supposed
+to be processed. This happens because in real-time streaming, data may experience delays due to 
+temporarily disconnection, network high latency, processing issues, etc.\\
+
+To handle late arrivals, Spark Structured Streaming provides a watermarking mechanism. Watermarking
+allows us to specify a threshold on event time, after which we consider the data to be late. This
+allows us to handle late arrivals by specifying a window on event time, and discarding data that
+arrives after the window has closed.\\
+
+To use watermarking, we need to specify the following options:
+
+\begin{itemize}
+    \item \textbf{Event time column}: The column that contains the event time.
+    \item \textbf{Watermark delay}: The threshold on event time, after which we consider the data to be late.
+\end{itemize}
+
+The system will track the processing time $P$ as the maximum seen event time (last event time), and if
+if the difference between $P$ and the event time of the event is smaller than the watermark delay, the
+event is considered on time. Otherwise, it is considered late, and it is discarded.\\
+
+To use watermarking, we need to specify the event time column and the watermark delay in the query.
+For example, suppose we have a streaming DataFrame with the temperature data, and we want to handle
+late arrivals. We can do this as follows:
+
+\begin{lstlisting}[language=Python]
+# Create a watermark column
+watermarked_df = temperature_sdf.withWatermark("TS", "2 minutes")
+
+# Group the data by window and sensor
+windowed_df = watermarked_df.groupBy(window("TS", "1 minutes", "30 seconds"), "SENSOR")
+\end{lstlisting}
+
+In this example, we create a watermark column on the \texttt{TS} column with a delay of 2 minutes.
+This allows us to handle late arrivals by specifying a window on event time, and discarding data that
+arrives after the window has closed. We then group the data by window and sensor, and process the data
+accordingly.\\
+
+The following graph shows how watermarking works, in a windowed groped aggregation with update mode:
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.9\textwidth]{figures/spark_watermark_update.png}
+    \label{fig:spark_watermark_update}
+    \caption{Spark watermarking in update mode}
+\end{figure}
+
+And the following graph shows how watermarking works, in a windowed groped aggregation with append mode:
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.9\textwidth]{figures/spark_watermark_append.png}
+    \label{fig:spark_watermark_append}
+    \caption{Spark watermarking in append mode}
+\end{figure}
+
+Note that a watermark delay of "X hours" guarantees that the engine will never
+drop any data that is less than X hours late. However, data later that that
+threshold is not guaranteed to be dropped. This data may or may not get aggregated,
+and obviously the more delayed the data is, the less likely it is to be aggregated.
+
+\subsection{Unsupported operations}
+
+Spark Structured Streaming does not support all operations that are supported in batch processing.
+Some of the operations that are not supported include:
+
+\begin{itemize}
+    \item Aggregation without grouping (e.g., counting rows of a table)
+    \item OrderBy operations unless after aggregation and in Complete Output mode
+    \item Limit and take the first N rows
+    \item Distinct operations
+    \item Chaining multiple stateful operations in Update and Complete mode
+    \item Few types of outer joins
+\end{itemize}
