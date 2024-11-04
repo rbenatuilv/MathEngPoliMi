@@ -298,3 +298,190 @@ Unfortunately, not even garbage collectors or smart pointers can prevent all mem
     \end{lstlisting}
 
 \end{itemize}
+
+\section{Smart pointers}
+
+We have seen that \texttt{C++} lets us allocate objects dynamically, using the memory space
+called the free store. To do so, we use the \texttt{new} operator. However, we must remember to
+deallocate the memory when we are done with it, using the \texttt{delete} operator.\\
+
+We have also seen that properly freeing dynamic objects turns out to be a surprisingly
+rich source of bugs:
+
+\begin{itemize}
+    \item If we forget to free the memory, we have a memory leak.
+    \item If we free the memory when there there are still pointers referring to it, 
+    we have a pinter that refers to memory that is no longer valid \textbf{(dangling pointer)}.
+    \item If we subsequently delete the other pointers, then the free store may be 
+    corrupted.
+\end{itemize}
+
+To avoid these problems, \texttt{C++11} introduced smart pointers. Smart pointers ensure
+that the objects to which they point are automatically freed when it is appropiate to do
+so. This allows us to avoid the problems associated with manual memory management.\\
+
+There are 3 main types of smart pointers:
+
+\begin {itemize}
+    \item \texttt{std::unique\_ptr}
+    \item \texttt{std::shared\_ptr}
+    \item \texttt{std::weak\_ptr}
+\end{itemize}
+
+In this course, we will focus on \texttt{std::shared\_ptr}. Note that these pointers work as 
+templates and are defined in the \texttt{<memory>} header.
+
+\subsection{Shared pointers}
+
+\texttt{std::shared\_ptr} is a smart pointer that retains shared ownership of an object through
+a pointer. Several shared pointers may own the same object. The object is destroyed and its memory
+deallocated when either of the following happens:
+
+\begin{itemize}
+    \item The last remaining shared pointer owning the object is destroyed.
+    \item The last remaining shared pointer owning the object is assigned another pointer via
+    the \texttt{reset()} method.
+\end{itemize}
+
+\texttt{std::shared\_ptr} is a reference-counted smart pointer. It keeps track of how many shared
+pointers are pointing to the same object. When the last shared pointer pointing to an object is
+destroyed, the object is automatically deallocated.\\
+
+\texttt{std::shared\_ptr} is a template class, so we have to specify the type of the object it points
+to. For example:
+
+\begin{lstlisting}[language=C++]
+#include <memory>
+
+std::shared_ptr<int> p1; // p1 is a shared pointer to an integer
+std::shared_ptr<std::vector<int>> p2; // p2 is a shared pointer to a vector of integers
+\end{lstlisting}
+
+To create a shared pointer, we can use the \texttt{std::make\_shared} function. This function
+creates a shared pointer that owns a dynamically allocated object. For example:
+
+\begin{lstlisting}[language=C++]
+#include <memory>
+
+std::shared_ptr<int> p = std::make_shared<int>(10); 
+// p points to an integer with value 10
+std::shared_ptr<std::vector<int>> q = std::make_shared<std::vector<int>>(10, 20); 
+// q points to a vector of 10 integers with value 20
+\end{lstlisting}
+
+\vspace{1em}
+
+We have the following operations for shared pointers:
+
+\begin{longtable}{|l|p{9cm}|}
+    \hline
+    \texttt{shared\_ptr<T> sp} & Null smart pointer that can point to objects of type T \\ \hline
+    \texttt{p} & Use p as a condition; true if p points to an object \\ \hline
+    \texttt{*p} & Dereference p to get the object to which p points \\ \hline
+    \texttt{p->mem} & Same as (*p).mem \\ \hline
+    \texttt{p.get()} & Returns the pointer in p. \textbf{Be very careful!} \\ \hline
+    \texttt{swap(p, q)} & Swap the pointers in p and q \\ \hline
+    \texttt{p.swap(q)} & Swap the pointers in p and q \\ \hline
+    \texttt{make\_shared<T> args} & Returns a shared\_ptr pointing to a dynamically allocated object of type T; use args to initialize that object \\ \hline
+    \texttt{shared\_ptr<T> p(q)} & p is a copy of the shared\_ptr q; increments the count in q. The pointer in q must be convertible to T* \\ \hline
+    \texttt{p = q} & p and q are shared\_ptrs holding pointers that can be converted to one another. Decrements p reference count and increments q count; deletes p existing memory if p count goes to 0 \\ \hline
+    \texttt{p.unique()} & Returns true if p count is one; false otherwise \\ \hline
+    \texttt{p.use\_count()} & Returns the number of objects sharing with p; slow, use for debugging \\ \hline
+    \caption{Operations and functions related to \texttt{shared\_ptr}}
+\end{longtable}
+
+Note that the copy, assignment, and destruction of \texttt{shared\_ptr} objects work
+as follows:
+
+\begin{itemize}
+    \item When we copy a \texttt{shared\_ptr}, the reference count is incremented.
+    \item When we assign a \texttt{shared\_ptr}, the reference count of the left-hand side
+    is decremented, and the reference count of the right-hand side is incremented.
+    \item When a \texttt{shared\_ptr} goes out of scope, the reference count is decremented.
+    If the reference count is zero, the object is deallocated.
+\end{itemize}
+
+\subsubsection{Be wary of shared ownership!}
+
+Do not design your program to use shared ownership by default. Instead, use shared ownership
+only when you have to. One such reason is to avoid expensive copies of large objects, but only if the
+performance benefits are significant, and the underlying object is immutable. In many cases,
+copies can be avoided by using references.\\
+
+If you have to use shared ownership, always prefer to use \texttt{std::shared\_ptr} over
+other forms of shared ownership.
+
+\subsection{\texttt{std::shared\_ptr} vs built-in pointers}
+
+Note that \texttt{std::shared\_ptr} is a smart pointer, and it is not the same as a built-in pointer.
+We cannot inplicitly convert a built-in pointer to a \texttt{std::shared\_ptr}. For this reason, a 
+function that returns a \texttt{std::shared\_ptr} cannot use a built-in pointer as a return value.
+For example:
+
+\begin{lstlisting}[language=C++]
+#include <memory>
+
+std::shared_ptr<int> create_int() {
+    int *p = new int(10);
+    return p; // error: cannot convert 'int*' to 'std::shared_ptr<int>'
+}
+\end{lstlisting}
+
+To fix this, we have to use the \texttt{std::make\_shared} function. For example:
+
+\begin{lstlisting}[language=C++]
+#include <memory>
+
+std::shared_ptr<int> create_int() {
+    return std::make_shared<int>(10); // ok
+}
+\end{lstlisting}
+
+We should never mix ordinary pointers and smart pointers. A \texttt{std::shared\_ptr} can coordinate
+destructions only with other \texttt{std::shared\_ptr} objects that are copies of itself. It is
+dangerous to use a built-in pointer to access an object owned by a smart pointer, as we may not
+know when the object is destroyed. For example:
+
+\begin{lstlisting}[language=C++]
+#include <memory>
+
+void f() {
+    std::shared_ptr<int> p = std::make_shared<int>(10);
+    int *q = p.get(); // q points to the object owned by p
+} // p is destroyed, but q still points to the object
+
+int main() {
+    f();
+    // q is a dangling pointer
+    return 0;
+}
+\end{lstlisting}
+
+In this case, \texttt{q} is a dangling pointer, as it points to an object that has been destroyed. 
+To avoid this, we should never use built-in pointers to access objects owned by smart pointers.
+
+\subsubsection{Which pointer to use?}
+
+We should use raw pointers:
+
+\begin{itemize}
+    \item When you need to store addresses of existing variables.
+\begin{lstlisting}[language=C++]
+int x = 10;
+int *p = &x;
+\end{lstlisting}
+
+\end{itemize}
+
+We should use smart pointers:
+
+\begin{itemize}
+    \item When you want to declare a new dynamic object.
+\begin{lstlisting}[language=C++]
+#include <memory>
+
+std::shared_ptr<int> p = std::make_shared<int>(10);
+\end{lstlisting}
+
+\end{itemize}
+
