@@ -1,0 +1,73 @@
+\chapter{Measure Theory}
+
+\section{Measure spaces}
+
+\begin{fdefinition}
+    Let $X$ be a non-empty set. A family $\mathcal{M} \subseteq \power(X)$ is a
+    \textbf{$\sigma$-algebra} if:
+
+    \vspace{1em}
+
+    \begin{enumerate}
+        \item[(i)] $\emptyset \in \mathcal{M}$.
+        \item[(ii)] $E \in \mathcal{M} \implies E^c \in \mathcal{M}$.
+        \item[(iii)] $\{E_n\}_{n \in \N} \subseteq \mathcal{M} \implies \bigcup_{n \in \N} E_n \in \mathcal{M}$.
+    \end{enumerate}
+
+    \vspace{1em}
+
+    If instead of (iii) we have that $E_1, E_2 \in \M \implies \E_1 \cup E_2 \in \M$, then
+    $\M$ is called an \textbf{algebra}.
+
+\end{fdefinition}
+
+\begin{fnote}
+    If $\mathcal{M}$ is a $\sigma$-algebra, then we say that $(X, \mathcal{M})$ is a
+    \textbf{measurable space}. Any set $E \in \mathcal{M}$ is called a
+    \textbf{measurable set}.
+\end{fnote}
+
+\begin{example}
+    Let $X \neq \emptyset$. Then:
+
+    \begin{itemize}
+        \item $\power(X)$ is a $\sigma$-algebra.
+        \item $\{\emptyset, X\}$ is a $\sigma$-algebra.
+        \item $\{\emptyset, E, E^c, X\}$ is a $\sigma$-algebra for any $E \subseteq X$.
+        \item $X = \R$, $\mathcal{M} = \{E \subseteq \R: \; E \text{ is open}\}$ is NOT a $\sigma$-algebra.
+    \end{itemize}
+\end{example}
+
+\begin{fproperties}
+    Let $(X, \mathcal{M})$ be a measurable space. Then:
+
+    \vspace{1em}
+
+    \begin{enumerate}[label=(\roman*)]
+        \item $X = \emptyset^c \in \M$
+        
+        \vspace{0.5em}
+    
+        \item $\M$ is also an algebra. Indeed, if $\{E_1, E_2\} \subseteq \M,\; E_n = \emptyset \; \forall n \geq 3$,
+        then $E_1 \cup E_2 = \bigcup_{n \in \N} E_n \in \M$.
+
+        \vspace{0.5em}
+
+        \item $\{E_n\}_{n \in \N} \subseteq \M \implies \bigcap_{n} E_n \in \M$.
+        
+        \vspace{0.5em}
+
+        \item $E, F \in \M \implies E\setminus F \in \M$
+        
+        \vspace{0.5em}
+
+        \item $\Omega \subseteq X$. Then, the \textbf{restriction} of $\M$ to $\Omega$ is:
+        
+        $$\M |_{\Omega} := \{F \subseteq \Omega: F = E \cap \Omega, E \in \M\}$$
+
+        Then, $(\Omega, \M |_{\Omega})$ is a measurable space.
+    \end{enumerate}
+\end{fproperties}
+
+
+

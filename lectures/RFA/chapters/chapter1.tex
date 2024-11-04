@@ -1,0 +1,228 @@
+\chapter{Set Theory}
+
+\section{Basic notions}
+
+\begin{fdefinition}
+    Let $X$, $Y$ be sets. We say:
+    \begin{itemize}
+        \item $X$, $Y$ are \textbf{equipotent} if there exists a bijection
+        $f: X \to Y$.
+
+        \item $X$ has a \textbf{cardinality greater or equal} to $Y$ if there exists an
+        surjection $f: X \to Y$.
+
+        \item $X$ is \textbf{finite} if it is equipotent to $\{1, 2, \ldots, n\}$
+        for some $n \in \N$. $X$ is infinite otherwise.
+    \end{itemize}
+
+\end{fdefinition}
+
+\begin{fnote}
+    $X$ is infinite $\iff$ it is equipotent to a proper subset of itself.
+\end{fnote}
+
+\begin{example}
+    The set of natural numbers $\N$ is infinite. In fact, the set of even
+    natural numbers $E = \{2, 4, 6, \ldots\} \subset \N$ is equipotent to $\N$, 
+    as we can define the bijection $f: \N \to E$ as $f(n) = 2n$.
+\end{example}
+
+\begin{fdefinition}
+    Let $X$ be an infinite set. We say $X$ is \textbf{countable} if it is
+    equipotent to $\N$. $X$ is \textbf{uncountable} otherwise, in which case
+    it is \textbf{more than countable}.
+\end{fdefinition}
+
+\begin{fdefinition}
+    $X$ has the \textbf{cardinality of the continuum} if it is equipotent to
+    $[0, 1] \subset \R$. Any such set is uncountable.
+\end{fdefinition}
+
+\begin{example}
+    We have that:
+    \begin{itemize}
+        \item $\N, \Z, \Q$ are countable.
+        \item $\R, \R^n, (0, 1), [0, 1]$ are uncountable.
+        \item Countable union of countable sets is countable.
+    \end{itemize}
+\end{example}
+
+\section{Families of subsets}
+
+Let $X$ be a set. The \say{Power set} of $X$ is the set of all subsets of $X$,
+denoted by $\power(X)$.
+
+$$\power(X) = \{E: \; E \subseteq X\}$$
+
+Note that $\power(X)$ has always a cardinality greater than $X$. For 
+example, if $X = \N$, then $\power(X)$ has the cardinality of the continuum.
+
+\begin{fdefinition}
+    Let $X$ be a set. A \textbf{family of subsets} of $X$ is a set $E$
+    such that:
+    $$E \subseteq \power(X)$$
+
+    We usually denote $E = \{E_i\}_{i \in I}$, where $I$ is an index set.
+\end{fdefinition}
+
+\begin{fdefinition}
+    Let $E = \{E_i\}_{i \in I}$ be a family of subsets of $X$. We define:
+    \begin{itemize}
+        \item The \textbf{union} of $E$ as:
+        $$\bigcup_{i \in I} E_i = \{x \in X: \; x \in E_i \text{ for some } i \in I\}$$
+
+        \item The \textbf{intersection} of $E$ as:
+        $$\bigcap_{i \in I} E_i = \{x \in X: \; x \in E_i \text{ for all } i \in I\}$$
+    \end{itemize}
+\end{fdefinition}
+
+\begin{fdefinition}
+    Let $E = \{E_i\}_{i \in I}$ be a family of subsets of $X$. We say $F$ is
+    \textbf{pairwise disjoint} if:
+    $$E_i \cap E_j = \emptyset \;\; \forall i, j \in I, i \neq j$$
+\end{fdefinition}
+
+\begin{fdefinition}
+    We say that the family $E = \{E_i\}_{i \in I}$ of subsets of $X$ is a
+    \textbf{covering} of $X$ if:
+    $$X = \bigcup_{i \in I} E_i$$
+
+    Any subfamily of $E$, $E' = \{E_i\}_{i \in I'}$ is a \textbf{subcovering}
+    of $X$ if it is a covering of $X$ itself.
+\end{fdefinition}
+
+\begin{fexample}
+    Let $X = \R$. We define:
+
+    $$\T = \{E \subset X: E \text{ is open}\}$$
+
+    We say that $\T$ is the standard topology of $X$. More generally, this can be
+    done in \say{metric spaces} $(X, d)$.\\
+
+    \textbf{Properties of $\T$ (open sets):}
+    \begin{itemize}
+        \item $\emptyset, X \in \T$.
+        \item Finite intersection of elements in $\T$ is in $\T$.
+        \item Arbitrary union of elements in $\T$ is in $\T$.
+    \end{itemize}
+\end{fexample}
+
+\vspace{1em}
+
+We can also define \textbf{sequences of sets}. Let $X$ be a set. A sequence of sets in $X$
+is a family of sets $\{E_n\}_{n \in \N}$.
+
+\begin{fdefinition}
+    Let $X$ be a set. A sequence of sets $\{E_n\}_{n \in \N}$ is said to be:
+    \begin{itemize}
+        \item \textbf{Increasing} if:
+        $$E_n \subseteq E_{n+1} \; \; \forall n \in \N$$
+        It is denoted by $\{E_n\} \uparrow$.
+
+        \item \textbf{Decreasing} if:
+        $$E_n \supseteq E_{n+1} \; \; \forall n \in \N$$
+        It is denoted by $\{E_n\} \downarrow$.
+    \end{itemize}
+\end{fdefinition}
+
+\vspace{1em}
+
+Let now $\{E_n\}_{n \in \N} \subseteq \power(X)$ be a sequence of sets in $X$:
+
+\begin{fdefinition}
+    We define the following:
+    \begin{itemize}
+        \item The \textbf{limit superior} of $\{E_n\}$ as:
+        
+        $$\limsup_{n \to \infty} E_n = \bigcap_{n \in \N} \bigcup_{k \geq n} E_k$$
+
+        \item The \textbf{limit inferior} of $\{E_n\}$ as:
+        
+        $$\liminf_{n \to \infty} E_n = \bigcup_{n \in \N} \bigcap_{k \geq n} E_k$$
+
+        \item If the limit superior and limit inferior are equal, we say that
+        
+        $$\lim_{n \to \infty} E_n = \limsup_{n \to \infty} E_n = \liminf_{n \to \infty} E_n$$
+    \end{itemize}
+\end{fdefinition}
+
+\begin{fexercise}
+    Let $X$ be a set and $\{E_n\}_{n \in \N} \subseteq \power(X)$ be a sequence of sets in $X$.
+    Prove that:
+    $$(i) \quad \{E_n\} \uparrow \;\; \Rightarrow \lim_{n \to \infty} E_n = \bigcup_{n \in \N} E_n \qquad (ii) \quad \{E_n\} \downarrow \;\; \Rightarrow \lim_{n \to \infty} E_n = \bigcap_{n \in \N} E_n$$
+\end{fexercise}
+
+\section{Characteristic functions}
+
+\begin{fdefinition}
+    Let $X$ be a set and $E \subseteq X$. The \textbf{characteristic function} of $E$ is
+    the function $\1_E: X \to \{0, 1\}$ defined as:
+    $$\1_E(x) = \begin{cases}
+        1 & \text{if } x \in E \\
+        0 & \text{if } x \notin E
+    \end{cases}$$
+
+    This function is also called the \textbf{indicator function} of $E$.
+\end{fdefinition}
+
+\begin{fnote}
+    Let $E, F \subseteq X$. We have that:
+    \begin{itemize}
+        \item $\1_{E \cap F} = \1_E \cdot \1_F$.
+        \item $\1_{E \cup F} = \1_E + \1_F - \1_{E \cap F}$.
+        \item $\1_{E^c} = 1 - \1_E$.
+        \item $\1_{\limsup_{n \to \infty} E_n} = \limsup_{n \to \infty} \1_{E_n}$.
+        \item $\1_{\liminf_{n \to \infty} E_n} = \liminf_{n \to \infty} \1_{E_n}$.
+    \end{itemize}
+\end{fnote}
+
+\section{Equivalence relations and Quotient sets}
+
+\begin{fdefinition}
+    A relation $R$ on a set $X$ is a subset of $X \times X$. For any $x, y \in X$,
+    we say that $x$ is related to $y$ if $(x, y) \in R$. We denote this as $xRy$.
+\end{fdefinition}
+
+\begin{fdefinition}
+    A relation $R$ on a set $X$ is an \textbf{equivalence relation} if it satisfies:
+    \begin{itemize}
+        \item \textbf{Reflexivity:} 
+        $$xRx \;\; \forall x \in X$$
+
+        \item \textbf{Symmetry:} 
+        $$xRy \;\; \Rightarrow \;\;  yRx \;\; \forall x, y \in X$$
+ 
+        \item \textbf{Transitivity:} 
+        $$xRy, yRz \; \Rightarrow \; xRz \;\; \forall x, y, z \in X$$
+    \end{itemize}
+
+    Every equivalence relation on $X$ induces a partition of $X$. We define
+    the \textbf{equivalence class} of $x \in X$ as:
+
+    $$[x] = \{y \in X: \; xRy\}$$
+
+    The set of all equivalence classes is called the \textbf{quotient set} of $X$
+    by $R$, denoted by $X/R$.
+
+    $$X/R = \{[x]: \; x \in X\}$$
+\end{fdefinition}
+
+\begin{fexample}
+    Let $X = \Z \times \Z_0$ such that $\Z_0 = \Z \setminus \{0\}$. We define
+    the relation $R$ on $X$ as:
+    $$(a, b)R(c, d) \iff ad = bc$$
+
+    We can prove that $R$ is an equivalence relation. The equivalence classes
+    are:
+
+    $$[(a, b)] = \{(c, d) \in X: \; ad = bc\}$$
+
+    Notice that:
+
+    $$[(a, b)] = \{(a, b), (2a, 2b), (3a, 3b), \ldots\}$$
+
+    If we denote a class $[(a, b)]$ as $[a/b]$, then we have that:
+
+    $$X/R = \{[a/b]: \; a, b \in \Z_0\} = \Q$$
+
+\end{fexample}
