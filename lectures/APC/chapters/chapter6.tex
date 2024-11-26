@@ -227,7 +227,21 @@ int main() {
 To summarize, a base class specifies that a member function should be dynamically bound by
 declaring it as virtual. A derived class specifies that it intends to override a virtual
 function by using the \texttt{override} keyword. Any non-static member function, other than
-a constructor, can be declared as virtual.
+a constructor, can be declared as virtual.\\
+
+Note that, when a derived class overrides a virtual function, it may, but is not required to,
+repeat the \texttt{virtual} keyword. This is a good practice, as it makes the code more readable, but 
+once a function is declared as virtual in a base class, it remains virtual in all derived classes.\\
+
+A derived-class function that overrides an inherited virtual function must have exactly the same 
+parameter type(s) as the base-class function that it overrides. If the parameter types differ, the
+functions are considered to be overloaded, not overridden.\\
+
+With one exception, the return type of a virtual in the derived class must also match the return type
+of the base-class function. The exception is that the return type of the derived-class function can be
+a pointer or reference to a derived class type, even if the return type of the base-class function is
+a pointer or reference to a base class type. I.e., if \texttt{D} is derived from \texttt{B}, then a base 
+class virtual can return \texttt{B*} and the version of the derived can return \texttt{D*}.\\
 
 \subsection{Derived-to-base conversion}
 
@@ -274,7 +288,9 @@ int main() {
 The fact that we can bind a reference or pointer to a base class object to a derived class
 has an important implication: we don't know the actual type of the object to which the pointer
 or reference is bound. This is a key feature of polymorphism. Tha object can be of the base
-class type or of any derived class type.
+class type or of any derived class type.\\
+
+We will deepen about this topic later in this chapter.
 
 \subsection{Static and dynamic types}
 
@@ -359,3 +375,67 @@ When refactoring a class, it is important to consider the following:
 
 By following these guidelines, you can create a well-structured class hierarchy that is
 easy to understand and maintain.
+
+\section{Derived-to-base conversion}
+
+As we said before, because a derived object contains subparts corresponding to its base class(es),
+we can use an object of a derived type as if it were an object of its base type(s). In particular,
+we can binde a base-class reference or pointer to the base-class part of a derived object.
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=12cm]{figures/derived-to-base_conv.png}
+    \caption{Example of derived-to-base conversion}
+    \label{fig:derived-to-base}
+\end{figure}
+
+Ordinarily, we can only bind a reference or a pointer to an object that has the same type as 
+the corresponding reference or pointer. Classes related by inheritance are an important exception
+of this rule.\\
+
+The conversion from derived to base exists because every derived object contains a base-class 
+part to which a pointer or reference of the base-class type can be bound. Note that there is
+\textbf{no similar guarantee for base-class objects}. \\
+
+A base-class object can exist either as an independent object or as a part of a derived object.
+A base object that is not part of a derived object has only the members defined by the class;
+it doesn't have the members defined by the derived class, i.e, \textbf{there is no automatic 
+conversion} from the base class to the derived class.\\
+
+\subsection{No conversion between objects}
+
+Also note that the automatic derived-to-base conversion applies only for conversions to a reference
+or pointer type. It is possible to convert an object of a derived class to its base-class type, but
+such conversions may not behave as we might want.\\
+
+When we initialize or assign an object of a class type, we are actually calling a function:
+\begin{itemize}
+    \item When we \textbf{initialize}, we're calling a \textbf{copy constructor}
+    \item When we \textbf{assign}, we're calling an \textbf{assignment operator}
+    \item These members normally have a parameter that is the reference to the const version of
+    the class type.
+\end{itemize}
+
+Because these members take references, the derived-to-base conversion lets us pass a derived object
+to a base-class copy operation.\\
+
+\textbf{IMPORTANT!} These operations are \textbf{not virtual}. When we pass a derived object to a 
+base-class constructor, the constructor that is run is defined in the base class. If we assign a 
+derived object to a base object, the assignment operator that is run is defined in the base class.
+
+\section{Containers and Inheritance}
+
+When we use a container to store objects from an inheritance hierarchy, we generally must store
+those objects indirectly. This is because the container must store objects of a single type, and
+the objects in the hierarchy are of different types.\\
+
+As an example, assume we want to define a vector to hold several books that a customer wants to buy.
+We can't use a vector that holds \texttt{ScienceBook} objects, as we can't convert a \texttt{ScienceBook}
+object to a \texttt{Book} object. We also can't use a vector that holds \texttt{Book} objects, because
+if we add a \texttt{ScienceBook} object to the vector, we'll lose the \texttt{ScienceBook}-specific
+information.\\
+
+The solution is to use a vector of pointers to the base class. This way, we can store pointers to
+objects of the derived classes in the vector, and we can access the objects through the base-class
+interface. This is an example of dynamic binding, which is a key feature of polymorphism. Prefer
+smart pointers to raw pointers.\\
