@@ -869,4 +869,489 @@ defined only once.\\
 Like global objects, static data members are defined outside any function. Once they are defined, they
 continue to exist until the program completes.
 
+\section{Copy constructors and destructors}
 
+Each class defines a new type and the operations that objects of that type can perform.
+When we copy, assign or destroy objects of a class, this class controls how these operations
+are performed. Collectively, these operations are known as the \textbf{copy-control} operations.\\
+
+IF a class does not define all the copy-control operations, the compiler will define them for us.
+As a result, many classes can ignore the copy-control operations. However, there are some classes
+that must define these operations, as relying on the compiler-generated versions would lead to
+incorrect behavior. Usually, the hardest part of implementing copy-control operations is 
+recognizing when they are needed.
+
+\subsection{Copy-assigment operator}
+
+Just as a class controls how the objects are initialized, it also controls how they are assigned.
+The copy-assignment operator is a special member function that is called when an object 
+is assigned to another object. It is represented by the \texttt{=} operator.\\
+
+Just as it does for the copy constructor, the compiler defines a synthesized copy-assignment
+operator for classes that do not define their own. The synthesized copy-assignment operator
+assigns each non-static member of the right-hand object to the corresponding member of the
+left-hand object. If some members cannot be copy-assigned, the synthesized copy-assignment operator
+will not be defined. Array members are assigned by assigning each element of the array.\\
+
+The synthesized copy-assignment operator returns a reference to its left-hand object. This allows
+assignments to be chained.\\
+
+We can define our own copy-assignment operator for a class. The copy-assignment operator is a member
+function that takes a single parameter of the class type. Let us see an example of a class 
+\texttt{SalesData} with a copy-assignment operator:\\
+
+\begin{lstlisting}[language=C++]
+class SalesData {
+    public:
+        SalesData &operator=(const SalesData &);
+    private:
+        std::string bookNo;
+        unsigned unitsSold = 0;
+        double revenue = 0.0;
+}
+
+SalesData &SalesData::operator=(const SalesData &rhs) {
+    bookNo = rhs.bookNo;
+    unitsSold = rhs.unitsSold;
+    revenue = rhs.revenue;
+    return *this;
+}
+\end{lstlisting}
+
+In this example, we could also want that when we copy an object of the class \texttt{SalesData},
+everything is copied except the \texttt{bookNo}. In that case, we could define the copy-assignment
+operator as follows:\\
+
+\begin{lstlisting}[language=C++]
+SalesData &SalesData::operator=(const SalesData &rhs) {
+    if (this != &rhs) {
+        unitsSold = rhs.unitsSold;
+        revenue = rhs.revenue;
+    }
+    return *this;
+}
+\end{lstlisting}
+
+\subsection{Copy initialization}
+
+When we use direct initialization, i.e., when we use the \texttt{Object(values)} syntax, 
+we are asking the compiler to use ordinary function matching to select the constructor 
+that best matches the arguments we provide.\\
+
+When we use copy initialization, i.e., when we use the \texttt{Object = values} syntax,
+we are asking the compiler to copy the right-hand object into the left-hand object, 
+converting that operand if necessary.\\
+
+Copy initialization ordinarily uses the \textbf{copy constructor}. This happens not only 
+when we define variables using an \texttt{=}, but also when we:
+
+\begin{itemize}
+    \item Pass an object as an argument to a parameter of non-reference type
+    \item Return an object from a function that has a non-reference return type
+    \item Brace initialize the elements in an array or the members of an aggregate
+    class
+\end{itemize}
+
+Also, some class types use copy initialization for the objects they allocate. The library
+containers copy initialize their elements when we initialize the container, or when we 
+call an insert or push member.
+
+\subsection{Copy constructor}
+
+A constructor is called the \textbf{copy constructor} if its first parameter is a
+reference to the class type and any additional parameters have default values.
+For example:
+
+\begin{lstlisting}[language=C++]
+class Foo {
+    public:
+        Foo(); // Default constructor
+        Foo(const Foo &); // Copy constructor
+}
+\end{lstlisting}
+
+Not that the first parameter must be a reference type: almost always a \textbf{reference to const},
+although we can define the copy constructor to take a reference to non-const.\\
+
+When we do not define a copy constructor, the compiler tries to synthesize one for us.
+Unlike the synthesized default constructor, the synthesized copy constructor is defined
+even if we define other constructors.\\
+
+Note that if all members of a class can be copied (i.e., they have copy constructors),
+the synthesized copy constructor member-wise copies each member of its argument into the
+corresponding member of the object being created. If some members cannot be copied, the
+synthesized copy constructor is unavailable (implicitly deleted).\\
+
+We can define our own copy constructor for a class. For example, we can define a class
+\texttt{SalesData} with a copy constructor as follows:\\
+
+\begin{lstlisting}[language=C++]
+class SalesData {
+    public:
+        SalesData(const SalesData &);
+    private:
+        std::string bookNo;
+        unsigned unitsSold = 0;
+        double revenue = 0.0;
+}
+
+SalesData::SalesData(const SalesData &orig) : 
+    bookNo(orig.bookNo), 
+    unitsSold(orig.unitsSold), 
+    revenue(orig.revenue) 
+{}
+\end{lstlisting}
+
+An important remark: container elements are copies. When we use an object to initialize
+a container, or insert an object into a container, a copy of that object is placed in the
+container, not the object itself. Just as when we pass an object to a non-reference
+parameter, there is no relationship between the element in the container and the object
+from which that value originated. Subsequent changes to the element in the container
+have no effect on the original object, and vice versa.
+
+\subsection{Destructors}
+
+The destructore does whatever operations the class designer wishes to have executed
+after the last use of an object. Typically, the destructor frees the resources that
+the object acquired during its lifetime.\\
+
+The destructor operates inversely to the constructors. And just as a constructor has 
+an initialization part and a function body, a destructor has a function body and a
+destruction part.\\
+
+In a destructor, there is nothing akin to the constructor initializer list to control
+how members are destroyed. The destruction part is implicit.\\
+
+Let us compare the constructor and destructor of a class:
+
+\begin{itemize}
+    \item \textbf{Constructors} initialize the non-static data members of an object 
+    and may do other work.
+    \begin{itemize}
+        \item Members are initialized before the function body is executed.
+        \item Members are initialized in the same order as ther appear in the class.
+    \end{itemize}
+
+    \item \textbf{Destructors} do whatever work is needed to free the resources used by
+    an object and destroy the non-static data members of the object.
+    \begin{itemize}
+        \item The function body is executed first and then the members are destroyed.
+        \item Members are destroyed in the reverse order from which they were initialized.
+    \end{itemize}
+\end{itemize}
+
+What happens when a member is destroyed depends on the type of the member. Members of 
+class type are destroyed by running the member's own destructor. The built-in types
+do not have destructors, so nothing is done t destroy members of built-in type.\\
+
+The destructor is a member function with the name of the class prefixed by a tilde (\texttt{\~}).
+It has no return value and takes no parameters. Because it takes no parameters, a destructor
+cannot be overloaded, so there is always only one destructor for a class. The syntax is as
+follows:\\
+
+\begin{lstlisting}[language=C++]
+class Foo {
+    public:
+        ~Foo(); // Destructor
+        // ...
+}
+\end{lstlisting}
+
+The destructor is called automatically whenever an object of its type is destroyed. This
+happens on the following situations:
+
+\begin{itemize}
+    \item Variables are destroyed when they go out of scope.
+    \item Members of an object are destroyed when the object of which they are a part
+    is destroyed.
+    \item Elements in a container, whether a library container or an array, are destroyed
+    when the container is destroyed.
+    \item Dynamically allocated objects are destroyed when the delete operator is applied
+    to a pointer to the object.
+    \item Temporary objects are destroyed at the end of the full expression in which they
+    were created.
+\end{itemize}
+
+The compiler synthesizes a destructor for a class if the class does not define one. 
+As with the copy constructor and copy-assignment operator, for some
+classes, the default destructor cannot be synthesized.\\
+
+A synthesized destructor works by calling the destructors of the members in reverse order
+of their declaration. These members are destroyed as part of the implicit destruction
+phase tha follows the destructor body.
+
+\section{Copy control}
+
+There are three basic operations to control copies of class objects:
+
+\begin{itemize}
+    \item Copy constructor
+    \item Copy-assignment operator
+    \item Destructor
+\end{itemize}
+
+There is no requirement that we define all these operations, but ordinarily we should
+think of these operations as a unit. If we define one of these operations, we should
+define all three. This is known as the \textbf{Rule of three}.\\
+
+Although many classes need to define all (or none of) the copy-control members, some classes
+have work that need to be done to copy or assign objects but has no need for the destructor.\\
+
+For example, consider a class that gives each object its own, unique serial number:
+\begin{itemize}
+    \item Such a class would need a copy constructor to generate a new, distinct serial
+    number for the object being created.
+    \item That constructor would copy all the other data members from the given object.
+    \item This class would also need its own copy-assignment operator to avoid assigning
+    to the serial number of the left-hand object.
+    \item This class would have no need for a destructor.
+\end{itemize}
+
+This example gives rise to a second rule of thumb: if a class needs a copy constructor,
+it almost surely needs a copy-assignment operator as well, and vice versa. Nevertheless,
+needing either the copy constructor or the copy-assignment operator does not (necessarily)
+indicate the need for a destructor.\\
+
+Another rule of thumb to use when you decide whether a class needs to define its own versions 
+of the copy-control members is to decide first whether the class needs a destructor. Often,
+the need for a destructor is more obvious that the need for the copy constructor or
+assigment operator. If the class \textbf{needs a destructor}, it almost surely
+\textbf{needs a copy constructor} and a \textbf{copy-assignment} operator as well.
+
+\subsection{Using default and delete}
+
+In \texttt{C++11}, we can use the \texttt{default} and \texttt{delete} keywords to control
+the synthesized copy-control members. The \texttt{default} keyword tells the compiler to
+generate the default version of a member function. This can prevent custom implementation
+and improves code readability. For example:\\
+
+\begin{lstlisting}[language=C++]
+class SalesData {
+    public: 
+    // copy control; use defaults
+    SalesData() = default;
+    SalesData(const SalesData&) = default;
+
+    SalesData& operator=(const SalesData&);
+    ~SalesData() = default;
+
+    // other members
+};
+
+SalesData& SalesData::operator=(const SalesData&) = default;
+\end{lstlisting}
+
+For some classes, there really is no sensible meaning for create a copy, so copies or
+assigments must be denied. For example, the \texttt{iostream} classes prevent copying 
+to avoid multiple objects to write or read from the same IO buffer.\\
+
+To prevent (deny) the copyong behavior, in \texttt{C++} we use \textbf{deleted functions}.
+To define a function as deleted, we use the same syntax as default, but using \texttt{delete}
+afte the $=$ operator. This prevents the compiler to automatically synthesize the functions
+declared as deleted. For example:\\
+
+\begin{lstlisting}[language=C++]
+struct NoCopy{
+    NoCopy() = default;
+
+    // disallow copy
+    NoCopy(const NoCopy&) = delete;
+    // disallow assignment
+    NoCopy &operator=(const NoCopy&) = delete;
+
+    ~NoCopy() = default;
+
+    // other members
+}
+\end{lstlisting}
+
+\subsection{Resource management}
+
+Classes that manage resources that do not reside in the class must define the copy-control
+members. In order to define these members, we first have to decide what copying an object
+of our type will mean. In general, we have two choices:
+
+\begin{itemize}
+    \item \textbf{Like-a-value:} the class behaves like a value
+    \item \textbf{Like-a-pointer:} the class behaves like a pointer
+\end{itemize}
+
+\textbf{Like-a-value} classes have their own state. When we copy a like-a-value object, the copy
+and the original are independent of each other. Changes made to the copy have no effect on the
+original, and viceversa. \textbf{Like-a-pointer} classes share part of the state. When we copy 
+objects of such classes, the copy and the original use the same underlying data, so changes made
+to the copy also change the original, and viceversa.\\
+
+Following these types of behaviors, we have to ways of implementing the copy logic:
+
+\begin{itemize}
+    \item \textbf{Shallow copy (like-a-pointer):} Copy only a pointer so that rhe two pointers
+    now refer to the same object. This is what pointers and references do.
+
+    \item \textbf{Deep copy (like-a-value):} Copy what the pointer points to, so that the two
+    pointers now each refer to a distinct object. This is what vectors, strings, ans other STL
+    objects do. It requires copy constructors and copy assignments for container classes, and 
+    must copy \textbf{all the way down} if there are more levels in the object.
+\end{itemize}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=14cm]{figures/shallow-and-deep.png}
+    \caption{Shalow and deep copy}
+    \label{fig:shallow-deep}
+\end{figure}
+
+Ordinarily, classes copy members of built-in types (other tha pointers) directly;
+such members are values and hence ordinarily ought to behave like values. What we
+do when we copy the pointer member determines whether the class has like-a-value or
+like-a-pointer behavior.\\
+
+For example, a like-a-pointer class:\\
+
+\begin{lstlisting}[language=C++]
+class StrLPVector{
+    public:
+    typedef std::vector<std::string>::size_type size_type;
+
+    StrLPVector();
+    StrLPVector(std::initializer_list<std::string> il);
+
+    size_type size() const { return data->size(); }
+    bool empty() const { return data->empty(); }
+
+    // add and remove objects
+    void push_back(const std::string &t) { data -> push_back(t); }
+    void pop_back() { data-> pop_back(); }
+
+    // element access
+    std::string& front() { return data->front(); }
+    std::string& back() { return data->back(); }
+
+    private:
+    std::shared_ptr<std::vector<std::string>> data;
+    // write msg if data[i] isn't valid
+};
+\end{lstlisting}
+
+For example, a like-a-value class:\\
+
+\begin{lstlisting}[language=C++]
+class StrLPVector {
+    public:
+    typedef std::vector<std::string>::size_type size_type;
+
+    StrLPVector();
+    StrLPVector(std::initializer_list<std::string> il);
+    size_type size() const { return data.size(); }
+    bool empty() const { return data.empty(); }
+
+    // add and remove elements
+    void push_back(const std::string &t) { data.push_back(t); }
+    void pop_back() { data.pop_back(); };
+
+    // element access
+    std::string& front() { return data.front(); }
+    std::string& back() { return data.back(); }
+
+    private:
+    std::vector<std::string> data;
+    // write msg if data[i] isn't valid
+};
+\end{lstlisting}
+
+\section{Implicit class-type conversions}
+
+\texttt{C++} defines several automatic conversions among the built-in types. For example,
+we can assign an \texttt{int} to a \texttt{double}, or pass an \texttt{int} to a function
+that takes a \texttt{double} parameter.\\
+
+Classes can define implicit conversion as well. Every constructor that can be called with a
+single argument defines an implicit conversion to the class type. Such constructors are called
+\textbf{converting constructors}. For example:\\
+
+\begin{lstlisting}[language=C++]
+class MatLabVector {
+    vector<double> elem;
+
+    public:
+    MatLabVector(unsigned sz) : elem(sz, 0.) {}
+    MatLabVector() = default;
+
+    double& opeartor[](unsigned n);
+    size_t size() const;
+
+    MatLabVector operator+(const MatLabVector& other) const;
+    MatLabVector operator*(double scalar) const;    
+}
+\end{lstlisting}
+
+In this case, the \texttt{MatLabVector} constructor that takes an \texttt{unsigned} is a
+defines implicit conversions from that type to a \texttt{MatLabVector}. We can use an 
+\texttt{unsigned} wherever a \texttt{MatLabVector} is expected. For example:\\
+
+\begin{lstlisting}[language=C++]
+MatLabVector v1(10); // ok: direct initialization
+v1 = 20; // ok: implicit conversion to MatLabVector
+
+void f(MatLabVector);
+f(10); // ok: implicit conversion to MatLabVector
+\end{lstlisting}
+
+This is very error prone (unless that is the desired behavior). To avoid this, we can use
+the \texttt{explicit} keyword to prevent the compiler from using that constructor for implicit
+conversions. For example:\\
+
+\begin{lstlisting}[language=C++]
+class MatLabVector {
+    vector<double> elem;
+
+    public:
+    explicit MatLabVector(unsigned sz) : elem(sz, 0.) {}
+    MatLabVector() = default;
+
+    double& opeartor[](unsigned n);
+    size_t size() const;
+
+    MatLabVector operator+(const MatLabVector& other) const;
+    MatLabVector operator*(double scalar) const;    
+}
+
+MatLabVector v1(10); // ok: direct initialization
+v1 = 20; // error: no implicit conversion to MatLabVector
+
+void f(MatLabVector);
+f(10); // error: no implicit conversion to MatLabVector
+\end{lstlisting}
+
+Note that when we declare a constructor as \texttt{explicit}, we can only use that constructor
+for direct initialization. We cannot use that constructor for copy initialization.\\
+
+Although the compiler will not use an explicit constructor for an implicit conversion, we can
+use such constructors explicitly to force a conversion. For example:\\
+
+\begin{lstlisting}[language=C++]
+MatLabVector v1(10); // ok: direct initialization
+v1 = MatLabVector(20); // ok: explicit conversion to MatLabVector
+
+v1 += 10; // error: no implicit conversion to MatLabVector
+v1 += MatLabVector(10); // ok: explicit conversion to MatLabVector
+\end{lstlisting}
+
+\subsubsection{IMPORTANT:}
+
+Consider the class \texttt{SalesData}, with its constructor \texttt{SalesData(const std::string)}.
+Note that in this case, even if it is not explicit, only one implicit conversion is allowed.
+For instance:\\
+
+\begin{lstlisting}[language=C++]
+// ERROR: requires two user-defined conversions:
+// (1) convert "9-999-99999-9" to string
+// (2) converst that (temporary) string to SalesData
+item += "9-999-99999-9";
+
+// OK: explicit conversion to string, implicit conversion to SalesData
+item += string("9-999-99999-9");
+
+// OK: implicit conversion to string, explicit conversion to SalesData
+item += SalesData("9-999-99999-9");
+\end{lstlisting}
