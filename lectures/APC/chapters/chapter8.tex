@@ -690,7 +690,7 @@ those to elements after the insertion are invalid. It is \textbf{very risky} to 
 \end{itemize}
 
 When we loop through a container and modify it, we must be careful to avoid using an invalidated
-iterator. For example:
+iterator. For example:\\
 
 \begin{lstlisting}[language=C++]
 vector<int> v = {1, 2, 3, 4, 5};
@@ -711,4 +711,356 @@ while (it != end)
     else
         ++it;
 \end{lstlisting}
+
+\section{Adaptors}
+
+Container adaptors ae interfaces created on top of a (limited) set of functionalities of a 
+pre-existing sequential container, which provide a different API. When you declare the container
+adaptors, you have an option of specifying which sequential container to use as underlying 
+container.\\
+
+We have three main container adaptors:
+
+\begin{itemize}
+    \item \texttt{stack}:
+    \begin{itemize}
+        \item This container provides a \textbf{last-in, first-out} (LIFO) access.
+        \item You remove (pop) elements in the reverse order you insert (push) them.
+        You cannot get any elements in the middle of the stack.
+        \item Usually, this goes on top of a \texttt{deque}.
+    \end{itemize}
+
+    \item \texttt{queue}:
+    \begin{itemize}
+        \item Container providing a \textbf{first-in, first-out} (FIFO) access.
+        \item You remove (pop) elements in the same order you insert (push) them.
+        You cannot get any elements in the middle of the queue.
+        \item Usually, this goes on top of a \texttt{deque}.
+    \end{itemize}
+
+    \item \texttt{priority\_queue}:
+    \begin{itemize}
+        \item Container providing \textbf{sorted-order} access to elements.
+        \item You can insert (push) elements in any order, and then retrieve (pop) the 
+        highest-priority element.
+        \item Priority queues in \texttt{C++} STL use a heap structure internally, which in
+        turn is basically \textbf{array-backed}; thus, usually goes on top of a \texttt{vector}.
+    \end{itemize}
+\end{itemize}
+
+\section{Associative containers}
+
+Associative containers support the general container operations, but they do not support
+the sequential-container position-specific operations, such as \texttt{push\_front}. Because 
+the elements are stored based on their \textbf{keys}, these operations would be meaningless for
+the associative containers. Nevertheless, they have:
+
+\begin{itemize}
+    \item Type aliases
+    \item \textbf{Bidirectional iterators}
+    \item Specific operations
+    \item Hash functions (for unordered associative containers)
+\end{itemize}
+
+The main associative containers are:
+
+\begin{itemize}
+    \item For the header \texttt{<map>}:
+    \begin{itemize}
+        \item \texttt{map}: a collection of key-value pairs, where the keys are unique.
+        \item \texttt{multimap}: a collection of key-value pairs, where the keys may not be unique.
+    \end{itemize}
+
+    \item For the header \texttt{<set>}:
+    \begin{itemize}
+        \item \texttt{set}: a collection of unique keys.
+        \item \texttt{multiset}: a collection of keys that may not be unique.
+    \end{itemize}
+
+    \item For the header \texttt{<unordered\_map>}:
+    \begin{itemize}
+        \item \texttt{unordered\_map}: a map organized by a hash function, where the keys are unique.
+        \item \texttt{unordered\_multimap}: a map organized by a hash function, where the keys may not be unique.
+    \end{itemize}
+
+    \item For the header \texttt{<unordered\_set>}:
+    \begin{itemize}
+        \item \texttt{unordered\_set}: a set organized by a hash function, where the keys are unique.
+        \item \texttt{unordered\_multiset}: a set organized by a hash function, where the keys may not be unique.
+    \end{itemize}
+\end{itemize}
+
+\subsection{\texttt{map}}
+
+A \texttt{map} is a collection of key-value pairs, where the keys are unique. It is often referred
+to as an associative array. An associative array is like a "normal" array, but instead of using
+integers as indices, you can use any type of key.\\
+
+Values in a \texttt{map} are found by a key and not by their position. For example, given a map
+of names to phone numbers, we'd use a person's name as a subscript to fetch their phone number:\\
+
+\begin{lstlisting}[language=C++]
+map<string, string> phone_book;
+
+phone_book["John"] = "123-456-7890";
+
+cout << phone_book["John"] << endl;  // prints 123-456-7890
+\end{lstlisting}
+
+\subsubsection{Implementation of a \texttt{map}}
+
+A \texttt{map} is implemented by red-black trees, self-balancing binary search trees. The
+\texttt{map} is always sorted by its key according to the comparison function. The complexity
+of the operations is logarithmic ($O(\log(n))$) in the size of the container.
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.8\textwidth]{figures/map.png}
+    \caption{How a \texttt{map} works}
+    \label{fig:map}
+\end{figure}
+
+\subsection{\texttt{set}}
+
+A \texttt{set} is simply a collection of objects. A \texttt{set} is most useful when we simply
+want to know whether an object is present in the collection or not.\\
+
+For example, a business might have a set to hold the names of individuals sho have written
+bad checks. When a new check is received, the business can quickly check the set to see if
+the person has a history of writing bad checks:\\
+
+\begin{lstlisting}[language=C++]
+set<string> bad_check_writers;
+
+if (bad_check_writers.find(name) != bad_check_writers.end())
+    cout << "Do not accept check from " << name << endl;
+\end{lstlisting}
+
+\subsubsection{Implementation of a \texttt{set}}
+
+A \texttt{set} is implemented by red-black trees, self-balancing binary search trees. The
+\texttt{set} is always sorted by its key according to the comparison function. The complexity
+of the operations is logarithmic ($O(\log(n))$) in the size of the container.
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.8\textwidth]{figures/set.png}
+    \caption{How a \texttt{set} works}
+    \label{fig:set}
+\end{figure}
+
+\subsection{Associative vs sequential containers}
+
+There are two main differences between associative and sequential containers:
+
+\begin{itemize}
+    \item The associative containers do not support the position-specific operations, such as
+    \texttt{push\_front} and \texttt{push\_back}. Also they do not support constructors or insert
+    operations that take an element value and a count.
+
+    \item The asociative containers iterators are always bidirectional. Accessing \texttt{begin()}
+    and \texttt{end()} is always $O(1)$, and incrementing or decrementing an iterator is always
+    $O(1)$.
+\end{itemize}
+
+\subsection{Requirements on the key type}
+
+For the \textbf{ordered containers}, the key type must define a way to compare the elements.
+By default, the library uses the \texttt{<} operator to compare the keys, but we can also supply
+our own \texttt{<} operation to use a strict weak ordering over the key type.\\
+
+It has to be a strict weak ordering, which means that the relation must be:
+
+\begin{itemize}
+    \item \textbf{Irreflexive}: $a < a$ is always false.
+    \item \textbf{Transitive}: If $a < b$ and $b < c$, then $a < c$.
+    \item \textbf{Antisymmetric}: If $a < b$, then $b < a$ is false.
+\end{itemize}
+
+\subsection{The \texttt{pair} type}
+
+The \texttt{pair} type is a simple way to combine two values into a single object. It is a
+template class that takes two type parameters. It is defined in the \texttt{utility} header.
+For example:\\
+
+\begin{lstlisting}[language=C++]
+pair<string, int> p1;  // default initialized
+
+pair<string, int> p2("hello", 42);  // initialized to "hello" and 42
+
+pair<string, int> p3 = make_pair("world", 42);  // initialized to "world" and 42
+\end{lstlisting}
+
+The \texttt{pair} type is used to return two values from a function. For example,
+the \texttt{insert} operation on a \texttt{map} returns a \texttt{pair} of an iterator
+to the element inserted and a bool that indicates whether the insertion was successful.\\
+
+The data members of a \texttt{pair} are public, and can be accessed using the \texttt{first}
+and \texttt{second} members. Note that the elements in a \texttt{map} are \texttt{pair}s.
+We have a limited set of operations for \texttt{pair}:
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.8\textwidth]{figures/pair_ops.png}
+    \caption{Operations for \texttt{pair}}
+    \label{fig:pair_ops}
+\end{figure}
+
+\subsection{Associative container type aliases}
+
+We have the following type aliases for the associative containers:
+
+\begin{itemize}
+    \item \texttt{key\_type}: the type of the key.
+    \item \texttt{mapped\_type}: the type of the value.
+    \item \texttt{value\_type}: it is the same as \texttt{key\_type} for \texttt{set} and
+    a \texttt{pair} of \texttt{key\_type} and \texttt{mapped\_type} for \texttt{map}.
+\end{itemize}
+
+Note that the key is \texttt{const}, meaning that we cannot change the key of an element in
+an associative container. For example, when we retrieve an element from a \texttt{map}, we can 
+change the value of the element, but not the key. Look at the following example:\\
+
+\begin{lstlisting}[language=C++]
+map<string, int> m;
+
+m["hello"] = 42;
+
+auto it = m.find("hello");
+if (it != m.end())
+    it->second = 43;  // ok
+it->first = "world";  // error
+\end{lstlisting}
+
+\subsection{Iterating over an associative container}
+
+When we use an iterator to travers a map, multimap, set or multiset, the iterators yield 
+elements in \textbf{ascending order} according to the key. For example, consider the following
+code:\\
+
+\begin{lstlisting}[language=C++]
+map<string, int> m = {{"hello", 42}, {"world", 43}};
+for (auto it = m.begin(); it != m.end(); ++it)
+    cout << it->first << " " << it->second << endl;
+
+// prints:
+// hello 42
+// world 43
+\end{lstlisting}
+
+\subsection{Adding elements to an associative container}
+
+Because (unordered) \texttt{map} and (unordered) \texttt{set} contain unique keys, inserting
+elements that are already present, has no effect:
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.8\textwidth]{figures/associative_add_ops.png}
+    \caption{Operations for adding elements on associative containers}
+    \label{fig:associative_add_ops}
+\end{figure}
+
+For example:
+
+\begin{lstlisting}[language=C++]
+vector<int> ivec = {2, 4, 6, 8, 2, 4, 6, 8};
+
+set<int> set2;
+set2.insert(ivec.cbegin(), ivec.cend()) // set2 has 4 elements
+\end{lstlisting}
+
+\subsection{Erasing elements}
+
+We can erase one element or a range of elements by passing erase or an iterator pair:
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.8\textwidth]{figures/erasing_associative.png}
+    \caption{Erasing ops on associative containers}
+    \label{fig:erasing_associative}
+\end{figure}
+
+\subsection{Subscritping a \texttt{map}}
+
+The \texttt{map} and \texttt{unordered\_map} containers provide the susbcript operator and a 
+corresponding \texttt{at} function. The \texttt{set} types do not support subscripting because
+there is no value associated with a key. We also cannot subscript a \texttt{multimap} or an
+\texttt{unordered\_multimap} because there may be more than one value associated with a given key:
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.8\textwidth]{figures/subscripting_map.png}
+    \caption{Subscripting a map}
+    \label{fig:map_subscript}
+\end{figure}
+
+\subsection{Accessing elements} 
+
+We can use these operations to access elements on an associative container:
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.8\textwidth]{figures/accessing_associative.png}
+    \caption{Accessing elements on associative containers}
+    \label{fig:accessig_associative}
+\end{figure}
+
+Note that lower and upper bound are not valid for unordered containers, in that case you can 
+rely on \texttt{equal\_range}.
+
+\subsection{\texttt{unordered\_map} \& \texttt{unordered\_set}}
+
+The unordered associative containers are just a collection of buckets, each containing a variable
+number of items. These containers use a \textbf{hash function} to map elements to buckets. Given
+the item key, this identifies the proper bucket to store such item. All of the elements with a 
+given hash value are stored in the same bucket, and all the elements with the same key (in the
+multi-version) will be in the same bucket.
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.6\textwidth]{figures/hash_working.png}
+    \caption{How a hash works}
+    \label{fig:hash_working}
+\end{figure}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.6\textwidth]{figures/hash_diagram.png}
+    \caption{Diagram of a map using a hash function}
+    \label{fig:hash_diagram}
+\end{figure}
+
+
+The performance of an unordered container depends on the quality of its hash
+function and on the number and size of its buckets. The average complexity is
+constant ($O(1)$) and the worst case has a linear complexity $(O(N))$.\\
+
+Rather than using comparison operation to organize their elements, these containers
+use a hash function ans the key type's \texttt{==} operator. We should use an
+unordered container if the key type is inherently unordered or if performance testing
+reveals problems that hashing might solve.
+
+\subsection{Complexities of operations}
+
+You can choose the most suitable container in terms of complexity, depending on what
+operations you need to apply on them:
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.8\textwidth]{figures/complexities_containers.png}
+    \caption{Complexities of main operations}
+    \label{fig:complexities_containers}
+\end{figure}
+
+\subsection{\texttt{map} vs \texttt{unordered\_map}}
+
+If the most frequent operations of your application are \textbf{find, insert or delete} of 
+single elements and you access through a key:
+
+\begin{itemize}
+    \item Use a \texttt{map} if you want to optimize the worst case complexity ($O(\log N)$ vs 
+    $O(N)$)
+    \item Use an \texttt{unordered\_map} if you want to optimize the average case complexity 
+    ($O(1)$ vs $O(\log N)$)
+\end{itemize}
 
