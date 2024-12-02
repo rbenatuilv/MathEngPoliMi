@@ -107,99 +107,257 @@ of splitting the computation of the derivative of a function into elementary ope
 \end{itemize}
 
 
-\section{Wengert list}
+\section{Automatic differentiation: Wengert list}
 
-Suppose that we have a function $f: \mathbb{R}^n \to \mathbb{R}^m$ that we want to
-compute in simple steps. We can represent the function as a sequence of elementary operations
-in a Wengert list:
+Automatic differentiation (AD) is a technique that computes the derivative of a function by applying the 
+chain rule. It is based on the idea of splitting the computation of the derivative of a function into 
+elementary operations. The main idea is to represent the function as a composition of elementary functions
+and then apply the chain rule to compute the derivative.\\
 
-\begin{enumerate}
-    \item Define input variables, $v_{i-n} \; \forall i = 1, ..., n$, such that $v_{i-n} = x_i$.
-    \item Define intermediate variables, $v_i \; \forall i = n+1, ..., p$, such that $v_i = g_i(v_{j_1}, ..., v_{j_k})$
-    for some elementary operation $g_i$.
-    \item Define output variables, $y_{i-p} \; \forall i = p+1, ..., m$, such that $y_i = [f(x)]_i$.
-\end{enumerate}
+To implement AD, we take advantage of the evaluation trace of the function, also called the forward primal
+trace. This trace is a sequence of elementary operations that are applied to the input variables to compute
+the output of the function. It keeps track of the intermediate values of the variables and the operations 
+that are applied to them. These variables are called primal variables, and are typically denoted by $v_i$
+for functions $f: \R^n \to \R^m$, following these rules:
 
-For example, consider the function $f(x) = \sin((x_1 + x_2) \cdot x_2^2)$. We can represent
-this function as a Wengert list:
+\begin{itemize}
+    \item \textbf{Input variables}: $v_{i-n} = x_i, \quad i = 1, ..., n$
+    \item \textbf{Intermediate variables}: $v_i = g_i(v_{j_1}, ..., v_{j_k}), \quad i=1, ..., \ell, \quad j_i,...,j_k \subseteq [1-n, \ell]$
+    \item \textbf{Output variables}: $y_{m-i} = v_{\ell - i}, \quad i = m-1, ..., 0$
+\end{itemize}
 
-\begin{enumerate}
-    \item Define input variables: $v_{-1} = x_1$, $v_0 = x_2$.
-    \item Define intermediate variables: $v_1 = v_{-1} + v_0$, $v_2 = v_0^2$, $v_3 = v_1 \cdot v_2$, $v_4 = \sin(v_3)$.
-    \item Define output variable: $y_1 = v_4$.
-\end{enumerate}
+For example, consider the function $f: \R^2 \to \R$ defined as $f(x, y) = \sin((x_1 + x_2) x_2^2)$. 
+The evaluation trace of this function is:
 
-The Wengert list can be represented as a computational graph:
+\begin{itemize}
+    \item $v_{-1} = x_1$, $v_{0} = x_2$
+    \item $v_{1} = v_{-1} + v_{0}$
+    \item $v_{2} = v_{0}^2$
+    \item $v_{3} = v_{1} \cdot v_{2}$
+    \item $v_{4} = \sin(v_{3})$
+    \item $y_1 = v_4$
+\end{itemize}
+
+This trace is also called the Wengert list (as it was introduced by R. E. Wengert in 1964). We can represent
+the Wengert list as a directed acyclic graph (DAG), where nodes represent variables and edges
+describe the computational hierarchy of input to output transformations. This graph is also commonly
+referred to as the computational graph. For the previous example, we get:
 
 \begin{figure}[H]
     \centering
-    \resizebox{0.3\textwidth}{!}{%
-    \begin{circuitikz}
-    \tikzstyle{every node}=[font=\normalsize]
-    \draw  (8.5,4.75) circle (0.5cm) node {\normalsize $v_{-1}$} ;
-    \draw  (12,4.75) circle (0.5cm) node {\normalsize $v_0$} ;
-    \draw  (8.5,7) ellipse (1.5cm and 0.5cm) node {\normalsize $v_1 = v_{-1}+v_0 $} ;
-    \draw  (12,7) ellipse (1.5cm and 0.5cm) node {\normalsize $v_2 = v_0^2$} ;
-    \draw  (10.25,9.5) ellipse (1.5cm and 0.5cm) node {\normalsize $v_3 = v_1+v_2$} ;
-    \draw  (10.25,12.25) ellipse (1.5cm and 0.5cm) node {\normalsize $y_1 = sin(v_3)$} ;
-    \draw [->, >=Stealth] (8.5,5.25) -- (8.5,6.5);
-    \draw [->, >=Stealth] (12,5.25) -- (12,6.5);
-    \draw [->, >=Stealth] (8.5,7.5) -- (9.5,9);
-    \draw [->, >=Stealth] (12,7.5) -- (11,9);
-    \draw [->, >=Stealth] (11.5,5) -- (9.25,6.5);
-    \draw [->, >=Stealth] (10.25,10) -- (10.25,11.75);
-    \end{circuitikz}
-    }%
-    \label{fig:my_label}
-    \caption{Computational graph of the Wengert list}
+    \includegraphics[width=0.95\textwidth]{figures/DAG_autodiff.png}
+    \caption{Comp. graph of the function $f(x, y) = \sin((x_1 + x_2) x_2^2)$}
+    \label{fig:DAG_autodiff}
 \end{figure}
 
-\section{Forward mode}
+These tools are essential for the implementation of AD, in particular, its two modes:
 
-The forward mode of automatic differentiation is based on the idea of computing the derivative
-of a function by applying the chain rule in the forward direction. The forward mode is useful
-when the function has more outputs than inputs, i.e., $m >> n$.\\
+\begin{itemize}
+    \item \textbf{Forward mode}
+    \item \textbf{Backward mode}
+\end{itemize}
 
-We can implement the forward mode of automatic differentiation using the Wengert list. 
-The algorithm is as follows:
+\section{Forward mode of AD}
 
-\begin{enumerate}
-    \item On the initialization step, we set one of the input variables to 1, and the rest to 0.
-    This variable represents which derivative we want to compute.
+The forward mode of automatic differentiation (AD) adopts the idea of the evaluation trace,
+but introduces a new concept: the tangent variables, usually denoted by $\dot{v}_i$. These
+tangents carry the derivative information of the primal variables with respect to a single
+input variable of interest. For example, if we are interested in computing the derivative
+of a function $f: \R^n \to \R^m$ with respect to the variable $x_i$, we write:
 
-    \item We calculate the derivatives of the intermediate variables by applying the chain rule.
-    
-    \item We calculate the derivatives of the output variables by applying the chain rule.
-    
-    \item We return the derivatives of the output variables.
-\end{enumerate}
+$$\dot{v}_j = \frac{\partial v_j}{\partial x_i} \quad j = 1-n, ..., \ell$$
 
-For example, consider the function $f(x) = \sin((x_1 + x_2) \cdot x_2^2)$. We can compute
-the derivative of the function with respect to $x_1$ and $x_2$ using the forward mode of automatic differentiation.
-We will use the dot notation to represent the derivative of a variable:
+The forward mode of AD computes the derivative of a function by applying the chain rule
+to the evaluation trace. It is based on the idea of propagating the derivative information
+from the input variables to the output variables. For this, we calculate what is called
+the forward tangent trace, by simply applying derivation rules to the evaluation trace.
+For example, consider the same function $f(x, y) = \sin((x_1 + x_2) x_2^2)$.
+The forward tangent trace of this function is:
 
-\begin{enumerate}
-    \item Set $\dot{v}_{-1} = 1$, $\dot{v}_0 = 0$ (we want to compute the derivative with respect to $x_1$).
-    \item Derivate the intermediate variables. 
-    
-    \begin{itemize}
-        \item $\dot{v}_{1} = \dot{v}_{-1} + \dot{v}_0$
-        \item $\dot{v}_{2} = 2 \cdot v_0 \cdot \dot{v}_0$
-        \item $\dot{v}_{3} = \dot{v}_1 \cdot v_2 + v_1 \cdot \dot{v}_2$
-        \item $\dot{v}_{4} = \cos(v_3) \cdot \dot{v}_3$
-    \end{itemize}
+\begin{itemize}
+    \item $\dot{v}_{-1} = \dot{x}_1$, $\dot{v}_{0} = \dot{x}_2$
+    \item $\dot{v}_{1} = \dot{v}_{-1} + \dot{v}_{0}$
+    \item $\dot{v}_{2} = 2 v_{0} \dot{v}_{0}$
+    \item $\dot{v}_{3} = v_{2} \dot{v}_{1} + v_{1} \dot{v}_{2}$
+    \item $\dot{v}_{4} = \cos(v_{3}) \dot{v}_{3}$
+    \item $\dot{y}_1 = \dot{v}_4$
+\end{itemize}
 
-    \item Return $\dot{y}_1 = \dot{v}_4$.
+In general, by following the computational graph, we can propose the following formula for
+the tangent variables:
 
-\end{enumerate}
+\begin{equation}
+    \dot{v}_i = \sum_{j \in \{\text{predecesors of } i\}} \frac{\partial v_i}{\partial v_j} \dot{v}_j
+\end{equation}
 
-Notice that to compute the derivative of the function with respect to $x_1$ and $x_2$, we need to
-compute the intermediate variables for a certain point $x$ (because we have to use the values of the variables
-to compute the derivatives). This method of differentiation does not return a symbolic 
-expression for the derivative, but the value of the derivative at a certain point.\\
+In the case of the input variables (that don't have predecesors), we notice that the tangent
+variables, by definition, are always either 0 or 1. This is because the input variables 
+are independent of each other, so their derivatives are 0, except for the variable 
+of interest, which has a derivative of 1, as it is the variable with respect to which 
+we are computing the derivative.\\
 
-Note that this method is not efficient when the function has more inputs than outputs, i.e., $m << n$.
-This is because we have to do the forward pass for each input variable, which can be computationally expensive.
+In fact, by setting the tangent variables of the input variables to 0 or 1, we can compute
+the derivative of the function with respect to any input variable, following the forward 
+tangent trace. This is the main idea of the forward mode of AD.\\
+
+For example, let us calculate the derivative of the previous function in the point
+$(x, y) = (1, 2)$ with respect to the variable $x_1$. We can do this by setting the
+tangent variables of the input variables to 0 or 1, as well as the primal input variables
+to their values at the point $(1, 2)$. Then, we can compute the forward primal and
+tangent traces to get the derivative of the function with respect to $x_1$:
+
+\begin{table}[H]
+    \centering
+    \begin{tabular}{@{}l|lc|l|l@{}}
+        \toprule
+        \textbf{Forward Primal Trace} & \textbf{Output}   & \phantom{a} & \textbf{Forward Tangent Trace}                & \textbf{Output}             \\ \midrule
+        $v_{-1} = x_1$               & 1                  &             & $\dot{v}_{-1} = \dot{x}_1$                    & 1                           \\
+        $v_0 = x_2$                  & 2                  &             & $\dot{v}_0 = \dot{x}_2$                       & 0                           \\ \midrule
+        $v_1 = v_{-1} + v_0$         & $1 + 2 = 3$        &             & $\dot{v}_1 = \dot{v}_{-1} + \dot{v}_0$        & $1 + 0 = 1$                 \\
+        $v_2 = v_0^2$                & $2^2 = 4$          &             & $\dot{v}_2 = 2 v_0 \cdot \dot{v}_0$           & $2 \cdot 2 \cdot 0 = 0$     \\
+        $v_3 = v_1 \cdot v_2$        & $3 \cdot 4 = 12$   &             & $\dot{v}_3 = v_2 \dot{v}_1 + \dot{v}_2 \cdot v_1$ & $4 \cdot 1 + 0 \cdot 3 = 4$ \\ 
+        $v_4 = \sin v_3$             & $\sin(12) = -0.54$ &             & $\dot{v}_4 = \cos(v_3) \cdot \dot{v}_3$       & $\cos(12) \cdot 4 = 3.38$   \\ \midrule
+        $y_1 = v_4$                  & $-0.54$            &             & $\dot{y}_1 = \dot{v}_4$                       & 3.38                        \\ \bottomrule
+    \end{tabular}
+    \caption{Example of forward mode of AD}
+\end{table}
+
+The same can be done, setting the tangent variable $\dot{v}_0 = 1$, to compute the derivative
+of the function with respect to $x_2$. The result is $\dot{y}_1 = -13.501$. So in the end,
+we have computed the derivative of the function with respect to $x_1$ and $x_2$ at the point
+$(1, 2)$, which is $3.38$ and $-13.501$, respectively.\\
+
+This process is the essence of forward mode AD. At every elementary operation for a given 
+function, compute intermediate variables (primals) by applying basic arithmetic operations, 
+and in synchrony, compute their derivatives (tangents).\\
+
+We can generalize this procedure to compute Jacobians of functions $f: \R^n \to \R^m$ evaluated
+at a point $x_0 \in \R^n$. Remember that the Jacobian is a matrix that contains the partial
+derivatives of the function with respect to each input variable:
+
+\begin{equation}
+    J_f(x_0) = \begin{bmatrix}
+        \frac{\partial f_1}{\partial x_1} & \cdots & \frac{\partial f_1}{\partial x_n} \\
+        \vdots & \ddots & \vdots \\
+        \frac{\partial f_m}{\partial x_1} & \cdots & \frac{\partial f_m}{\partial x_n}
+    \end{bmatrix}
+\end{equation}
+\vspace{1em}
+
+To compute the Jacobian of a function $f: \R^n \to \R^m$ evaluated at a point $x_0 \in \R^n$,
+we can use the forward mode of AD. We set the input variables to $x_0$, and the tangent variables
+equal to the canonical basis vectors $e_i$ of $\R^n$, for $i = 1, ..., n$. Every pass through
+the forward mode of AD for each $e_i$ will give us the $i$-th column of the Jacobian.\\
+
+Because the function $f: \R^n \to \R^m$ has $n$ input variables, we need to perform $n$ passes
+through the forward mode of AD to compute the Jacobian. So this procedure has a complexity of
+$O(n)$. This is the main drawback of the forward mode of AD: it is not efficient for functions
+with a large number of input variables, with respect to the output variables, i.e., $n \gg m$.\\
+
+\subsection{Note: Forward mode and Jacobian-vector product (JVP)}
+
+In practice, we are often interested in computing the product of the Jacobian of a function
+$f: \R^n \to \R^m$ evaluated at a point $x_0 \in \R^n$ with a vector $r \in \R^n$. This operation
+is called the Jacobian-vector product, and it is denoted by $J_f(x_0) \cdot r$.\\
+
+The Jacobian-vector product can be computed using the forward mode of AD. We set the input variables
+to $x_0$, and the tangent variables equal to $r$. Then, a single pass through the forward mode of AD
+will give us the product of the Jacobian with the vector $r$. This is a more efficient way to compute
+the Jacobian-vector product, and sometimes it is more convenient than computing the full Jacobian.
+
+\section{Backward mode of AD}
+
+Backward mode of automatic differentiation (AD), also known as reverse mode of AD, is a technique
+that computes the derivative of a function by applying the chain rule in reverse order. It is based
+on the idea of propagating the derivative information from the output variables to the input variables.\\
+
+This method introduces a new concept: the adjoint variables, usually denoted by $\bar{v}_i$. These
+adjoints carry the derivative information of a single output variable with respect to a variable
+(intermediate or input) of interest. For example, if we are interested in computing the derivative
+of the output variable $y_j$ with respect to the variable $v_i$, we write:
+
+$$\bar{v}_i = \frac{\partial y_j}{\partial v_i} \quad i = 1-n, ... \ell$$
+
+As in forward mode, in reverse mode we also perform a pass through the evaluation trace of the function.
+But this time, the adjoint variables are not computed alongside the primal variables. Instead, we store
+any dependency information that is needed to compute the adjoints in the computational graph (Wengert list).
+Then we perform a backward pass through the computational graph to compute the adjoints.\\
+
+Given the computational graph, the adjoint variables can be computed by the following formula:
+
+\begin{equation}
+    \bar{v}_i = \sum_{j \in \{\text{successors of } i\}} \frac{\partial v_j}{\partial v_i} \bar{v}_j
+\end{equation}
+
+In the case of the output variables (that don't have successors), we notice that the adjoint variables
+are always either 0 or 1. This is because, by definition, the adjoint of the output variables are calculated
+with respect to the output variables, so their derivatives are 0, except for the variable of interest, which
+has a derivative of 1, as it is the variable with respect to which we are computing the derivative.\\
+
+Notice that when we reach to the input variables, we have computed the derivative of the function with respect
+to all the output variables. This is the main idea of the backward mode of AD. At every elementary operation
+for a given function, compute intermediate variables (primals) by applying basic arithmetic operations, and
+store any dependency information that is needed to compute the adjoints. Then, perform a backward pass through
+the computational graph to compute the adjoints.\\
+
+For example, consider the same function $f(x, y) = \sin((x_1 + x_2) x_2^2)$. The computational graph of this
+function is shown in Figure \ref{fig:DAG_autodiff}. The adjoint trace of this function is:
+
+\begin{itemize}
+    \item $\bar{y}_1 = 1$
+    \item $\bar{v}_4 = 1 \cdot \bar{y}_1$
+    \item $\bar{v}_3 = \cos(v_3) \cdot \bar{v}_4$
+    \item $\bar{v}_2 = \bar{v}_3 \cdot v_1$
+    \item $\bar{v}_1 = \bar{v}_3 \cdot v_2$
+    \item $\bar{v}_0 = 2 v_0 \cdot \bar{v}_2 + 1 \cdot \bar{v}_1$
+    \item $\bar{v}_{-1} = 1 \cdot \bar{v}_1$
+\end{itemize}
+
+For the same example, let us calculate the derivative of the function in the point $(x, y) = (1, 2)$:
+
+\begin{table}[H]
+    \centering
+    \begin{tabular}{@{}l|lc|l|l@{}}
+        \toprule
+        \textbf{Forward Primal Trace} & \textbf{Output}   & \phantom{a} & \textbf{Backward Adjoint Trace}                & \textbf{Output}             \\ \midrule
+        $v_{-1} = x_1$               & 1                  &             & $\bar{v}_{-1} = 1 \cdot \bar{v}_1$             & $3.375$                           \\
+        $v_0 = x_2$                  & 2                  &             & $\bar{v}_0 = 2 v_0 \cdot \bar{v}_2 + 1 \cdot \bar{v}_1$ & $4 \cdot 2.351 + 3.375 = 13.501$ \\ \midrule
+        $v_1 = v_{-1} + v_0$         & $1 + 2 = 3$        &             & $\bar{v}_1 = \bar{v}_3 \cdot v_2$              & $0.843 \cdot 4 = 3.375$      \\
+        $v_2 = v_0^2$                & $2^2 = 4$          &             & $\bar{v}_2 = \bar{v}_3 \cdot v_1$              & $0.843 \cdot 3 = 2.531$      \\
+        $v_3 = v_1 \cdot v_2$        & $3 \cdot 4 = 12$   &             & $\bar{v}_3 = \cos(v_3) \cdot \bar{v}_4$        & $\cos(12) \cdot 1 = 0.843$   \\
+        $v_4 = \sin v_3$             & $\sin(12) = -0.54$ &             & $\bar{v}_4 = 1 \cdot \bar{y}_1$                & 1                           \\ \midrule
+        $y_1 = v_4$                  & $-0.54$            &             & $\bar{y}_1 = 1$                                & 1                           \\ \bottomrule
+    \end{tabular}
+    \caption{Example of backward mode of AD}
+\end{table}
+
+Notice that the result of the derivative of the function with respect to $x_1$ and $x_2$ at the point
+$(1, 2)$ is the same as in the forward mode of AD. But in this case, we only needed to perform a single
+pass through the computational graph to compute the derivatives.\\
+
+As well as in the forward mode of AD, we can generalize this procedure to compute Jacobians of functions
+$f: \R^n \to \R^m$ evaluated at a point $x_0 \in \R^n$. We just need to set the input variables to $x_0$ for
+the evaluation trace, and the adjoint output variables to the canonical basis vectors $e_i$ of $\R^m$, 
+for $j = 1, ..., m$. Then, perform a single pass through the computational graph to compute the Jacobian. 
+For each $e_i$, we will get the $i$-th row of the Jacobian.\\
+
+Because the function $f: \R^n \to \R^m$ has $m$ output variables, we need to perform $m$ passes through the
+backward mode of AD to compute the Jacobian. So this procedure has a complexity of $O(m)$. This is the main
+advantage of the backward mode of AD: it is more efficient for functions with a large number of output variables,
+with respect to the input variables, i.e., $n \gg m$, which is usually the case in deep learning.
+
+\subsection{Note: Backward mode and vector-Jacobian product (VJP)}
+
+In practice, we are often interested in computing the product of a vector $r \in \R^m$ with the Jacobian of a
+function $f: \R^n \to \R^m$ evaluated at a point $x_0 \in \R^n$. This operation is called the vector-Jacobian
+product, and it is denoted by $r^T \cdot J_f(x_0) = J_f(x_0)^T \cdot r$.\\
+
+In the same way as in the forward mode of AD, the vector-Jacobian product can be computed using the backward mode
+of AD. We set the input variables to $x_0$ for the evaluation trace, and the adjoint output variables to $r$.
+Then, a single pass through the computational graph will give us the product of the vector $r^T$ with the Jacobian.
+This is a more efficient way to compute the vector-Jacobian product, and sometimes it is more convenient than
+computing the full Jacobian.
+
 
 \section{Dual numbers}
 
