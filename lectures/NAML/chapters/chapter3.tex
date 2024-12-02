@@ -137,7 +137,7 @@ layers of the model.\\
 
 \begin{figure}[H]
     \centering
-    %\includegraphics[width=0.5\textwidth]{figures/mlp_graph.png}
+    \includegraphics[width=0.7\textwidth]{figures/MLP.jpg}
     \caption{Graph representation of the MLP model}
     \label{fig:mlp_graph}
 \end{figure}
@@ -456,4 +456,233 @@ of the most common are:
     when the output of the model needs to be interpreted as a probability distribution.
 
 \end{enumerate}
+
+\section{Loss functions}
+
+The loss function of a neural network is a function that measures the error of the
+model. The loss function takes the output of the model and the true output and
+produces a value that represents how well the model is performing. There are many
+loss functions that can be used in a neural network, but some of the most common
+are:
+
+\begin{enumerate}
+    \item Mean Squared Error (MSE):
+    \begin{equation}
+        J = \frac{1}{2N} \sum_{i=1}^{N} (y_i - \hat{y}_i)^2
+    \end{equation}
+
+    The mean squared error (MSE) is a simple loss function that measures the squared
+    difference between the output of the model and the true output. The MSE is often
+    used in regression problems, where the output of the model is a continuous value.
+
+    \item Mean Absolute Error (MAE):
+    \begin{equation}
+        J = \frac{1}{N} \sum_{i=1}^{N} |y_i - \hat{y}_i|
+    \end{equation}
+
+    The mean absolute error (MAE) is a loss function that measures the absolute
+    difference between the output of the model and the true output. The MAE is often
+    used in regression problems, where the output of the model is a continuous value.
+
+\end{enumerate}
+
+An issue of the MSE is that it can be sensitive to outliers. The MAE is more
+robust to outliers, but it can be harder to optimize. In practice, the choice of
+loss function depends on the problem at hand.\\
+
+Another big issue of using the MSE is that it can lead to the vanishing gradient
+problem. This is because when we derive the MSE with respect to the weights and
+biases, we get an expression that depends on the derivative of the activation
+function. If the activation function is the sigmoid function, the derivative
+of the activation function can be very small, which can make the optimization
+process difficult.\\
+
+To overcome this problem, we can use the cross-entropy loss function.
+
+\subsection{Cross-entropy loss function}
+
+The cross-entropy loss function is a loss function that measures the error of the
+model by comparing the output of the model with the true output. The cross-entropy
+loss function is often used in classification problems, where the output of the
+model is a probability distribution. The cross-entropy loss function is defined as
+follows:
+
+\begin{equation}
+    J = -\frac{1}{N} \sum_{i=1}^{N} \sum_{j} y_{ij} \log(\hat{y}_{ij})
+\end{equation}
+
+where $y_{ij}$ is the true output of class $j$ for sample $i$ and $\hat{y}_{ij}$
+is the predicted output of class $j$ for sample $i$.\\ 
+
+Let us see why the cross-entropy loss function is useful for avoiding the vanishing
+gradient problem. For this, let us take a simple binary classification problem,
+with the following loss function:
+
+\begin{equation}
+    J = -\frac{1}{N} \sum_{i=1}^{N} y_i \log(\hat{y}_i) + (1 - y_i) \log(1 - \hat{y}_i)
+\end{equation}
+
+where $y_i$ is the true output for sample $i$ and $\hat{y}_i$ is the predicted
+output for sample $i$.\\
+
+Now, let us compute the derivative of the loss function with respect to one
+of the weights of the model. For this, we have:
+
+$$ \frac{\partial J}{\partial w} = \frac{\partial J}{\partial \hat{y}} \cdot \frac{\partial \hat{y}}{\partial z} \cdot \frac{\partial z}{\partial w}$$
+    
+where $z$ is the weighted sum of the inputs of the neuron and $\hat{y}$ is the
+output of the neuron after activation. So we have:
+
+$$ \frac{\partial J}{\partial w} = \frac{\partial J}{\partial \hat{y}} \cdot \sigma'(z) \cdot x$$
+
+where $x$ is the input of the neuron. Now, let us compute the derivative of the
+loss function with respect to the output of the neuron:
+
+$$ \frac{\partial J}{\partial \hat{y}} = -\frac{1}{N} \sum_{i=1}^{N} \left( \frac{y_i}{\hat{y}_i} - \frac{1 - y_i}{1 - \hat{y}_i} \right)$$
+
+Notice that we can rewrite $\hat{y}_i$ as $\sigma(z_i)$, where $z_i$ is the weighted
+sum of the inputs of the neuron. Then, simplifying, we have:
+
+$$ \frac{\partial J}{\partial \hat{y}} = -\frac{1}{N} \sum_{i=1}^{N} \frac{\sigma(z_i) - y_i}{\sigma(z_i) (1 - \sigma(z_i))}$$
+
+Combining the terms, and using the fact that $\sigma'(z) = \sigma(z) (1 - \sigma(z))$ 
+for the sigmoid, we have:
+
+$$ \frac{\partial J}{\partial w} = -\frac{1}{N} \sum_{i=1}^{N} (\sigma(z_i) - y_i) \cdot x$$
+
+This is the gradient of the loss function with respect to the weights of the model.
+Notice that the gradient depends on the difference between the output of the model
+and the true output. This is the key to avoiding the vanishing gradient problem.\\
+
+The cross-entropy loss function is a generalization of the binary classification
+loss function to multi-class classification problems. It avoids the vanishing
+gradient problem when using the softmax activation function in the output layer,
+which is the generalization of the sigmoid function to multi-class classification.\\
+
+How do we obtain the cross-entropy loss function? Let us derive it.\\
+
+\subsection{Derivation of the cross-entropy loss function}
+
+The idea is to avoid the vanishing gradient problem by letting the derivative
+of the loss function to not depend on the derivative of the activation function.
+In other terms, we want that these terms:
+
+$$\frac{\partial J}{\partial w} = (a - y) \sigma'(z) x , \quad \frac{\partial J}{\partial b} = (a - y) \sigma'(z)$$
+
+do not depend on $\sigma'(z)$, i.e., we want that:
+
+\begin{equation}
+    \frac{\partial J}{\partial w} = (a - y) x , \quad \frac{\partial J}{\partial b} = (a - y)
+\end{equation}
+
+where $a$ is the output of the neuron after activation, $y$ is the true output, $z$
+is the weighted sum of the inputs of the neuron, $w$ is the weight of the connection
+between the neuron and the previous layer, and $b$ is the bias of the neuron.\\
+
+Let us take the derivative with respect to the bias $b$, and notice the following:
+
+$$\frac{\partial J}{\partial b} = \frac{\partial J}{\partial a} \cdot \frac{\partial a}{\partial z}$$
+$$ = \frac{\partial J}{\partial a} \cdot \sigma'(z) = \frac{\partial J}{\partial a} \cdot a (1 - a)$$
+
+Now, we want that this term does not depend on $\sigma'(z)$, and for that, we 
+use the equation (3.22):
+
+$$\frac{\partial J}{\partial a} a (1 - a) = a - y$$
+
+Then, we have:
+
+$$\frac{\partial J}{\partial a} = \frac{a - y}{a (1 - a)}$$
+
+Integrating, we obtain:
+
+$$J = - ( y \log(a) + (1 - y) \log(1 - a)) + C$$
+
+which is the cross-entropy loss function.\\
+
+\section{Regularization}
+
+Regularization is a technique used to prevent overfitting in a neural network.
+Overfitting occurs when the model learns the training data too well and fails
+to generalize to new data. Regularization is a way to prevent overfitting by
+adding a penalty term to the loss function. This penalty term discourages the
+model from learning complex functions that fit the training data too well.\\
+
+There are many regularization techniques that can be used in a neural network,
+but some of the most common are:
+
+\begin{enumerate}
+    \item \textbf{L2 regularization:}
+    \begin{equation}
+        J = J_0 + \lambda \frac{1}{2 N} \sum_{\ell} \sum_{j, k} (w^\ell_{jk})^2
+    \end{equation}
+
+    L2 regularization is a technique that adds a penalty term to the loss function
+    that is proportional to the square of the weights of the model. L2 regularization
+    encourages the model to learn small weights, which can help to prevent overfitting
+    by reducing the complexity of the model.\\
+
+    Notice that, when computing the update of the weights, we have:
+
+    $$w^{(k + 1)} = w^{(k)} - \alpha \nabla_{w^{(k)}} J = w^{(k)} - \alpha \nabla_{w^{(k)}} J_0 - \alpha \frac{\lambda}{N} w^{(k)}$$
+
+    which is equivalent to:
+
+    $$w^{(k + 1)} = (1 - \alpha \frac{\lambda}{N}) w^{(k)} - \alpha \nabla_{w^{(k)}} J_0$$
+
+    When choosing appropiate values for $\lambda$, notice that the term $\alpha \frac{\lambda}{N} < 1$.
+    This causes the weights to decay over time, which can help to prevent overfitting. This is 
+    called weight decaying.\\
+
+    \item \textbf{L1 regularization:}
+    \begin{equation}
+        J = J_0 + \lambda \frac{1}{N} \sum_{\ell} \sum_{j} |w^\ell_j|
+    \end{equation}
+
+    L1 regularization is a technique that adds a penalty term to the loss function
+    that is proportional to the absolute value of the weights of the model. L1
+    regularization encourages the model to learn sparse weights, i.e., weights
+    that are close to zero. This can help to prevent overfitting by reducing the
+    complexity of the model.\\
+
+    Notice that, when computing the update of the weights, we have:
+
+    $$w^{(k + 1)} = w^{(k)} - \alpha \nabla_{w^{(k)}} J = w^{(k)} - \alpha \nabla_{w^{(k)}} J_0 - \alpha \frac{\lambda}{N} \text{sign}(w^{(k)})$$
+
+    This means that the weights are updated by subtracting (or adding) a constant value from
+    the weights. This can help to prevent overfitting by encouraging the model to learn
+    sparse weights.\\
+
+
+    \item \textbf{Dropout regularization:}
+    
+    Dropout regularization is a technique that randomly sets a fraction of the
+    neurons in the model to zero during training. This can help to prevent
+    overfitting by reducing the complexity of the model. Dropout regularization
+    is a simple and effective technique that can be used in a variety of models.\\
+
+    The idea is, for some layer $\ell$, to set a fraction $p$ of the neurons to zero.
+    This can be done by multiplying the output of the layer by a mask $m$ that has
+    values of 0 or 1. The mask $m$ is generated by sampling from a Bernoulli distribution
+    with probability $p$. Then, the output of the layer is given by:
+
+    $$a^\ell = m \odot \sigma(z^\ell)$$
+
+    where $\odot$ is the element-wise product. This can help to prevent overfitting
+    by reducing the complexity of the model.
+
+    \begin{figure}[H]
+        \centering
+        \includegraphics[width=0.7\textwidth]{figures/dropout.png}
+        \caption{Dropout regularization}
+        \label{fig:dropout}
+    \end{figure}
+
+\end{enumerate}
+
+
+
+
+
+
+
 
