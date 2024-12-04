@@ -1037,7 +1037,7 @@ The stochastic gradient descent algorithm works as follows:
     \begin{algorithmic}[1]
         \Require $x^{(0)}, \eta, \varepsilon, T$
         \For{$k = 0, 1, 2, \ldots, T$}
-            \State Sample a random batch of training data $\{ x_i, y_i \}_{i=1}^n$
+            \State Sample a random batch of training data $\{ x_i, y_i \}_{i=1}^m$
             \State Compute the gradient of the loss function with respect to the batch
             \State Update the weights of the model using the gradient
             \If{\textbf{STOP}$(\varepsilon)$}
@@ -1047,3 +1047,149 @@ The stochastic gradient descent algorithm works as follows:
     \end{algorithmic}
 \end{algorithm}
 
+The sample can be chosen using one of the following strategies:
+
+\begin{enumerate}
+    \item Random sampling \textbf{with replacement}:\\
+    In this strategy, in every iteration, we sample $m$ samples from the training data with replacement,
+    i.e., we can sample the same sample more than once. To implement that, for each iteration, we have
+    to choose a new set of indices to sample.
+
+    \item Random sampling \textbf{without replacement}:\\
+    In this strategy, in every iteration, we sample $m$ samples from the training data without replacement,
+    i.e., we can sample the same sample only once. To implement that, we just shuffle the training data
+    once and then go through the shuffled data in batches of size $m$.
+\end{enumerate}
+
+In practice, the second strategy is more common, as it can be more efficient. For every epoch of
+training, we shuffle the training data and then go through the shuffled data in batches of size $m$.\\
+
+Also, note that SGD is originally formulated by taking just one sample at a time, i.e., $m = 1$.
+When $m > 1$, we call it \textbf{mini-batch stochastic gradient descent}.
+
+\subsection{Convergence of SGD}
+
+To study the convergence of the SGD algorithm, we will make some assumptions:
+
+\begin{enumerate}
+    \item $|u^T H_J u| \leq L \|u\|^2, ,\; L > 0$, where $H_J$ is the Hessian of the loss function.
+    
+    \item The loss function $J$ is $\mu$-strongly convex, i.e., for all $x, y \in \R^n$:
+    $$J(y) \geq J(x) + \nabla J(x)^T (y - x) + \frac{\mu}{2} \|y - x\|^2$$
+
+    \item $\|\nabla J_i(x)\| < C$ for all $i$ and $x$, where $C$ is a constant. Note 
+    that $J(x) = \frac{1}{m} \sum_{i=1}^m J_i(x)$ for $m$ the number of samples.
+
+    \item $\E[\nabla J_i(x)] = \nabla J(x)$. This means that $\nabla J_i(x)$ is an unbiased
+    estimator of the gradient of the loss function.
+
+    \item $0 < \eta \leq \frac{1}{2\mu}$, where $\eta$ is the learning rate.
+\end{enumerate}
+
+From the first assumption, we obtain that:
+
+\begin{equation}
+    J(y) \leq J(x) + \nabla J(x)^T (y - x) + \frac{L}{2} \|y - x\|^2
+\end{equation}
+
+And from the second assumption, we have:
+
+\begin{equation}
+    J(x^*) \geq J(x) - \frac{1}{2 \mu} \| \nabla J(x) \|^2
+\end{equation}
+
+Now, we would like to find an upper bound for these two differences:
+
+\begin{itemize}
+    \item $J(w^{k}) - J(w^*)$
+    \item $\|w^{(k)} - w^*\|^2$
+\end{itemize}
+
+Lets us start with the first one. By using the SGD step and the first assumption, we have:
+
+\begin{align*}
+    J(w^{(k+1)}) &\leq J(w^{(k)}) + \nabla J(w^(k))^T (w^{(k+1)} - w^{(k)}) + \frac{L}{2} \|w^{(k+1)} - w^{(k)}\|^2\\
+                 &= J(w^{(k)}) - \eta \nabla J(w^{(k)})^T \nabla J_i(w^{(k)}) + \frac{L \eta^2}{2} \| \nabla J_i(w^{(k)}) \|^2\\
+                 &\leq J(w^{(k)}) - \eta \nabla J(w^{(k)})^T \nabla J_i(w^{(k)}) + \frac{L \eta^2}{2} C^2
+\end{align*}
+
+Now, bt subtracting $J(w^*)$ from both sides, we have:
+
+\begin{align*}
+    J(w^{(k+1)}) - J(w^*) &\leq J(w^{(k)}) - J(w^*) - \eta \nabla J(w^{(k)})^T \nabla J_i(w^{(k)}) + \frac{L \eta^2}{2} C^2\\
+\end{align*}
+
+Now, we can take the expectation of both sides:
+
+\begin{align*}
+    \E[J(w^{(k+1)}) - J(w^*)] &\leq J(w^{(k)}) - J(w^*) - \eta \nabla J(w^{(k)})^T \E[\nabla J_i(w^{(k)})] + \frac{L \eta^2}{2} C^2\\
+                              &= J(w^{(k)}) - J(w^*) - \eta \nabla J(w^{(k)})^T \nabla J(w^{(k)}) + \frac{L \eta^2}{2} C^2\\
+                              &= J(w^{(k)}) - J(w^*) - \eta \| \nabla J(w^{(k)}) \|^2 + \frac{L \eta^2}{2} C^2
+\end{align*}
+
+Now, we can use the equation (3.37) to obtain:
+
+$$- \| \nabla J(w^{(k)}) \|^2 \leq - 2 \mu (J(w^{(k)}) - J(w^*))$$
+
+Then, we have:
+
+\begin{align*}
+    \E[J(w^{(k+1)}) - J(w^*)] &\leq J(w^{(k)}) - J(w^*) - 2 \mu \eta (J(w^{(k)}) - J(w^*)) + \frac{L \eta^2}{2} C^2\\
+                              &= (1 - 2 \mu \eta) (J(w^{(k)}) - J(w^*)) + \frac{L \eta^2}{2} C^2
+\end{align*}
+
+Now, notice that we have the following inequality:
+
+$$\E[J(w^{(k+1)}) - J(w^*)] \leq (1 - 2 \mu \eta) \E[J(w^{(k)}) - J(w^*)] + \frac{L \eta^2}{2} C^2$$
+
+If we reapply the expected value to the equation, the left-hand side will remain the same (as
+the expectation is a constant value), and we will have:
+
+$$\E[J(w^{(k+1)}) - J(w^*)] \leq (1 - 2 \mu \eta) \E[J(w^{(k)}) - J(w^*)] + \frac{L \eta^2}{2} C^2$$
+
+This is a recursive equation. We get as solution:
+
+$$\E[J(w^{(k)}) - J(w^*)] \leq (1 - 2 \mu \eta)^k (J(w^{(0)}) - J(w^*)) + \frac{L \eta^2}{2} C^2 \sum_{i=0}^{k-1} (1 - 2 \mu \eta)^i$$
+
+Now, we can use the geometric series formula to obtain:
+
+$$\sum_{i=0}^{k-1} (1 - 2 \mu \eta)^i = \frac{1 - (1 - 2 \mu \eta)^k}{2 \mu \eta}$$
+
+And notice that, since $0 < \eta \leq \frac{1}{2 \mu}$, we have:
+
+$$0 < 1 - 2 \mu \eta < 1$$
+
+So we have:
+
+$$ \frac{1 - (1 - 2 \mu \eta)^k}{2 \mu \eta} \leq \frac{1}{2 \mu \eta}$$
+
+Using this result, we have:
+
+\begin{equation}
+    \E[J(w^{(k)}) - J(w^*)] \leq (1 - 2 \mu \eta)^k (J(w^{(0)}) - J(w^*)) + \frac{L \eta}{4 \mu} C^2
+\end{equation}
+
+Notice that the term $(1 - 2 \mu \eta)^k$ is a decreasing function of $k$. This means that the
+expected value of the loss function decreases with the number of iterations, with
+exception of the term $\frac{L \eta}{4 \mu} C^2$. This term is a constant value that depends on
+the learning rate $\eta$ and the constants $L$, $\mu$ and $C$. This is why we need to choose the
+learning rate carefully, as it can affect the convergence of the algorithm.\\
+
+Similarly, we can obtain an upper bound for the expected value of the second term, 
+$\|w^{(k)} - w^*\|^2$:
+
+\begin{equation}
+    \E[\|w^{(k)} - w^*\|^2] \leq (1 - 2 \mu \eta)^k \|w^{(0)} - w^*\|^2 + \frac{\eta}{2\mu} C^2
+\end{equation}
+
+This means that the expected value of the distance between the weights and the optimal solution
+also decreases with the number of iterations, with exception of the term $\frac{\eta}{2\mu} C^2$.\\
+
+This result shows that the SGD algorithm is expected to converge to some vicinity with radius
+$\frac{\eta}{2\mu} C^2$ of the optimal solution. This is a good result, as it shows that the
+SGD algorithm is able to find a good solution to the optimization problem.\\
+
+However, notice that these results have strong assumptions, that in practice are not always
+satisfied. For example, the assumption that the loss function is strongly convex is not always
+true. In practice, the loss function is often non-convex, which can make the optimization problem
+more difficult. 
