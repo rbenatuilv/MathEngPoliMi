@@ -679,10 +679,371 @@ but some of the most common are:
 
 \end{enumerate}
 
+\section{Optimization algorithms}
+
+The process of training a neural network involves solving an optimization problem
+to minimize the loss function. There are many optimization algorithms that can be
+used to train a neural network. To study these algorithms, let us first define
+some basic concepts.\\
+
+Let us consider a function $f: \mathbb{R}^n \rightarrow \mathbb{R}$ convex and
+differentiable. A convex function has these properties:
+
+\begin{enumerate}
+    \item The domain of $f$ is a convex set, i.e., for any $x, y \in \text{dom}(f)$:
+    $$\lambda x + (1 - \lambda) y \in \text{dom}(f)$$
+
+    \item For any $x, y \in \text{dom}(f)$ and $\lambda \in [0, 1]$:
+    $$f(\lambda x + (1 - \lambda) y) \leq \lambda f(x) + (1 - \lambda) f(y)$$
+\end{enumerate}
+
+Now, let us propose the following optimization problem:
+
+\begin{equation}
+    \min_{x \in \mathbb{R}^n} f(x)
+\end{equation}
+
+An idea to solve this problem is to propose an iterative algorithm such that, starting from
+an initial point $x^{(0)}$, we update the point $x^{(k)}$ to $x^{(k+1)}$ in such a way that:
+
+$$x^{(k+1)} = \min_{x \in \R^n} \tilde{f}_k(x)$$
+    
+where $\tilde{f}_k$ is a function that approximates $f$ at the point $x^{(k)}$. Some ways to
+approximate $f$ are:
+
+\begin{enumerate}
+    \item \textbf{Linear approximation}
+    
+    A linear approximation of $f$ at the point $x^{(k)}$ is given by:
+
+    $$\tilde{f}_k(x) = c_k + b_k^T (x - x^{(k)})$$
+
+    where $c_k$ is a scalar and $b_k$ is a vector. Right away, we notice that this problem
+    is unbounded, and we need to add some constraints to make it feasible.\\
+
+    \item \textbf{Quadratic approximation}
+    
+    A quadratic approximation of $f$ at the point $x^{(k)}$ is given by:
+
+    $$\tilde{f}_k(x) = c_k + b_k^T (x - x^{(k)}) + \frac{1}{2} (x - x^{(k)})^T A_k (x - x^{(k)})$$
+
+    where $A_k$ is a matrix. Let us use this form of approximation, and set some conditions:
+
+    \begin{enumerate}
+        \item $f(x^{(k)}) = \tilde{f}_k(x^{(k)})$
+        \item $\nabla \tilde{f}_k(x^{(k)}) = \nabla f(x^{(k)})$
+    \end{enumerate}
+
+    From the first condition, we have:
+    $$c_k = f(x^{(k)})$$
+
+    From the second condition, we have:
+    $$b_k = \nabla f(x^{(k)})$$
+
+    Then, let us set $A_k = \frac{1}{\eta} I$, where $\eta$ is a positive scalar. Then,
+    we have:
+
+    $$\tilde{f}_k(x) = f(x^{(k)}) + \nabla f(x^{(k)})^T (x - x^{(k)}) + \frac{1}{2 \eta} \| x - x^{(k)} \|^2$$
+
+    Now, notice that, since the function $\tilde{f}_k$ is convex, we can minimize it by
+    setting the gradient to zero. Then, we have:
+
+    $$\nabla \tilde{f}_k(x) = \nabla f(x^{(k)}) + \frac{1}{\eta} (x - x^{(k)}) = 0$$
+    $$\Rightarrow x^{(k+1)} = x^{(k)} - \eta \nabla f(x^{(k)})$$
+
+    This is the \textbf{gradient descent algorithm}, and we call $\eta$ the learning rate.\\
+\end{enumerate}
+
+\subsection{Gradient descent algorithm}
+
+More formally, the gradient descent algorithm is defined as follows, for a function
+$f: \R^n \rightarrow \R$:
+
+\begin{algorithm}[H]
+    \caption{Gradient descent algorithm}
+    \begin{algorithmic}[1]
+        \Require $x^{(0)}, \eta, \varepsilon, T$
+        \For{$k = 0, 1, 2, \ldots, T$}
+            \State $x^{(k+1)} = x^{(k)} - \eta \nabla f(x^{(k)})$
+            \If{\textbf{STOP}$(\varepsilon)$}
+                \State \textbf{break}
+            \EndIf
+        \EndFor
+    \end{algorithmic}
+\end{algorithm}
+
+In this case, we can define the stopping criterion as:
+
+\begin{equation}
+    \textbf{STOP}(\varepsilon) = \left\{ \begin{array}{ll}
+        \text{true} & \text{if } \| \nabla f(x^{(k)}) \| \leq \varepsilon\\
+        \text{false} & \text{otherwise}
+    \end{array} \right.
+\end{equation}
+
+Or:
+
+\begin{equation}
+    \textbf{STOP}(\varepsilon) = \left\{ \begin{array}{ll}
+        \text{true} & \text{if } |f(x^{(k+1)}) - f(x^{(k)})| \leq \varepsilon\\
+        \text{false} & \text{otherwise}
+    \end{array} \right.
+\end{equation}
+
+Or:
+
+\begin{equation}
+    \textbf{STOP}(\varepsilon) = \left\{ \begin{array}{ll}
+        \text{true} & \text{if } \| x^{(k+1)} - x^{(k)} \| \leq \varepsilon\\
+        \text{false} & \text{otherwise}
+    \end{array} \right.
+\end{equation}
+
+Now, to choose the learning rate $\eta$, we have many options. One of them is to
+use a fixed learning rate. Another option is to use a learning rate that decreases
+over time. This is called the learning rate schedule, and effectively, just decreases
+the learning rate depending on the iteration. For example:
+
+\begin{equation}
+    \eta_k = \frac{\eta_0}{1 + k}
+\end{equation}
+
+where $\eta_0$ is the initial learning rate. Another option is to use the \textbf{Backtracking
+line search}, which is an algorithm that finds an effective learning rate at each iteration. It
+works as follows:
+
+\begin{algorithm}[H]
+    \caption{Backtracking line search}
+    \begin{algorithmic}[1]
+        \Require $x^{(k)}, \eta_0, \alpha, \beta$
+        \State $\eta = \eta_0$
+        \While{$f(x^{(k)} - \eta \nabla f(x^{(k)})) > f(x^{(k)}) - \alpha \eta \| \nabla f(x^{(k)}) \|^2$}
+            \State $\eta = \beta \eta$
+        \EndWhile
+    \end{algorithmic}
+\end{algorithm}
+
+We usually set $\alpha = 0.5$ and $\beta = 0.5$.\\
+
+Another way of setting the learning rate is to use the \textbf{Exact line search}, which
+is an algorithm that finds the optimal learning rate at each iteration. It works by solving
+the following optimization problem at each iteration:
+
+\begin{equation}
+    \eta^{(k)} = \argmin_{\eta > 0} f(x^{(k)} - \eta \nabla f(x^{(k)}))
+\end{equation}
+
+This is a one-dimensional optimization problem that can be solved using standard optimization,
+but it can be computationally expensive, as it may not have a closed-form solution. In practice,
+the exact line search is rarely used.
+
+\subsection{Convergence of the gradient descent algorithm}
+
+Let us state the following theorem:
+
+\begin{theorem}
+    Let $f: \R^n \rightarrow \R$ be a convex function that is differentiable and has a Lipschitz
+    continuous gradient with constant $L$. Let $\{ x^{(k)} \}$ be the sequence generated by the
+    gradient descent algorithm with learning rate $\eta \leq \frac{1}{L}$. Then, we have:
+
+    \begin{equation}
+        f(x^{(k)}) - f(x^*) \leq \frac{\| x^{(0)} - x^* \|^2}{2 \eta k}
+    \end{equation}
+
+    where $x^*$ is the optimal solution of the optimization problem.
+\end{theorem}
+
+\begin{proof}
+    This proof is different from the one presented in the professor's lecture. Nonetheless, it
+    is a valid proof. It is based on the following lemma:
+
+    \begin{lemma}[Descent lemma]
+        Let $f: \R^n \rightarrow \R$ be a differentiable function that has a Lipschitz
+        continuous gradient with constant $L$. Then, for any $x, y \in \R^n$, we have:
+
+        \begin{equation}
+            f(y) \leq f(x) + \nabla f(x)^T (y - x) + \frac{L}{2} \| y - x \|^2
+        \end{equation}
+    \end{lemma}
+
+    \begin{proof}
+        Let us define the function $g(t) = f((1 - t) x + t y)$. Then, by the fundamental theorem
+        of calculus, we have:
+        
+        \begin{align*}
+            g(1) &= g(0) + \int_{0}^{1} g'(t) dt\\
+            f(y)&= f(x) + \int_{0}^{1} \nabla f((1 - t) x + t y)^T (y - x) dt\\
+                &= f(x) + \nabla f(x)^T (y - x) + \int_{0}^{1} (\nabla f((1 - t) x + t y) - \nabla f(x))^T (y - x) dt\\
+        \end{align*}
+
+        By the Cauchy-Schwarz inequality (more generally, the Hölder's inequality), we have:
+
+        \begin{align*}
+            (\nabla f((1 - t) x + t y) - \nabla f(x))^T(y - x) &\leq \| \nabla f((1 - t) x + t y) - \nabla f(x) \| \| y - x \|\\
+        \end{align*}
+
+        And then, by the Lipschitz continuity of the gradient, we have:
+
+        \begin{align*}
+            \|\nabla f((1 - t) x + t y)^T - \nabla f(x)^T\| &\leq L \| (1 - t) x + t y - x \|\\
+            &= L t \| y - x \|
+        \end{align*}
+
+        Then, we have:
+
+        \begin{align*}
+            f(y) &\leq f(x) + \nabla f(x)^T (y - x) + \int_{0}^{1} L t \| y - x \|^2 dt\\
+            &= f(x) + \nabla f(x)^T (y - x) + \frac{L}{2} \| y - x \|^2
+        \end{align*}
+
+        This is the desired result.
+
+    \end{proof}
 
 
+    Observe that a direct consequence of the descent lemma is that the gradient descent algorithm
+    is in fact a descent algorithm, i.e., it decreases the value of the function at each iteration.
+    We can propose our second lemma:
+
+    \begin{lemma}[Gradient descent lemma]
+        Let $f: \R^n \rightarrow \R$ be a function that is differentiable and has a Lipschitz
+        continuous gradient with constant $L$. Let $\{ x^{(k)} \}$ be the sequence generated by the
+        gradient descent algorithm with learning rate $\eta \leq \frac{1}{L}$. Then, we have:
+
+        \begin{equation}
+            f(x^{(k+1)}) \leq f(x^{(k)}) - \frac{\eta}{2} \| \nabla f(x^{(k)}) \|^2
+        \end{equation}
+    \end{lemma}
+
+    \begin{proof}
+        By the descent lemma, we have:
+
+        \begin{align*}
+            f(x^{(k+1)}) &\leq f(x^{(k)}) + \nabla f(x^{(k)})^T (x^{(k+1)} - x^{(k)}) + \frac{L}{2} \| x^{(k+1)} - x^{(k)} \|^2\\
+            &= f(x^{(k)}) - \eta \| \nabla f(x^{(k)}) \|^2 + \frac{L}{2} \| \eta \nabla f(x^{(k)}) \|^2\\
+            &= f(x^{(k)}) - \left(1 - \frac{L \eta}{2} \right) \eta  \| \nabla f(x^{(k)}) \|^2
+        \end{align*}
+
+        Now notice that, since $\eta \leq \frac{1}{L}$, we have:
+
+        $$1 - \frac{L \eta}{2} \geq \frac{1}{2}$$
+
+        Then, we have:
+
+        $$f(x^{(k+1)}) \leq f(x^{(k)}) - \frac{\eta}{2} \| \nabla f(x^{(k)}) \|^2$$
+
+        This is the desired result.
+    \end{proof}
+
+    Now, let us prove the theorem. To do so, let us define the following operator:
+
+    $$V_{t} = \frac{\|x^{(t)} - x^*\|^2}{2}$$
+
+    Then, we have:
+
+    \begin{align*}
+        V_{t+1} &= \frac{1}{2} \|x^{(t+1)} - x^*\|^2  = \frac{1}{2} \|x^{(t)} - \eta \nabla f(x^{(t)}) - x^*\|^2\\
+                &= \frac{1}{2} \left[ \|x^{(t)} - x^*\|^2  + \eta^2 \| \nabla f(x^{(t)}) \|^2 - 2 \eta \nabla f(x^{(t)})^T (x^{(t)} - x^*) \right]\\
+                &= V_t + \frac{\eta^2}{2} \| \nabla f(x^{(t)}) \|^2 - \eta \nabla f(x^{(t)})^T (x^{(t)} - x^*)\\
+    \end{align*}
+
+    Here, we use the fact that $f$ is convex, meaning that:
+
+    $$f(x^*) \geq f(x^{(t)}) + \nabla f(x^{(t)})^T (x^* - x^{(t)})$$
+
+    $$\Rightarrow \nabla f(x^{(t)})^T (x^{(t)} - x^*) \geq f(x^{(t)}) - f(x^*)$$
+
+    Then, we have:
+
+    \begin{align*}
+        V_{t+1} &\leq V_t + \frac{\eta^2}{2} \| \nabla f(x^{(t)}) \|^2 - \eta (f(x^{(t)}) - f(x^*))
+    \end{align*}
+
+    Now, notice that, by the gradient descent lemma, we have:
+
+    $$\frac{\eta}{2} \| \nabla f(x^{(t)}) \|^2 \leq f(x^{(t)}) - f(x^(t + 1))$$
+
+    Replace this in the previous equation, we have:
+
+    \begin{align*}
+        V_{t+1} &\leq V_t + \frac{\eta^2}{2} \| \nabla f(x^{(t)}) \|^2 - \eta (f(x^{(t)}) - f(x^*))\\
+                &\leq V_t + \eta (f(x^{(t)}) - f(x^{(t+1)})) - \eta (f(x^{(t)}) - f(x^*))\\
+                &= V_t - \eta (f(x^{(t+1)}) - f(x^*))\\
+    \end{align*}
+
+    We obtain that:
+
+    $$f(x^{(t+1)}) - f(x^*) \leq \frac{1}{\eta} (V_t - V_{t+1})$$
+
+    Now, using the fact that for each step, the value of the function decreases, we have:
+
+    \begin{align*}
+        T(f(x^{(T)}) - f(x^*)) &\leq \sum_{t=0}^{T-1} (f(x^{(t+1)}) - f(x^*))\\
+                               &\leq \frac{1}{\eta} \sum_{t=0}^{T-1} (V_t - V_{t+1})\\
+    \end{align*}
+
+    Notice that the sum on the right-hand side telescopes, and we obtain:
+
+    $$T(f(x^{(T)}) - f(x^*)) \leq \frac{1}{\eta} (V_0 - V_T) \leq \frac{1}{\eta} V_0$$
+
+    Rearranging, we obtain:
+
+    $$f(x^{(T)}) - f(x^*) \leq \frac{\| x^{(0)} - x^* \|^2}{2 \eta T}$$
+
+    This is the desired result.
+
+\end{proof}
+
+\vspace{5em}
+
+The result of the theorem can be generalized when used the backtracking line search. In this case,
+we have:
+
+\begin{equation}
+    f(x^{(k)}) - f(x^*) \leq \frac{1}{2 \eta_{\min} k} \| x^{(0)} - x^* \|^2
+\end{equation}
+
+where $\eta_{\min} = \min \{1, \beta / L\}$.\\
+
+With this result, we can calculate the number of iterations needed to reach a certain level of
+accuracy. For example, if we want to reach an accuracy of $\varepsilon$, we have:
+
+\begin{equation}
+    k \geq \frac{1}{2 \eta \varepsilon} \| x^{(0)} - x^* \|^2 \in O\left(\frac{1}{\varepsilon}\right)
+\end{equation}
+
+This means that the gradient descent algorithm converges at a rate of $O(1/\varepsilon)$, called
+\textbf{sub-linear convergence}. 
 
 
+\subsection{Stochastic gradient descent (SGD)}
 
+The gradient descent algorithm is a simple and effective optimization algorithm that can be used
+to train a neural network. However, the gradient descent algorithm can be slow to converge when
+the training data is large. This is because the gradient descent algorithm computes the gradient
+of the loss function with respect to all the training data at each iteration. This can be
+computationally expensive, especially when the training data is large.\\
 
+To overcome this problem, we can use the stochastic gradient descent algorithm. The stochastic
+gradient descent algorithm is a variant of the gradient descent algorithm that computes the
+gradient of the loss function with respect to a random sample of the training data at each
+iteration. This can be much faster than computing the gradient with respect to all the training
+data.\\
+
+The stochastic gradient descent algorithm works as follows:
+
+\begin{algorithm}[H]
+    \caption{Stochastic gradient descent algorithm}
+    \begin{algorithmic}[1]
+        \Require $x^{(0)}, \eta, \varepsilon, T$
+        \For{$k = 0, 1, 2, \ldots, T$}
+            \State Sample a random batch of training data $\{ x_i, y_i \}_{i=1}^n$
+            \State Compute the gradient of the loss function with respect to the batch
+            \State Update the weights of the model using the gradient
+            \If{\textbf{STOP}$(\varepsilon)$}
+                \State \textbf{break}
+            \EndIf
+        \EndFor
+    \end{algorithmic}
+\end{algorithm}
 
