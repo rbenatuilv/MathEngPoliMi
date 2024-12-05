@@ -679,7 +679,7 @@ but some of the most common are:
 
 \end{enumerate}
 
-\section{Optimization algorithms}
+\section{Optimization methods: Gradient Descent}
 
 The process of training a neural network involves solving an optimization problem
 to minimize the loss function. There are many optimization algorithms that can be
@@ -836,6 +836,32 @@ the following optimization problem at each iteration:
 This is a one-dimensional optimization problem that can be solved using standard optimization,
 but it can be computationally expensive, as it may not have a closed-form solution. In practice,
 the exact line search is rarely used.
+
+\subsubsection{Wolfe conditions}
+
+In general, a good learning rate is one that satisfies the \textbf{Wolfe conditions}. These are a 
+set of conditions that ensure that the learning rate is not too large or too small. The Wolfe
+conditions are defined as follows:\\
+
+For $0 < c_1 < c_2 < 1$, and a descent direction $d$, the Wolfe conditions are:
+
+\begin{enumerate}
+    \item \textbf{Sufficient decrease condition:}
+    $$f(x + \eta d) \leq f(x) + c_1 \eta \nabla f(x)^T d$$
+
+    This condition ensures that the learning rate is not too large, i.e., that the function value
+    decreases sufficiently at each iteration.
+
+    \item \textbf{Curvature condition:}
+    $$\nabla f(x + \eta d)^T d \geq c_2 \nabla f(x)^T d$$
+
+    This condition ensures that the learning rate is not too small, i.e., that the gradient of the
+    function is not too flat at each iteration.
+\end{enumerate}
+
+The Wolfe conditions are a good way to choose the learning rate, as they ensure that the learning
+rate is not too large or too small. In practice, the Wolfe conditions are often used in conjunction
+with the backtracking line search to find an effective learning rate at each iteration.
 
 \subsection{Convergence of the gradient descent algorithm}
 
@@ -1193,3 +1219,459 @@ However, notice that these results have strong assumptions, that in practice are
 satisfied. For example, the assumption that the loss function is strongly convex is not always
 true. In practice, the loss function is often non-convex, which can make the optimization problem
 more difficult. 
+
+
+\section{Improving the SGD: Momentum and Adaptive learning rates}
+
+There are many techniques that can be used to improve the performance of the SGD algorithm.
+Two of the most popular techniques are \textbf{momentum} and \textbf{adaptive learning rates}.
+These techniques can help to speed up the convergence of the SGD algorithm and improve the
+performance of the model.\\
+
+In this section, we will discuss the following algorithms:
+
+\begin{itemize}
+    \item SGD with momentum
+    \item Nesterov accelerated gradient (NAG)
+    \item AdaGrad
+    \item AdaDelta + RMSProp
+    \item Adam
+\end{itemize}
+
+\subsection{SGD with momentum}
+
+The SGD with momentum algorithm is a variant of the SGD algorithm that uses a momentum term to
+accelerate the convergence of the algorithm. The momentum term is a moving average of the
+gradients of the loss function. This can help to smooth out the updates to the weights and
+improve the performance of the model.\\
+
+It's step is given by:
+
+\begin{equation}
+    \begin{aligned}
+        v^{(k+1)} &= \gamma v^{(k)} + \eta \nabla J(w^{(k)}) \\
+        w^{(k+1)} &= w^{(k)} - v^{(k+1)}
+    \end{aligned}
+\end{equation}
+
+Note that $v^{(k)}$ represents the momentum term, and $\gamma$ is the momentum parameter. The
+momentum parameter is a hyperparameter that controls the influence of the momentum term on the
+updates to the weights.\\
+
+The momentum term allows us to take into account the previous gradients when updating the weights.
+In some way, we are considering the velocity of the descent, and not only the gradient at the
+current point. This helps us to avoid local minima and saddle points, in which the gradient is
+close to zero.
+
+\subsection{Nesterov accelerated gradient (NAG)}
+
+The Nesterov accelerated gradient (NAG) algorithm is a variant of the SGD with momentum algorithm
+that uses a different update rule for the weights. The NAG algorithm uses the gradient of the
+loss function at the point $w^{(k)} - \gamma v^{(k)}$ to update the weights. The step
+of the NAG algorithm is given by:
+
+\begin{equation}
+    \begin{aligned}
+        v^{(k+1)} &= \gamma v^{(k)} + \eta \nabla J(w^{(k)} - \gamma v^{(k)}) \\
+        w^{(k+1)} &= w^{(k)} - v^{(k+1)}
+    \end{aligned}
+\end{equation}
+
+In this case, the expression $\nabla J(w^{(k)} - \gamma v^{(k)})$ is an approximation of the
+gradient of the loss function at the point $w^{(k+1)}$. The term $w^{(k)} - \gamma v^{(k)}$ is
+known as a \textbf{predictor corrector} step, as we are in some way "looking ahead" to the value
+of the gradient at the possible next point. Then we use this to calculate the real update to the
+weights. This can help to improve the performance of the algorithm and speed up the convergence.
+
+\subsection{AdaGrad}
+
+The AdaGrad algorithm is a variant of the SGD algorithm that uses an adaptive learning rate to
+update the weights. The AdaGrad algorithm uses a different learning rate for each weight, based
+on the history of the gradients of the loss function. The step of the AdaGrad algorithm is given
+by:
+
+\begin{equation}
+    \begin{aligned}
+        G^{(k)} &= G^{(k-1)} + (\nabla J(w^{(k)}))^2 \\
+        w^{(k+1)} &= w^{(k)} - \eta_0 (G^{(k)} + \varepsilon \cdot \1)^{-1/2} \odot \nabla J(w^{(k)})
+    \end{aligned}
+\end{equation}
+
+Here, $G^{(k)}$ contains the sum of the squares of the gradients of the loss function up to the
+$k$-th iteration. The term $\varepsilon$ is a small constant that is added to the denominator to
+avoid division by zero. The term $\1$ is a vector of ones with the same size as the weights. The
+term $(G^{(k)} + \varepsilon \cdot \1)^{-1/2}$ is the element-wise inverse square root of the
+sum of the squares of the gradients. This term is used to scale the gradients of the loss function
+before updating the weights.\\
+
+The AdaGrad algorithm adapts the learning rate for each weight based on the history of the gradients
+of the loss function. This can help to improve the performance of the algorithm and speed up the
+convergence.\\
+
+However, the AdaGrad algorithm has some limitations. As the sum of the squares of the gradients increases, the learning rate decreases. This
+can cause the learning rate to become very small, which can slow down the convergence of the
+algorithm. To overcome this problem, we can use the AdaDelta algorithm.
+
+\subsection{AdaDelta (and RMSProp)}
+
+This algorithm is a variant of the AdaGrad algorithm that uses an adaptive learning rate to update
+the weights. But in this case, instead of using the sum of the squares of the gradients up to the
+$k$-th iteration, we use a moving average of the squares of the gradients, i.e., we take the average 
+of the squares of the gradients on the last $n$ iterations.\\
+
+Since keeping track of the last $n$ gradients can be computationally expensive, we can use an
+exponential moving average to approximate the moving average. The step of the AdaDelta algorithm
+is given by:
+
+\begin{equation}
+    \begin{aligned}
+        E[g^2]^{(k)} &= \rho E[g^2]^{(k-1)} + (1 - \rho) (\nabla J(w^{(k)}))^2 \\
+        \Delta w^{(k+1)} &= - \eta_0 (E[g^2]^{(k)} + \varepsilon \cdot \1)^{-1/2} \odot \nabla J(w^{(k)}) \\
+        w^{(k+1)} &= w^{(k)} + \Delta w^{(k+1)}
+    \end{aligned}
+\end{equation}
+
+where $E[g^2]^{(k)}$ is the notation for the moving average of the squares of the gradients up to
+the $k$-th iteration. The term $\rho$ is the decay rate of the moving average, that controls the
+influence of the previous gradients on the moving average. The term $\varepsilon$ is a small constant
+that is added to the denominator to avoid division by zero.\\
+
+The term $\sqrt{E[g^2]^{(k+1)} + \varepsilon}$ is the element-wise square root of the moving average
+of the squares of the gradients. It is called the \textbf{root mean square} (RMS) of the gradients. This
+is why the AdaDelta algorithm is also known as the RMSProp algorithm, as we are using the RMS of the
+gradients to update the weights.\\
+
+In other words, if we define:
+
+\begin{equation}
+    RMS[g]^{(k)} = \sqrt{E[g^2]^{(k)} + \varepsilon \cdot \1}
+\end{equation}
+
+Then, the step of the AdaDelta algorithm can be written as:
+
+\begin{equation}
+    \begin{aligned}
+        E[g^2]^{(k)} &= \rho E[g^2]^{(k-1)} + (1 - \rho) (\nabla J(w^{(k)}))^2 \\
+        \Delta w^{(k)} &= - \frac{\eta_0}{RMS[g]^{(k)}} \odot \nabla J(w^{(k)})\\
+        w^{(k+1)} &= w^{(k)} + \Delta w^{(k)}
+    \end{aligned}
+\end{equation}
+
+The hyperparameter $\rho$ is usually set to a value close to 1, e.g., $\rho = 0.9$. \\
+
+The algorithm also uses an unit corrector factor. It is based on the fact that the update term $\Delta w^{(k)}$
+is not proportional to the units of the weights. To correct this, we use the RMS of the update term
+$\Delta w^{(k)}$ to scale the update term, instead of a fixed learning rate $\eta_0$:
+
+\begin{equation}
+    \Delta w^{(k)} = - \frac{RMS[\Delta w]^{(k-1)}}{RMS[g]^{(k)}} \odot \nabla J(w^{(k)})
+\end{equation}
+
+So, the AdaDelta algorithm can be written as:
+
+\begin{equation}
+    \begin{aligned}
+        E[g^2]^{(k)} &= \rho E[g^2]^{(k-1)} + (1 - \rho) (\nabla J(w^{(k)}))^2 \\
+        \Delta w^{(k)} &= - \frac{RMS[\Delta w]^{(k-1)}}{RMS[g]^{(k)}} \odot \nabla J(w^{(k)})\\
+        E[\Delta w^2]^{(k)} &= \rho E[\Delta w^2]^{(k-1)} + (1 - \rho) (\Delta w^{(k)})^2\\
+        w^{(k+1)} &= w^{(k)} + \Delta w^{(k)}\\
+    \end{aligned}
+\end{equation}
+
+The idea of using the RMS of the gradients to update the weights is that it can help to avoid the
+problem of the learning rate becoming very small, as in the AdaGrad algorithm. This allows the model
+to adapt to the changing conditions of the optimization problem and keep learning even when the
+gradients are small.
+
+\subsection{Adam}
+
+Adam is a very famous optimization algorithm that combines the ideas of the SGD with momentum and
+the AdaDelta algorithm. The Adam algorithm uses a moving average of the gradients of the loss function
+and the moving average of the squares of the gradients to update the weights. The step of the Adam
+algorithm is given by:
+
+\begin{equation}
+    \begin{aligned}
+        m^{(k)} &= \beta_1 m^{(k-1)} + (1 - \beta_1) \nabla J(w^{(k)}) \\
+        v^{(k)} &= \beta_2 v^{(k-1)} + (1 - \beta_2) (\nabla J(w^{(k)}))^2 \\
+        \hat{m}^{(k)} &= \frac{m^{(k)}}{1 - \beta_1^k} \\
+        \hat{v}^{(k)} &= \frac{v^{(k)}}{1 - \beta_2^k} \\
+        w^{(k+1)} &= w^{(k)} -  \frac{\eta_0}{\sqrt{\hat{v}^{(k)} + \varepsilon}} \odot \hat{m}^{(k)}
+    \end{aligned}
+\end{equation}
+
+Here, $m^{(k)}$ is the moving average of the gradients of the loss function, $v^{(k)}$ is the moving
+average of the squares of the gradients, $\beta_1$ and $\beta_2$ are the decay rates of the moving
+averages, and $\varepsilon$ is a small constant that is added to the denominator to avoid division by
+zero. The terms $\hat{m}^{(k)}$ and $\hat{v}^{(k)}$ are the bias-corrected moving averages, which are
+used to correct the bias of the moving averages.\\
+
+The Adam algorithm uses the moving average of the gradients to update the weights, and the moving
+average of the squares of the gradients to scale the updates. This can help to improve the performance
+of the algorithm and speed up the convergence. The hyperparameters $\beta_1$ and $\beta_2$ control the
+influence of the moving averages on the updates to the weights. They are usually set to values close to
+1, e.g., $\beta_1 = 0.9$ and $\beta_2 = 0.999$.\\
+
+The Adam algorithm is a very powerful optimization algorithm that is widely used in practice. It can
+help to improve the performance of the model and speed up the convergence of the algorithm. It is
+recommended to use the Adam algorithm when training a neural network, as it can help to achieve better
+results in less time.
+
+\section{2nd order optimization methods: Newton's method and BFGS}
+
+The gradient descent algorithm (and its variants) is a first-order optimization algorithm, as it
+uses the first derivative of the loss function to update the weights. However, there are also
+second-order optimization algorithms that use the second derivative of the loss function to update
+the weights. These algorithms can converge faster than first-order optimization algorithms, as they
+take into account the curvature of the loss function.\\
+
+In this section, we will discuss two second-order optimization algorithms: Newton's method and the
+Broyden-Fletcher-Goldfarb-Shanno (BFGS) algorithm.
+
+\subsection{Newton's method}
+
+The Newton's method is derived from a quadratic approximation of the loss function. The idea is to
+approximate the loss function with a quadratic function and then find the minimum of the quadratic
+function. Let us consider the following quadratic approximation of the loss function $J$ at the point
+$w^{(k)}$:
+
+\begin{equation}
+    J(w) \approx \tilde{J}(w) = J(w^{(k)}) + \nabla J(w^{(k)})^T (w - w^{(k)}) + \frac{1}{2} (w - w^{(k)})^T H_J(w^{(k)}) (w - w^{(k)})
+\end{equation}
+
+Here, $H_J(w^{(k)})$ is the Hessian of the loss function at the point $w^{(k)}$. Now, we can find the
+minimum of the quadratic function by setting the gradient of the quadratic function to zero:
+
+$$\nabla \tilde{J}(w) = \nabla J(w^{(k)}) + H_J(w^{(k)}) (w - w^{(k)}) = 0$$
+
+Solving this equation, we obtain:
+
+\begin{equation}
+    w = w^{(k)} - H_J(w^{(k)})^{-1} \nabla J(w^{(k)})
+\end{equation}
+
+This is the update rule of the Newton's method. In some way, this method uses the inverse of the
+Hessian to adapt the direction of the gradient, according to the curvature of the loss function. 
+Note that, in practice, we do not compute the inverse of the Hessian, and instead, we solve the
+linear system $H_J(w^{(k)}) \Delta w = - \nabla J(w^{(k)})$ to find the update $\Delta w$.\\
+
+We can also add a learning rate to the update rule to control the step size of the update:
+
+\begin{equation}
+    w^{(k+1)} = w^{(k)} - \eta H_J(w^{(k)})^{-1} \nabla J(w^{(k)})
+\end{equation}
+
+Similar to what happens in the gradient descent algorithm, the learning rate $\eta$ can be a fixed
+value or can be adapted during training, and should follow the Wolfe conditions.\\ 
+
+The Newton's method is a very powerful optimization algorithm that can converge very fast. However,
+it has some limitations. One of the main limitations of the Newton's method is that it requires the
+computation of the Hessian of the loss function, which can be computationally expensive, especially
+when the number of parameters is large. In practice, the Hessian is often approximated using 
+Quasi-Newton methods, such as the BFGS algorithm.
+
+\subsection{Secant condition}
+
+The methods for approximating the Hessian are based on the secant condition. To illustrate this,
+let us consider the case of minimizing a one-dimensional function, $f: \R \rightarrow \R$. At
+the $k+1$-th iteration, let us state the quadratic approximation of the function at the point $x^{(k+1)}$:
+
+$$\tilde{f}^{(k+1)}(x) = f(x^{(k+1)}) + f'(x^{(k+1)}) (x - x^{(k+1)}) + \frac{1}{2} h(x^{(k+1)}) (x - x^{(k+1)})^2$$
+
+Where $h(x^{(k+1)})$ is the approximation of the second derivative of the function at the point $x^{(k+1)}$.
+On this approximation, we we want to enforce the following condition:
+
+$$\tilde{f}^{(k+1)'}(x^{(k+1)}) = f'(x^{(k)})$$
+
+This will allow us to determine an expression for $h(x^{(k+1)})$. By solving this equation, we obtain:
+
+$$h(x^{(k+1)}) = \frac{f'(x^{(k+1)}) - f'(x^{(k)})}{x^{(k+1)} - x^{(k)}}$$
+
+By using this expression on the update rule of the Newton's method, we obtain:
+
+\begin{equation}
+    x^{(k+1)} = x^{(k)} - \frac{f'(x^{(k)})}{h(x^{(k)})} = x^{(k)} - \frac{(x^{(k+1)} - x^{(k)})}{f'(x^{(k+1)}) - f'(x^{(k)})} f'(x^{(k)})
+\end{equation}
+
+This is called the secant method, for 1D functions. For multi-dimensional functions, we have the
+same idea, but now we have to consider the Hessian matrix. Let us again propose a quadratic
+approximation of the function at the point $x^{(k+1)}$:
+
+$$\tilde{f}^{(k+1)}(x) = f(x^{(k+1)}) + \nabla f(x^{(k+1)})^T (x - x^{(k+1)}) + \frac{1}{2} (x - x^{(k+1)})^T \tilde{H}_f(x^{(k+1)}) (x - x^{(k+1)})$$
+
+Where $\tilde{H}_f(x^{(k+1)})$ is the approximation of the Hessian of the function at the point $x^{(k+1)}$.
+By enforcing the following condition:
+
+$$\nabla \tilde{f}^{(k+1)}(x^{(k+1)}) = \nabla f(x^{(k)})$$
+
+We can determine that the approximation of the Hessian should obey the following expression:
+
+\begin{equation}
+    \tilde{H}_f(x^{(k+1)}) (x^{(k+1)} - x^{(k)}) = \nabla f(x^{(k+1)}) - \nabla f(x^{(k)})
+\end{equation}
+
+This is the secant condition for multi-dimensional functions. But notice now that in this
+expression, the unknown is the Hessian matrix, and not the second derivative of the function.
+As the Hessian is symmetric, this means that for a $n \times n$ matrix, we have $n(n+1)/2$ unknowns.
+The equation propose a total of $n$ conditions (one for each dimension). This means that we still
+need to impose a total of:
+
+$$\frac{n(n+1)}{2} - n = \frac{n(n-1)}{2}$$
+
+additional conditions to solve the system. By formulating the rest of the conditions, we can
+determine the approximation of the Hessian matrix. This is the idea behind the BFGS algorithm.\\
+
+Before deducing the BFGS algorithm, let us repropose the secant condition in a more general form:
+
+\begin{equation}
+    H_{k+1} s_{k} = y_{k}
+\end{equation}
+
+where:
+
+$$ s_{k} = x^{(k+1)} - x^{(k)}, \quad y_{k} = \nabla f(x^{(k+1)}) - \nabla f(x^{(k)})$$
+
+Also notice that we are reformulating the notation of the Hessian matrix, as $H_{k+1}$, to indicate
+that on each iteration, we have a different approximation of the Hessian, that should fullfil the previous
+secant condition.
+
+\subsection{BFGS algorithm}
+
+This algorithm is named after Broyden, Fletcher, Goldfarb, and Shanno, who proposed the algorithm in
+the 1970s. The BFGS algorithm is a Quasi-Newton method that uses the secant condition to approximate
+the Hessian of the loss function. The BFGS algorithm enforces also the following conditions:
+
+\begin{itemize}
+    \item $H_{k+1}$ is symmetric
+    \item $H_{k+1}$ is positive definite
+    \item $H_{k+1}$ is a good approximation of the previous Hessian matrix $H_k$
+\end{itemize}
+
+In other words, the BFGS algorithm proposes the following problem to solve:
+
+\begin{align*}
+    \min_{H_{k+1}} &\| H_{k+1} - H_k \|_F^2\\
+    \text{s.t. } &H_{k+1} s_{k} = y_{k}\\
+                 &H_{k+1} \text{ is symmetric}
+\end{align*}
+
+Where $\| \cdot \|_F$ is the Frobenius norm. Now, since what we really want is to find the inverse 
+of the Hessian, we can define the matrix $B_{k+1} = H_{k+1}^{-1}$, and then solve the following problem:
+
+\begin{align*}
+    \min_{B_{k+1}} &\| B_{k+1} - B_k \|_F^2\\
+    \text{s.t. } &B_{k+1} y_{k} = s_{k}\\
+                 &B_{k+1} \text{ is symmetric}
+\end{align*}
+
+To solve this problem, the algorithm proposes the following update rule to the Hessian:
+
+$$H_{k+1} = H_k + a u u^T + b v v^T$$
+
+where $u, v$ are linear independent vectors and $a, b$ are scalars. This is called a rank-2 update
+to the Hessian. By imposing the secant condition, we obtain:
+
+\begin{equation*}
+    u = y_k, \quad v = H_k s_k, \quad a = \frac{1}{y_k^T s_k}, \quad b = - \frac{1}{s_k^T H_k s_k}
+\end{equation*}
+
+So, the update rule to the Hessian is given by:
+
+\begin{equation}
+    H_{k+1} = H_k + \frac{y_k y_k^T}{y_k^T s_k} - \frac{H_k s_k s_k^T H_k}{s_k^T H_k s_k}
+\end{equation}
+
+But notice that we are interested in the inverse of the Hessian, not the Hessian itself. So, we can
+compute $B_{k+1} = H_{k+1}^{-1}$ by using the \textbf{Sherman-Morrison formula}:
+
+\begin{equation}
+    (A + UCV)^{-1} = A^{-1} - A^{-1} U (C^{-1} + V A^{-1} U)^{-1} V A^{-1}
+\end{equation}
+
+We can use this formula by defining:
+
+\begin{equation*}
+    A = H_k, \quad U = \begin{bmatrix}
+        H_k s_k & y_k
+    \end{bmatrix}, \quad C =\begin{bmatrix}
+        \frac{-1}{s_k^T H_k s_k} & 0\\
+        0 & \frac{1}{y_k^T s_k}
+    \end{bmatrix}, \quad V = \begin{bmatrix}
+        H_k s_k\\
+        y_k
+    \end{bmatrix}
+\end{equation*}
+        
+By using the Sherman-Morrison formula, we can obtain the update rule to the inverse of the Hessian:
+
+\begin{equation}
+    B_{k+1} = (I - \rho s_k y_k^T) B_k (I - \rho y_k s_k^T) + \rho s_k s_k^T
+\end{equation}
+
+where:
+
+$$\rho = \frac{1}{y_k^T s_k}$$
+
+This is the final update rule of the BFGS algorithm. But we still need to ensure that the matrix
+$B_{k+1}$ is positive definite. Let us consider the generic vector $z$:
+
+\begin{align*}
+    z^T B_{k+1} z &= (z - \rho s_k^T z y_k)^T B_k (z - \rho s_k^T z y_k) + \rho (s_k^T z)^2
+\end{align*}
+
+Now, as long as $B_k$ is positive definite, the term $(z - \rho s_k^T z y_k)^T B_k (z - \rho s_k^T z y_k)$
+is positive. The term $\rho (s_k^T z)^2$ is also positive, if and only if $\rho > 0$. This means
+that the matrix $B_{k+1}$ is positive definite, as long as we start with a positive definite matrix
+$B_0$ and $\rho > 0$.\\
+
+The condition $\rho > 0$ (also formulated as $y_k^T s_k > 0$) is called the \textbf{curvature condition}.
+This condition ensures that the update to the inverse of the Hessian is positive definite. For strongly
+convex functions, this condition is always satisfied. For other functions, we need to impose this
+condition in some way, for example, by finding a point $x_{k+1}$ that satisfies Wolfe conditions, which
+entail that the curvature condition is satisfied, using line search.\\
+
+To initialize the BFGS algorithm, we need to start with a positive definite matrix $B_0$. A common
+choice is to start with the identity matrix, $B_0 = I$. This is a good choice, as the identity matrix
+is always positive definite and obviously symmetric.
+
+\subsubsection{Low memory BFGS (L-BFGS)}
+
+The BFGS algorithm requires the storage of the Hessian matrix, which can be computationally expensive
+when the number of parameters is large. To overcome this problem, the low memory BFGS (L-BFGS) algorithm
+was proposed.\\
+
+Instead of storing the complete Hessian, L-BFGS stores only a few vectors that represent the approximation 
+implicitly. Due to its resulting linear memory requirement, the L-BFGS method is particularly well suited 
+for optimization problems with many variables.\\
+
+Instead of the inverse Hessian $B_k$, L-BFGS maintains a history of the past m updates of the 
+position $x$ and gradient $\nabla f(x)$, where generally the history size m 
+can be small (often $m < 10$). These updates are used to implicitly do operations requiring 
+the $B_k$-vector product.
+
+\subsection{Comparison between Newton's method and BFGS}
+
+The Newton's method and the BFGS algorithm are both second-order optimization algorithms that use the
+second derivative of the loss function to update the weights. However, the main difference between the
+two algorithms is the time complexity of computing the update rule.\\
+
+Let us assume a problem of $n$ dimensions. The Newton's method requires the computation of the inverse
+of the Hessian matrix, which has a time complexity of $O(n^3)$. This means that the Newton's method is
+computationally expensive when the number of parameters is large.\\
+
+On the other hand, the BFGS algorithm uses an approximation of the Hessian matrix, whice can be computed
+as we saw before. The time complexity of these matrix-vector products is $O(n^2)$. This means that the
+BFGS algorithm is more efficient than the Newton's method when the number of parameters is large.\\
+
+In summary, the complexities are:
+
+\begin{itemize}
+    \item Newton's method: \textbf{$O(n^3)$}
+    \item BFGS algorithm: \textbf{$O(n^2)$}
+\end{itemize}
+
+But on the other hand, the Newton's method is more accurate than the BFGS algorithm, as it uses the
+exact Hessian matrix to update the weights. This means that the Newton's method can converge faster
+than the BFGS algorithm. 
+
+
