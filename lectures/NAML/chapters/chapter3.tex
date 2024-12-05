@@ -209,10 +209,10 @@ Therefore, our aim is to compute the derivative of the loss function with respec
 to the weights and biases of the model, i.e., we need to compute:
 
 \begin{equation}
-    \frac{\partial J}{\partial k^\ell_{jk}}, \frac{\partial J}{\partial b^\ell_j} \quad \forall \ell, j, k
+    \frac{\partial J}{\partial w^\ell_{jk}}, \frac{\partial J}{\partial b^\ell_j} \quad \forall \ell, j, k
 \end{equation}
 
-where $k^\ell_{jk}$ is the weight of the connection between neuron $k$ in layer $\ell-1$
+where $w^\ell_{jk}$ is the weight of the connection between neuron $k$ in layer $\ell-1$
 and neuron $j$ in layer $\ell$, and $b^\ell_j$ is the bias of neuron $j$ in layer $\ell$.\\
 
 For this, let us define the vector of errors (or sensitivities) $\delta^\ell$ for 
@@ -1466,9 +1466,9 @@ value or can be adapted during training, and should follow the Wolfe conditions.
 
 The Newton's method is a very powerful optimization algorithm that can converge very fast. However,
 it has some limitations. One of the main limitations of the Newton's method is that it requires the
-computation of the Hessian of the loss function, which can be computationally expensive, especially
-when the number of parameters is large. In practice, the Hessian is often approximated using 
-Quasi-Newton methods, such as the BFGS algorithm.
+computation of the inverse of the Hessian of the loss function, which can be computationally expensive,
+especially when the number of parameters is large. In practice, the inverse of the Hessian is often 
+approximated using Quasi-Newton methods, such as the BFGS algorithm.
 
 \subsection{Secant condition}
 
@@ -1659,7 +1659,7 @@ Let us assume a problem of $n$ dimensions. The Newton's method requires the comp
 of the Hessian matrix, which has a time complexity of $O(n^3)$. This means that the Newton's method is
 computationally expensive when the number of parameters is large.\\
 
-On the other hand, the BFGS algorithm uses an approximation of the Hessian matrix, whice can be computed
+On the other hand, the BFGS algorithm uses an approximation of the Hessian matrix, which can be computed
 as we saw before. The time complexity of these matrix-vector products is $O(n^2)$. This means that the
 BFGS algorithm is more efficient than the Newton's method when the number of parameters is large.\\
 
