@@ -1310,5 +1310,216 @@ simple functions.
 
 \end{fremark}
 
+\vspace{1em}
+
+\begin{note}
+    The following propositions assume that $(X, \M, \mu)$ is a complete measure space (needed for
+    a.e. properties).
+\end{note}
+
+\begin{fproposition}[Chebychev's inequality]
+    Let $f: X \to [0, \infty]$ be a measurable function, and $0 < c < \infty$. Then:
+    
+    $$\mu(\{f \geq c\}) \leq \frac{1}{c} \int_{\{f \geq c\}} f \, d\mu \leq \frac{1}{c} \int_{X} f \, d\mu$$
+
+    where $\{f \geq c\} = \{x \in X: f(x) \geq c\}$.
+
+\end{fproposition}
+
+\begin{proof}
+    $$\int_{X} f \, d\mu \geq \int_{\{f < c\}} f \, d\mu \geq \int_{\{f < c\}} c \, d\mu = c \cdot \mu(\{f < c\})$$
+
+    Now we just divide by $c$.
+\end{proof}
+
+\begin{note}
+    We have as a consequence the following lemmas:
+\end{note}
+
+\begin{flemma}[Vanishing lemma]
+    Let $f: X \to [0, \infty]$ be a measurable function, $E \in \M$:
+
+    $$\int_{E} f \, d\mu = 0 \iff f = 0 \text{ a.e. on } E$$
+\end{flemma}
+
+\begin{proof}
+    The proof goes as follows:
+
+    \begin{itemize}
+        \item[($\Leftarrow$)]: Trivial
+        
+        \item[($\Rightarrow$)]: We have to show that:
+        $$\mu(\{x \in E: f(x) > 0\}) = 0$$
+
+        Let us define $F = \{x: f(x) > 0\} = \bigcup_{n} F_n$, where $F_n = \{x: f(x) \geq 1/n\}$.
+        Then, we have that:
+
+        $$F_n \subset F_{n+1} \quad \forall n$$
+
+        so $F_n \uparrow F$. Then, we have that:
+
+        $$\mu(F_n) \to \mu(F)$$
+
+        and:
+
+        $$ 0 \leq \mu(F_n) = \mu(\{f \geq \frac{1}{n}\}) \leq \frac{1}{1/n} \int_{E} f \, d\mu = 0$$
+
+        Then, $\mu(F) = 0$.
+
+    \end{itemize}
+\end{proof}
+
+\begin{fremark}
+    The vanishing lemma applies to \textbf{every f} once $\mu(E) = 0$, indeed, every property
+    is true a.e. on negligible sets. \say{The Lebesgue integral does not see negligible sets}.
+\end{fremark}
+
+\begin{flemma}
+    Let $f: X \to [0, \infty]$ be a measurable function. Then:
+
+    $$\int_X f \, d\mu < \infty \implies \mu(\{f = \infty\}) = 0$$
+\end{flemma}
+
+\begin{proof}
+    Exercise. (Hint: $\{f = \infty\} = \bigcap_n \{f \geq n\}$)
+\end{proof}
+
+\begin{ftheorem}[Monotone Convergence Theorem (MCT)]
+    Let $\{f_n\}_{n \in \N}$ be a sequence of measurable functions $f_n: X \to [0, \infty]$.
+    Assume that:
+    \vspace{1em}
+    \begin{enumerate}[label=(\roman*)]
+        \item $f_n \leq f_{n+1} \quad \forall n$
+        \vspace{1em}
+        \item $\lim_{n \to \infty} f_n(x) = f(x) \quad \text{for } a.e. x \in X$
+        \vspace{1em}
+    \end{enumerate}
+
+    Then, we have that:
+
+    $$\lim_{n \to \infty} \int_{X} f_n \, d\mu = \int_{X} f \, d\mu$$
+
+\end{ftheorem}
+
+\begin{fremark}
+    All assumptions are essential
+\end{fremark}
+
+\begin{proof}
+    The proof goes as follows:\\
+
+    \textbf{\underline{Part 1:}}\\
+
+    Assume that assumptions (i) and (ii) hold $\forall x \in X$. We have some basic facts:
+
+    \begin{itemize}
+        \item $f(x) = \lim_{n \to \infty} f_n(x) \implies f(x) \geq 0$ and measurable.
+        
+        \item $\int_{X} f_n \, d\mu \leq \int_{X} f_{n+1} \, d\mu$. Then, if we define:
+        
+        $$\alpha_n = \int_{X} f_n \, d\mu, \quad \alpha = \lim_{n \to \infty} \alpha_n$$
+
+        we have that $\alpha_n \leq \alpha_{n+1}$, so $\alpha_n \uparrow \alpha$. Moreover,
+        we have that:
+
+        $$f_n(x) \leq f(x) \implies \int_{X} f_n \, d\mu \leq \int_{X} f \, d\mu$$
+        $$\implies \alpha \leq \int_{X} f \, d\mu$$
+    \end{itemize}
+
+    So, to complete part 1, we have to show that $\alpha \geq \int_{X} f \, d\mu$.\\
+
+    We use the definition of $\int_X f \, d\mu$:
+
+    Take any $s: X \to [0, \infty)$ simple, measurable and $0 \leq s \leq f$. Take also $0 \leq c < 1$.
+    Then, we have that:
+
+    $$0 < c \cdot s \leq f$$
+
+    Take $f_n(x) \uparrow f(x) \; \forall x \in X$. Consider $E_n = \{x \in X: f_n(x) \geq c \cdot s(x)\} \in \M$.
+    Then, we have that:
+
+    \begin{enumerate}[label=(\alph*)]
+        \item $E_n \subset E_{n+1}$: indeed, $x \in E_n \iff f_n(x) \geq c \cdot s(x) \implies f_{n+1}(x) \geq c \cdot s(x) \iff x \in E_{n+1}$
+        
+        \item $\bigcup_n E_n = X$: indeed, either $f(x) = 0 \implies x \in E_n \; \forall n$ or $f(x) > 0$ and 
+        $c \cdot s(x) < f(x)$. Since $f_n(x) \uparrow f(x)$, we have that $\exists N_0$ s.t. $f_{N_0}(x) \geq c \cdot s(x)$.
+        Then $x \in E_{N_0}$.
+    \end{enumerate}
+
+    Then, we have that:
+
+    $$\alpha \geq \alpha_n = \int_{X} f_n \, d\mu \geq \int_{E_n} c \cdot s \, d\mu = c \cdot \int_{E_n} s \, d\mu$$
+    $$= c \cdot \phi(E_n)$$
+
+    (where $\phi(E) = \int_{E} s \, d\mu$ is a measure). Then, notice that $E_n \uparrow X$, so $\phi(E_n) \to \phi(X)$.
+
+    Then, we have that:
+
+    $$\alpha \geq c \cdot \phi(X) = c \cdot \int_{X} s \, d\mu$$
+
+    Then, $\forall c < 1$, $\forall s$:
+
+    $$\alpha \geq c \int_{X} s \, d\mu$$
+
+    If we take the limit $c \to 1$, we have that $\alpha \geq \int_{X} s \, d\mu$. And if we take the supremum
+    over all $s$, we have that:
+
+    $$\alpha \geq \int_{X} f \, d\mu$$
+
+    \textbf{\underline{Part 2:}}\\
+
+    Now, we have to show that the result holds for $a.e. \; x \in X$. Define 
+    $$F = \{x \in X: \text{either } (i) \text{ or } (ii) \text{ fails}\}$$
+
+    Then we have that $\mu(F) = 0$, and $E = X \setminus F$. For any $g$ (non-negative, measurable), 
+    we have that:
+
+    $$g - \chi_E \cdot g = 0 \quad \text{a.e. on } X$$
+
+    Then, we use the vanishing lemma to show that:
+
+    $$\int_{X} (g - \chi_E \cdot g) \, d\mu = 0$$
+    $$\iff \int_{X} g \, d\mu = \int_{E} g \, d\mu$$
+
+    Finally:
+
+    $$\int_X f \, d\mu = \int_{E} f \, d\mu = \lim_{n \to \infty} \int_{E} f_n \, d\mu = \lim_{n \to \infty} \int_{X} f_n \, d\mu$$
+
+\end{proof}
+
+
+\begin{fremark}
+    Note that we now have 2 ways to compute the integral of a non-negative measurable function:
+
+    \begin{itemize}
+        \item $\int_{X} f \, d\mu = \sup\left\{\int_{X} s \, d\mu: s \text{ simple, measurable and } 0 \leq s \leq f\right\}$
+        \vspace{1em}
+        \item $\int_{X} f \, d\mu = \lim_{n \to \infty} \int_{X} f_n \, d\mu$ where $f_n \uparrow f$ simple and measurable functions.
+        
+    \end{itemize}
+\end{fremark}
+
+\vspace{1em}
+
+\begin{fcorollary}[Monotone convergence for series]
+    Let $\{f_n\}_{n \in \N}$ be a sequence of measurable functions $f_n: X \to [0, \infty]$.
+    Then, we have that:
+
+    $$\int_{X} \sum_{n} f_n \, d\mu = \sum_{n} \int_{X} f_n \, d\mu$$
+    
+\end{fcorollary}
+
+\vspace{1em}
+
+\begin{fproposition}
+    Take $\Phi: X \to [0, \infty]$ measurable, $E \in \M$. Define:
+
+    $$\nu(E) = \int_{E} \Phi \, d\mu$$
+
+    Then, $\nu$ is a measure on $(X, \M)$. Moreover, for $f: X \to [0, \infty]$ measurable:
+
+    $$\int_{X} f \, d\nu = \int_{X} f \cdot \Phi \, d\mu$$
+
+\end{fproposition}
 
 
