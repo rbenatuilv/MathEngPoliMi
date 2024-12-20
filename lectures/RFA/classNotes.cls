@@ -63,8 +63,8 @@
 {\end{theorem}\end{tbox}}
 
 \newenvironment{fremark}
-{\begin{rbox}\begin{remark}}
-{\end{remark}\end{rbox}}
+{\begin{nbox}\begin{remark}}
+{\end{remark}\end{nbox}}
 
 \newenvironment{fnote}
 {\begin{nbox}\begin{note}}
