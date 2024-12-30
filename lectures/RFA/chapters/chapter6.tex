@@ -1,0 +1,402 @@
+\chapter{Absolutely continuous functions and Functions of bounded variations}
+
+\section{Fundamental theorems of calculus}
+
+Let $(X, \Lcur(X), \lambda)$ be a complete measure space, such that 
+$X = \R$ or $X = I \subset \R$ an interval.
+Take $f \in L^1(a, b)$. We can define the \textbf{integral function}:
+
+$$F(x) = \int_[a, x] f \, d\mu = \int_a^x f(t) \, dt$$
+
+If $f \in C([a, b])$, then:
+
+\begin{itemize}
+    \item $F \in C^1([a, b])$
+    \item $F'(x) = f(x)$
+    \item $F(x) - F(y) = \int_y^x f(t) \, dt$
+\end{itemize}
+
+What if only $f \in L^1(a, b)$? 
+
+\subsection{1st Fundamental Theorem of Calculus}
+
+\begin{ftheorem}[1st Fundamental Theorem of Calculus]
+    Let $f \in L^1(a, b)$. If we define:
+    $$F(x) = \int_a^x f(t) \, dt$$
+    then:
+    \vspace{1em}
+    \begin{itemize}
+        \item $F$ is differentiable at a.e. $x \in [a, b]$
+        \vspace{1em}
+        \item $F'(x) = f(x)$ a.e. $x \in [a, b]$
+    \end{itemize}
+\end{ftheorem}
+
+\begin{fexample}
+    Take $[a, b] = [-1, 1]$ and:
+
+    $$f(x) = \mathcal{H}(x) = \begin{cases}
+        0 & x \leq 0 \\
+        1 & x > 0
+    \end{cases}$$
+
+    This is the Heaviside function. Notice that $\mathcal{H} \in L^1(-1, 1)$.
+    Now:
+
+    $$F(x) = \int_{-1}^x \mathcal{H}(t) \, dt = \begin{cases}
+        0 & x \leq 0 \\
+        x & x > 0
+    \end{cases}
+    $$
+
+    Also, if we define:
+
+    $$f(x) = \begin{cases}
+        \mathcal{H}(x) & x \notin \Q\\
+        \infty & x \in \Q
+    \end{cases}$$
+
+    we get the same $F$.
+\end{fexample}
+
+\begin{note}
+    For the proof, we need a deep result due to Lebesgue. We go back to
+    $\Lcur^1([a, b])$.
+\end{note}
+
+\vspace{1em}
+
+\begin{fdefinition}
+    Le t $f \in \Lcur^1([a,b])$. we say $x \in [a, b]$ is a \textbf{Lebesgue point}
+    for $f$ if:
+
+    $$ \lim_{h \to 0} \frac{1}{h} \int_{x}^{x+h} |f(t) - f(x)| \, dt = 0$$
+
+    Note that if $x = a$ then $h \to 0^+$ and if $x = b$, then $h \to 0^-$.
+\end{fdefinition}
+
+\begin{fremark}
+    If $x$ is a LP, then:
+
+    $$0 = \lim_{h \to 0} \frac{1}{h} \int_{x}^{x + h} |f(t) - f(x)| \, dt$$
+    $$ \geq \lim_{h \to 0} \left| \frac{1}{h} \int_x^{x+h} (f(t) - f(x)) \, dt \right|$$
+    $$ = \left| \left( \lim_{h \to 0} \int_x^{x+h} f(t) \, dt \right) - f(x) \right|$$
+
+    i.e., LP is related with the validity of a local mean value theorem at $x$
+\end{fremark}
+
+\vspace{1em}
+
+\begin{fremark}
+    We have the following:
+    \vspace{1em}
+    \begin{itemize}
+        \item $f$ is continuos $\implies$ $x$ is a LP.
+        \vspace{1em}
+        \item $f \in C([a, b]) \implies$ every $x \in [a, b]$ is a LP.
+        \vspace{1em}
+        \item Take $\mathcal{H}(x)$, then $x = 0$ is not a LP.
+    \end{itemize}
+\end{fremark}
+
+\vspace{1em}
+
+\begin{ftheorem}[Lebesgue]
+    Let $f \in \Lcur^1([a, b])$. Then, a.e. $x \in [a, b]$ is a Lebesgue point.
+\end{ftheorem}
+
+\begin{fremark}
+    By consequence of the theorem, it makes sense to consider Lebesgue points in 
+    $L^1$. Indeed, changing the representative of the function class in
+    $L^1$ maintains the same set of Lebesgue points up to a negligible set.
+\end{fremark}
+
+\vspace{1em}
+
+\begin{note}
+    To prove the \textbf{1st fund. thm.}, we will show that:
+    \begin{itemize}
+        \item $F$ is differentiable at $x$.
+        \item $F'(x) = f(x)$
+    \end{itemize}
+
+    for all $x$ Lebesgue points for $f$.
+\end{note}
+
+\vspace{1em}
+
+\begin{proof}[Proof: (1st fund. thm.)]
+    Take $x \in [a, b]$ a LP of $f$. Then:
+
+    $$ 0 \leq \left| \frac{F(x+h) - F(x)}{h} - f(x)\right| $$
+    $$= \left| \frac{\int_a^{x+h} f(t) \, dt - \int_a^x f(t) \, dt}{h} - f(x) \right|$$
+    $$= \left| \frac{1}{h} \int_x^{x+h} f(t) \, dt - \frac{1}{h} \int_x^{x+h} f(x) \, dt \right|$$
+    $$\leq \frac{1}{h} \int_x^{x+h} |f(t) - f(x)| \, dt \to 0 \quad \text{as } h \to 0$$
+
+    because $x$ is a LP.
+
+\end{proof}
+
+\begin{fremark}
+    Let us try to reverse the point of view: take $g: [a, b] \to \R$, and assume that
+    $g$ is differentiable a.e. in $[a, b]$, and that $g' \in L^1([a, b])$. Is 
+    $g$ related with $\int_a^x g'(t) \, dt$?. The answer is \textbf{NO!}
+\end{fremark}
+
+\begin{fexample}
+    $\mathcal{H}: [-1, 1] \to \R$ and notice that:
+
+    $$\mathcal{H}'(x) 0 \begin{cases}
+        \nexists & x = 0\\
+        0 & x \neq
+    \end{cases}$$
+
+    We have that $\mathcal{H}' = 0$ a.e. in $[-1, 1]$, and $0 \in L^1([-1, 1])$.
+    But:
+
+    $$\mathcal{H}(1) - \mathcal{H}(0) = 1 - 0 = 1 \neq 0 = \int_{-1}^1 0 \, dt = \int_{-1}^1 \mathcal{H}'(t) \, dt$$
+
+    Other example with the Cantor-Vitali function:
+
+    $$g(x) = v(x), \quad \text{s.t. } v(0) = 0, v(1) = 1 \quad \text{and constant outside the Cantor set}$$
+
+    Then, $v$ is differentiable and $v'(x) = 0$ a.e., but we can notice that the same thing
+    as before happens.
+\end{fexample}
+
+\vspace{1em}
+
+\begin{fdefinition}
+    Let $I$ be an interval. We say that $f: I \to \R$ is an 
+    \textbf{absolutely continuous function}, $f \in AC(I)$, if:\\
+
+    $\forall \varepsilon > 0, \exists \delta$ s.t., $\forall n \in \N$, 
+    $\forall$ family of $n$ disjoint subintervals of $I$, i.e., $(a_i, b_i) \subset I$ s.t.
+    $... b_{i - 1} \leq a_i < b_i \leq a_{i+1} < ...$ we have that:
+
+    $$\lambda \left( \bigcup_{i=1}^n (a_i, b_i) \right) < \delta \implies \sum_{i=1}^n |f(b_i) - f(a_i)| \leq \varepsilon$$  
+
+\end{fdefinition}
+
+\begin{fremark}
+    Recall that $f$ is uniformly continuous (UC) if:
+
+    $$\forall \varepsilon > 0, \exists \delta > 0 \text{ s.t. } \forall x, y \in I$$
+    $$|x - y| < \delta \implies |f(x) - f(y)| < \varepsilon$$
+
+    (The choice of $\delta$ is independent of $x, y$)\\
+
+    Then:
+
+    $$UC(I) \supset AC(I)$$
+    
+    Recall that $f$ is Lipschitz continuous if $\exists L > 0$ s.t.:
+
+    $$\forall x, y \in I, |f(x) - f(y)| \leq L|x - y|$$
+
+    Then:
+
+    $$Lip(I) \subset AC(I)$$
+
+    We will see that:
+
+    $$Lip(I) \subsetneq AC(I) \subsetneq UC(I)$$
+
+    We will also see that, as $g' \in C \iff g \in C^1$, we have that:
+
+    $$g' \in L^1 \iff g \in AC$$
+\end{fremark}
+
+\subsection{2nd Fundamental Theorem of Calculus}
+
+\begin{ftheorem}[2nd Fundamental Theorem of Calculus]
+    Let $g: [a, b] \to \R$. The following are equivalent:
+    \vspace{1em}
+    \begin{enumerate}[label=(\roman*)]
+        \item $g \in AC([a, b])$
+        \vspace{1em}
+        \item $g$ is differentiable a.e. in $[a, b]$, $g' \in L^1([a, b])$
+        and:
+
+        $$g(x) - g(y) = \int_y^x g'(t) \, dt \quad \forall x, y \in [a, b]$$
+    \end{enumerate}
+\end{ftheorem}
+
+\begin{fcorollary}
+    $f \in L^1([a, b]) \implies F(x) = \int_a^x f(t) \, dt \in AC([a, b])$
+\end{fcorollary}
+
+\begin{note}
+    To prove one implication of the theorem, we will need some few extra 
+    results.
+\end{note}
+
+\vspace{1em}
+
+\begin{ftheorem}[Absolute continuity of the integral function]
+    Let $f \in L^1([a, b])$. Then, $\forall \varepsilon > 0$, $\exists \delta > 0$ s.t.:
+
+    $$\begin{cases}
+        E \in \M\\
+        \mu(E) < \delta
+    \end{cases} \implies \int_{E} |f| \, d\mu < \varepsilon$$
+    
+\end{ftheorem}
+
+\begin{proof}
+    By contradiction: assume that $\exists \varepsilon > 0$ s.t. $\forall \delta > 0$,
+    $\exists E \in \M$ s.t. $\mu(E) < \delta$ and $\int_E |f| \, d\mu \geq \varepsilon$.\\
+
+    In particular, $\delta = 1/2^n \to 0$, $E_n = E_{\delta_n}$ and:
+
+    $$F_n = \bigcup_{k=n}^{\infty} E_n = E_n \cup F_{n+1}, \quad F = \lim_{n \to \infty} F_n$$
+
+    Then:
+    \begin{enumerate}
+        \item $$(F_{n+1} \subset F_n) \implies \{F_n\} \downarrow F$$
+        \item $$\forall n, \quad  \mu(F_n) \leq \sum_{k=n}^{\infty} \mu(E_k) \leq \sum_{k=n}^{\infty} \delta_k = \sum_{k=n} \frac{1}{2^k} = 2^{-n+1}$$
+        \item $$\nu(F_n) = \int_{F_n} |f| \, d\mu \geq \int_{E_n} |f| \, d\mu \geq \epsilon \quad \forall n$$
+        Moreover:
+        $$\nu(F_1) = \int_{F_1} |f| \, d\mu \leq \int_X |f| \, d\mu < \infty$$
+    \end{enumerate}
+
+    Use continuity of measures:
+    $$(1) + (2) \implies \nu(F) = \lim_{n \to \infty} \nu(F_n) = 0$$
+    $$(1) + (3) \implies \nu(F) = \lim_{n \to \infty} \nu(F_n) \geq \varepsilon > 0$$
+
+    Contradiction, since $\nu(F) = 0$.
+\end{proof}
+
+\begin{fremark}
+    As a consequence, we have:
+
+    $$f \in L^1([a, b]) \implies F(x) = \int_a^x f(t) \, dt \in AC([a, b])$$
+\end{fremark}
+
+\begin{proof}
+    Take $\varepsilon > 0$, and $\delta = \delta(\varepsilon)$ as in the theorem.
+    I know:
+
+    $$\begin{cases}
+        \forall E \in \Lcur([a, b])\\
+        \lambda(E) < \delta
+    \end{cases} \implies \int_E |f| \, d\lambda < \varepsilon$$
+
+    Take $E = \bigcup_{i=1}^n (a_i, b_i)$, s.t $(a_i, b_i)$ disjoint intervals.
+    Then:
+
+    $$\sum_{i=1}^n |F(b_i) - F(a_i)| = \sum_{i=1}^n \left| \int_{a_i}^{b_i} f(t) \, dt \right| \leq \sum_{i=1}^n \int_{a_i}^{b_i} |f| \, dt$$
+    $$= \int_{\bigcup_{i=1}^n (a_i, b_i)} |f| \, dt < \varepsilon$$
+
+\end{proof}
+
+\begin{fexample}[(AC $\nRightarrow$ Lip)]
+    Consider $g(x) = \sqrt{x}$ in $[0, 1]$. Then:
+
+    $$\sqrt{x} = \int_0^x \frac{1}{2\sqrt{t}} \, dt$$
+
+    and $g \in AC([0, 1])$. But notice that $g \notin Lip([0, 1])$.
+
+    $$\left| \frac{\sqrt{x} - \sqrt{0}}{x - 0} \right| \nleq C$$
+
+    for any $C > 0$, as $x \to 0$.
+\end{fexample}
+
+\begin{fexample}[(UC $\nRightarrow$ AC)]
+    Consider:
+    $$f(x) = \begin{cases}
+        x \sin(1/x) & x \neq 0\\
+        0 & x = 0
+    \end{cases}$$
+
+    It is continuous in $[0, 1] \implies f \in UC([0, 1])$. But notice that
+    $f \notin AC([0, 1])$. Indeed:
+
+    $$f'(x) = \sin(1/x) - \frac{1}{x} \cos(1/x)$$
+
+    and $1/x \cos(1/x)$ is not integrable in $[0, 1]$, i.e., $f' \notin L^1([0, 1])$.
+\end{fexample}
+
+\section{AC functions and weak derivatives}
+
+\begin{fproposition}[Integration by parts in AC]
+    Let $u: [a, b] \to \R$. Then, $u \in AC([a, b])$ if and only if:
+    \vspace{1em}
+    \begin{itemize}
+        \item $u \in C([a, b])$
+        \vspace{1em}
+        \item $u$ is differentiable a.e. in $[a, b]$
+        \vspace{1em}
+        \item $u' \in L^1([a, b])$
+        \vspace{1em}
+        \item $$\int_a^b u' \varphi dx = - \int_a^b u \varphi' dx \quad \forall \varphi \in C_0^{\infty}([a, b])$$
+    \end{itemize}
+\end{fproposition}
+
+\vspace{1em}
+
+\begin{fdefinition}[Weak derivative]
+    Let $u \in L^1(a, b)$. We say that $u \in W^{1,1}(a, b) \iff \exists w \in L^1(a, b)$ s.t.:
+
+    $$\int_a^b u \varphi' dx = - \int_a^b w \varphi dx \quad \forall \varphi \in C_0^{\infty}(a, b)$$
+
+    Such $w$ is called the \textbf{weak derivative} of $u$.
+\end{fdefinition}
+
+\begin{fremark}
+    Both $u$ and $w = u'$ are equivalence classes of functions, i.e., $u \sim v \iff u = v$ a.e.
+Properties should be independent of the representative.
+\end{fremark}
+
+\begin{fremark}
+    If such a $w$ exists, it is unique (up to a.e. equivalence). Indeed, 
+    assume that $w_1, w_2$ are weak derivatives of $u$. Then:
+    
+    $$\int_a^b (w_1 - w_2) \varphi dx = 0 \quad \forall \varphi \in C_0^{\infty}(a, b)$$
+    $$\implies w_1 - w_2 = 0 \text{ a.e.}$$
+\end{fremark}
+
+\begin{fremark}
+    In principle, the pointwise and weak derivatives are different objects,
+    and the notation $u'$ may be misleading. But we know that if $u \in AC([a, b])$
+    they coincide.    
+\end{fremark}
+
+\begin{fremark}
+    In principle, the definition of weak derivatives can be 
+    extended (measures, distributions). Take:
+
+    $$\mathcal{H}(x) = \begin{cases}
+        0 & x \leq 0\\
+        1 & x > 0
+    \end{cases}$$
+
+    Then:
+
+    $$- \int_{-1}^1 \mathcal{H}(x) \varphi'(x) \, dx = - \int_0^1 \varphi'(x) \, dx = \varphi(0) - \varphi(1)$$
+    $$= \varphi(0) = \int_{[-1, 1]} \varphi(x) \,  d\delta_0$$
+
+    where $\delta_0$ is the Dirac delta function. This suggest that:
+
+    $$\mathcal{H}' = \delta_0 \text{ weakly}$$
+    $$\mathcal{H}' = 0 \text{ pointwise}$$
+\end{fremark}
+
+\vspace{1em}
+
+\begin{ftheorem}
+    $u \in AC([a, b]) \iff u \in W^{1,1}(a, b)$
+\end{ftheorem}
+
+\begin{proof}
+    The proof goes as follows:
+    \begin{itemize}
+        \item[($\Rightarrow$)] Already proved.
+        \item[($\Leftarrow$)] Assume that $u'$ weak derivative of $u$, $u' \in L^1(a, b)$.
+        Then:
+        $$z(x) = \int_a^x u'(t) \, dt, \quad z \in AC$$
+        
+        We can show that $u = z + c$ for some constant $c$.
+    \end{itemize}
+\end{proof}
+

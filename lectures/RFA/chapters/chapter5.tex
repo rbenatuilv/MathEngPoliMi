@@ -1,0 +1,135 @@
+\chapter{Types of convergence}
+
+We have various types of convergence for sequences of measurable
+functions:
+
+\begin{fdefinition}
+    Let $f_n: X \to \Rbar$ be a sequence of measurable functions,
+    that converges to a function $f: X \to \Rbar$. We say that the
+    convergence is a:
+    \vspace{1em}
+    \begin{itemize}
+        \item \textbf{Pointwise convergence}:
+        $$f_n(x) \to f(x) \quad \forall x \in X$$
+        \item \textbf{Uniform convergence}:
+        $$\sup_{x \in X} |f_n(x) - f(x)| \to 0$$
+        \item \textbf{Convergence a.e.}:
+        $$f_n(x) \to f(x) \quad \text{a.e. } x \in X$$
+        \item \textbf{$L^1$-convergence}:
+        $$\int_X |f_n - f| \, d\mu \to 0$$
+        \item \textbf{$L^\infty$-convergence}:
+        $$\esssup_X |f_n - f| \to 0$$
+        \item \textbf{Convergence in measure}:
+        $$\mu(\{x \in X: |f_n(x) - f(x)| \geq \epsilon\}) \to 0 \quad \forall \epsilon > 0$$
+    \end{itemize}
+\end{fdefinition}
+
+\begin{fremark}
+    Basic relations:
+    $$\text{Uniform convergence} \Rightarrow \text{Pointwise convergence} \Rightarrow \text{Convergence a.e.}$$
+    $$\text{Uniform convergence} \Rightarrow \text{$L^\infty$-convergence}$$
+\end{fremark}
+
+\begin{fexercise}
+    Let $([0, 1], \Lcur([0, 1]), \lambda)$ be the Lebesgue measure space.
+    Let:
+    $$f_n(x) = e^{-nx} \quad 0 \leq x \leq 1$$
+    $$g(x) = \begin{cases}
+        1 & x = 0 \\
+        0 & x \in (0, 1]
+    \end{cases}$$
+
+    $$f(x) = 0 \quad 0 \leq x \leq 1$$
+
+    Show that:
+
+    \begin{itemize}
+        \item $f_n \to f$ a.e.
+        \item $f_n \notto f$ pointwise
+        \item $f_n \to g$ pointwise
+        \item $f_n \notto g$ uniformly 
+    \end{itemize}
+\end{fexercise}
+\vspace{1em}
+
+\section{a.e. convergence and convergence in measure}
+
+\begin{ftheorem}
+    Let $\mu(X) < \infty$, $f_n, f$ measurable functions, a.e. finite in $X$.
+    If $f_n \to f$ a.e., then $f_n \to f$ in measure.
+\end{ftheorem}
+
+\begin{fremark}
+    if $\mu(X) = \infty$, then the theorem may not hold. For instance,
+    consider $X = \R$, with the Lebesgue measure, and:
+    $$f_n(x) = \chi_{[n, \infty)}(x) = \begin{cases}
+        1 & x \geq n \\
+        0 & x < n
+    \end{cases}$$
+
+    We can show that $f_n(x) \to 0$ a.e., but 
+    $\lambda(\{f_n \geq 1/2\}) = \infty \; \forall n$ and thus
+    $f_n \notto 0$ in measure.\\
+
+    Also notice that convergence in measure \textbf{does not imply} 
+    convergence a.e., even if $\mu(X) < \infty$. For instance, consider
+    the \textbf{\say{typewriter sequence}}.
+\end{fremark}
+
+\vspace{1em}
+
+\begin{ftheorem}
+    Let $f_n, f$ be measurable functions, a.e. finite in $X$. If $f_n \to f$ in measure,
+    then there exists a subsequence $f_{n_k}$ that converges to $f$ a.e.
+\end{ftheorem}
+
+\section{Convergence in $L^1$ and convergence in measure}
+
+\begin{ftheorem}
+    Let $f_n, f$ be measurable functions in $L^1(X, \M, \mu)$.
+    If $f_n \to f$ in $L^1$, then $f_n \to f$ in measure.
+\end{ftheorem}
+
+\begin{proof}
+    Assume by contradiction that $f_n \notto f$ in measure.
+    Then $\exists \alpha > 0$ s.t.:
+
+    $$\mu(\{x \in X: |f_n(x) - f(x)| \geq \alpha\}) \notto 0$$
+
+    I.e., $\exists \epsilon > 0$ and a subsequence $f_{n_k}$ s.t.:
+
+    $$\mu(\{x \in X: |f_{n_k}(x) - f(x)| \geq \alpha\}) \geq \epsilon \quad \forall k$$
+
+    Let us call $E_k = \{x \in X: |f_{n_k}(x) - f(x)| \geq \alpha\}$.
+    On the other hand, by assumption, $f_{n_k} \to f$ in $L^1$.
+    But notice that:
+
+    $$\int_X |f_{n_k} - f| \, d\mu \geq \int_{E_k} |f_{n_k} - f| \, d\mu \geq \alpha \mu(E_k) \geq \alpha \epsilon > 0$$
+
+    Since $f_{n_k} \to f$ in $L^1$, we have that $\int_X |f_{n_k} - f| \, d\mu \to 0$. 
+    But we have just shown that $\int_X |f_{n_k} - f| \, d\mu \geq \alpha \epsilon > 0$.
+    This is a contradiction, and thus $f_n \to f$ in measure.
+\end{proof}
+
+\begin{fremark}
+    In general, convergence in measure does not imply convergence in $L^1$.
+    For instance, consider $X = [0, 1]$, $\M = \Lcur([0, 1])$, $\mu$ the Lebesgue measure,
+    and $f_n(x) = n \chi_{[0, 1/n]}(x)$. We can show that $f_n \to 0$ in measure, but
+    $\int_X |f_n - 0| \, d\mu = 1 \; \forall n$.
+\end{fremark}
+
+\section{Convergence in $L^1$ and a.e. convergence}
+
+In general, they are not related. But we have 2 main results:
+\textbf{Dominating convergence theorem} that we already
+saw, and the \textbf{\say{Reverse Dominating Convergence Theorem}}, 
+that states:
+
+\begin{ftheorem}
+    Let $f_n \to f$ in $L^1(X, \M, \mu)$, then there exists a subsequence
+    $f_{n_k}$ that converges to $f$ a.e., and there exists a function $g \in L^1(X, \M, \mu)$
+    s.t. $|f_{n_k}| \leq g$ a.e. $\forall k$.
+\end{ftheorem}
+
+
+

@@ -1,0 +1,447 @@
+\chapter{Linear operators}
+
+\begin{note}
+    We will work with $(X, \norm{\cdot}_X)$ and $(Y, \norm{\cdot}_Y)$ 
+    normed (Banach) spaces.
+\end{note}
+
+\begin{fdefinition}
+    We say that $T: X \to Y$ is a \textbf{linear operator} if:
+
+    $$T(\alpha x + \beta y) = \alpha T(x) + \beta T(y)$$
+
+    $\forall x, y \in X$ and $\forall \alpha, \beta \in \R$.\\
+
+    (If $Y = \R$, we say that $T$ is a \textbf{linear functional}).
+\end{fdefinition}
+
+\vspace{1em}
+
+\textbf{\underline{Notation:}} For $T$ linear, $T(u) = Tu$.
+
+\begin{example}
+    Let $X = \R^n$ and $Y = \R^m$. Then, $T: \R^n \to \R^m$ is linear if:
+
+    $$T(x) = Ax$$
+
+    where $A \in \R^{m \times n}$.
+\end{example}
+
+\begin{fremark}
+    $T$ is linear $\implies T(0) = 0$.
+\end{fremark}
+
+\begin{fdefinition}
+    We say that $T: X \to Y$ is \textbf{bounded} if $\exists M > 0$ such that:
+
+    $$\norm{Tx}_Y \leq M \norm{x}_X \quad \forall x \in X$$
+\end{fdefinition}
+
+\vspace{1em}
+
+\begin{fnote}[Recall]
+    We have that:
+    \vspace{1em}
+    \begin{itemize}
+        \item $T$ is Lipschitz if $\exists L > 0$ such that $\norm{Tx - Ty}_Y \leq L \norm{x - y}_X$.
+        \vspace{1em}
+        \item $T$ is continuous in $x \in X$ if $\forall x_n \to x$ in $X$, we have that $Tx_n \to Tx$ in $Y$.
+    \end{itemize}
+    
+\end{fnote}
+
+\vspace{1em}
+
+\begin{fremark}
+    $T: \R^n \to \R^m$ linear $\implies T$ is continuous and bounded.
+    But notice that if $X, Y$ are infinite-dimensional, then the 
+    previous statement is not true.
+\end{fremark}
+
+\begin{ftheorem}
+    $T: X \to Y$ linear. Then, the following are equivalent:
+    \vspace{1em}
+    \begin{enumerate}[label=\arabic*)]
+        \item $T$ is bounded. 
+        \vspace{1em}
+        \item $T$ is Lipschitz.
+        \vspace{1em}
+        \item $T$ is continuous at any $x_0 \in X$
+        \vspace{1em}
+        \item $T$ is continuous at $0$.
+    \end{enumerate}
+\end{ftheorem}
+
+\begin{proof}
+    The proof goes as follows:
+
+    \begin{enumerate}
+        \item[($1 \implies 2$)] We know that $T$ is bounded, i.e.:
+        $$\norm{Tx}_Y \leq M \norm{x}_X, \quad \forall x \in X$$
+
+        Take $x = u - v$. Then:
+        $$\norm{Tu - Tv}_Y = \norm{T(u - v)}_Y \leq M \norm{x-y}_X$$
+
+        Then, $T$ is Lipschitz with $L = M$.
+
+        \item[($2 \implies 3$)] Let $L > 0$ be the Lipschitz constant for $T$. Let $x_n \to x_0$
+        for some $x_0 \in X$. We have:
+
+        $$0 \leq \norm{Tx_n - Tx_0}_Y \leq L \norm{x_n - x_0}_X \to 0$$
+
+        \item[($3 \implies 4$)] Trivial
+        
+        \item[($4 \implies 1$)] By contradiction, assume that $T$ is not bounded:
+        $$\forall n \in N, \; \exists x_n \in X: \; \norm{Tx}_Y \geq n \norm{x_n}_X$$
+
+        Let $z_n = \frac{1}{n} \frac{x_n}{\norm{x_n}_X}$. Then $\norm{z_n}_X = 1/n \to 0$ as $n \to \infty$.
+        Since $T$ is continuous at $0$, then:
+
+        $$Tz_n \to T 0 = 0$$
+
+        But:
+
+        $$\norm{Tz_n}_Y = \norm{T\left(\frac{1}{n} \frac{x_n}{\norm{x_n}}\right)}_Y$$
+        $$= \frac{1}{n \norm{x_n}_X} \norm{T x_n}_Y \geq 1 \notto 0$$
+
+        This is a contradiction.
+    \end{enumerate}
+\end{proof}
+
+\begin{fdefinition}
+    We define the set $\Lcur(X, Y)$ as:
+
+    $$\Lcur(X, Y) := \{T: X \to Y \text{ s.t. } T \text { linear and bounded}\}$$
+
+    If $X = Y$, we write $\Lcur(X)$. If $Y = \R$, then we say that $\Lcur(X, \R)$ is the 
+    \textbf{dual} of $X$, noted as $X' = X^*$.
+\end{fdefinition}
+
+\begin{fremark}
+    $\Lcur(X, Y)$ is a vector space, i.e., 
+    $\forall T,L \in \Lcur(X, Y), \alpha, \beta \in \R$:
+
+    $$(\alpha T + \beta L) \in \Lcur(X, Y)$$
+
+    ($(\alpha T + \beta L)(x):= \alpha T x + \beta L x$)
+
+\end{fremark}
+
+\vspace{1em}
+
+\begin{fdefinition}
+    We define a norm on $\Lcur(X, Y)$, called the \textbf{operator norm}, as:
+
+    $$\norm{T}_{\Lcur(X, Y)} := \sup_{\norm{x}\leq1} \norm{Tx}_Y$$
+\end{fdefinition}
+
+\begin{fproposition}
+    For the operator norm, we have the following equivalences:
+
+    $$\norm{T}_{\Lcur(X, Y)} = \sup_{\norm{x}=1} \norm{Tx}_Y = 
+    \sup_{x \neq 0} \frac{\norm{Tx}_Y}{\norm{x}_X} = 
+    \inf \{M > 0: \norm{Tx}_Y \leq M \norm{x}_X \; \forall x \in X\}$$
+\end{fproposition}
+
+\begin{proof}
+    We know that:
+
+    $$\sup_{\norm{x} \leq 1} \norm{Tx}_Y \geq \sup_{\norm{x}=1} \norm{Tx}_Y$$
+
+    The other inequality:
+
+    $$\forall x \neq 0, \; \norm{Tx}_Y = \norm{x}_X \cdot \norm{T\left(\frac{x}{\norm{x}_X}\right)}_Y$$
+
+    Then, if $z= x / \norm{x}_X$:
+
+    $$\norm{Tx}_Y \leq \norm{Tz}_Y, \quad \text{with } \norm{z}_X = 1$$
+
+    obtaining the inequality, so:
+
+    $$\norm{T}_{\Lcur(X, Y)} = \sup_{\norm{x}\leq1} \norm{Tx}_Y = 
+    \sup_{\norm{x}=1} \norm{Tx}_Y$$
+
+    For the others, we have:
+
+    $$\forall x \neq 0, \quad \norm{Tx}_Y \leq M \norm{x}_X \iff M \geq \frac{\norm{Tx}_Y}{\norm{x}_X}$$
+    $$\iff M \geq \norm{Tz}_Y, \quad \text{with } \norm{z}_X = 1$$
+
+    So:
+
+    $$\sup_{x \neq 0} \frac{\norm{Tx}_Y}{\norm{x}_X} = 
+    \inf \{M > 0: \norm{Tx}_Y \leq M \norm{x}_X \; \forall x \in X\}$$
+
+    And:
+
+    $$\inf(M) \geq \sup_{\norm{x} = 1} \norm{Tx}_Y$$
+
+\end{proof}
+
+\begin{ftheorem}
+    If $X$ is a normed space, and $Y$ is a Banach space, 
+    then $\Lcur(X, Y)$ is a Banach space.
+\end{ftheorem}
+
+\begin{proof}
+    Omitted.
+\end{proof}
+
+\begin{fdefinition}
+    Let $T: X \to Y$ linear. We define the following:
+    \vspace{1em}
+    \begin{itemize}
+        \item \textbf{Kernel:} $Ker(T) = \{x \in X: Tx = 0\} \subset X$
+        \vspace{1em}
+        \item \textbf{Range:} $R(T) = \{y \in Y: \exists x \in X, Tx = y\} \subset Y$
+        \vspace{1em}
+        \item $T$ is \textbf{injective} if $Ker(T) = \{0\}$
+        \vspace{1em}
+        \item $T$ is \textbf{surjective} if $R(T) = Y$
+        \vspace{1em}
+        \item $T$ is \textbf{bijective} if $T$ is injective and surjective
+    \end{itemize}
+    \vspace{1em}
+
+    Also, if $T$ is bijective, we define the \textbf{inverse} of $T$ as $T^{-1}: Y \to X$,
+    s.t. $T T^{-1} = I_Y$ and $T^{-1} T = I_X$.
+    Notice that $T^{-1}$ is linear.
+\end{fdefinition}
+
+\begin{fremark}
+    Let $T: X \to Y$ linear. Then, $Ker(T) \subset X$ and $R(T) \subset Y$ are
+    vector subspaces. Also, if $T \in \Lcur(X, Y)$, then $Ker(T)$ is closed in $X$.
+    The $R(T)$ may or may not be closed in $Y$.
+\end{fremark}
+
+\vspace{1em}
+
+\begin{fdefinition}[Isomorphism]
+    We say that $X, Y$ are \textbf{isomorphic} if $\exists T \in \Lcur(X, Y)$ bijective
+    and $T^{-1} \in \Lcur(Y, X)$.\\
+
+    In this case, we write $X \cong Y$.
+\end{fdefinition}
+
+\begin{fdefinition}
+     We say that $T \in \Lcur(X, Y)$ is an \textbf{isometry} if:
+     $$\norm{Tx}_Y = \norm{x}_X, \quad \forall x \in X$$
+\end{fdefinition}
+
+\begin{fdefinition}[Continuous embedding]
+    Let $X \subset Y$ be a vector subspace. We define the \say{inclusion}
+    operator $J: X \to Y$ as $Jx = x$. Then, if $J \in \Lcur(X, Y)$, i.e., 
+    if:
+
+    $$\norm{x}_Y \leq M \norm{x}_X, \quad \forall x \in X$$
+
+    Then, we say that $X$ is \textbf{continuously embedded} in $Y$, 
+    and we write $X \hookrightarrow Y$.\\
+
+    More generally, if $X, Y$ Banach and $T \in \Lcur(X, Y)$, $T$ injective
+    and $T^{-1} \in \Lcur(R(T), X)$, then we say that $X$ is \textbf{continuously embedded}
+    in $Y$. We call $T$ the \textbf{embedding operator}.
+    
+\end{fdefinition}
+
+\begin{fexample}
+    We have already prove that, for $(X, \M, \mu)$ a measure space,
+    $\mu(X) < \infty$, $1 \leq p < q \leq \infty$, then:
+
+    $$L^p(X, \M, \mu) \hookrightarrow L^q(X, \M, \mu)$$
+\end{fexample}
+
+\section{Uniform boundedness (Banach-Steinhaus theorem)}
+
+\begin{ftheorem}[Uniform boundedness (Banach-Steinhaus theorem)]
+    Let $X, Y$ Banach spaces, and $\mathcal{T} \subset \Lcur(X, Y)$ be 
+    a set of linear operators. Suppose that $\mathcal{T}$ is
+    pointwise bounded, i.e., $\forall x \in X$, $\exists M_x > 0$ such that:
+
+    $$\norm{Tx}_Y \leq M_x, \quad \forall T \in \mathcal{T}$$
+
+    Then, $\mathcal{T}$ is uniformly bounded, i.e., $\exists M > 0$ such that:
+
+    $$\norm{T}_{\Lcur(X, Y)} \leq M, \quad \forall T \in \mathcal{T}$$
+\end{ftheorem}
+
+\begin{note}
+    The proof is based on Baire's topological lemma.
+\end{note}
+
+\vspace{1em}
+
+\begin{flemma}[Baire's topological lemma]
+    Let $X$ be a complete metric space, $\{C_n\}_{n \in \N}$ s.t.
+    $C_n \subset X$ is closed and:
+
+    $$X = \bigcup_{n \in \N} C_n$$
+
+    Then, $\exists n_0 \in \N$ such that $C_{n_0}$ has non-empty interior.\\
+
+    ($\exists r > 0, x_0 \in C_{n_0}: \; \overline{B_r(x_0)} \subset C_{n_0}$)
+\end{flemma}
+
+\begin{proof}[Uniform boundedness]
+    Define, $\forall n \in \N$, 
+
+    $$C_n = \{x \in X: \norm{Tx}_Y \leq n, \; \forall T \in \mathcal{T}\}$$
+
+    We want to apply Baire's lemma to $\{C_n\}_{n \in \N}$. We have:
+
+    \begin{itemize}
+        \item ($C_n$ is closed): Indeed, take $\{x_k\}_{k \in \N} \subset C_n$ s.t. $x_k \to \bar{x} \in X$.
+        We have to show that $\bar{x} \in C_n$. We know that $\forall T \in \mathcal{T}$:
+
+        $$\norm{Tx_k}_Y \leq n, \quad \forall k \in \N$$
+
+        Since $T$ is continuous, then $Tx_k \to Tx$ as $k \to \infty$. Then:
+
+        $$\norm{Tx}_Y \leq n, \quad \forall T \in \mathcal{T}$$
+
+        So, $\bar{x} \in C_n$.
+
+        \item ($X = \bigcup_{n \in \N} C_n$): Indeed, take any $x \in X$. 
+        Since $\mathcal{T}$ is pointwise bounded, then $\exists M_x > 0$ such that:
+
+        $$\norm{Tx}_Y \leq M_x, \quad \forall T \in \mathcal{T}$$
+
+        Then, $x \in C_{n} \; \forall n \geq M_x$.
+    \end{itemize}
+
+    Baire implies that: $\exists n_0 \in \N$, $r > 0$ and $x_0 \in X$ such that:
+
+    $$\overline{B_r(x_0)} \subset C_{n_0}$$
+
+    Then, we have:
+
+    $$\norm{T(x_0 + r z)}_Y \leq n_0, \quad \forall T \in \mathcal{T}, \; \forall \norm{z}_X \leq 1$$
+
+    And notice that:
+
+    $$r \norm{Tz}_Y - \norm{T x_0}_Y \leq \norm{T(x_0 + r z)}_Y \leq n_0$$
+
+    Then, we have:
+
+    $$\norm{Tz}_Y \leq \frac{n_0 + \norm{T x_0}_Y}{r}, \quad \forall T \in \mathcal{T}, \; \forall \norm{z}_X \leq 1$$
+
+    Taking the supremum over $\norm{z}_X \leq 1$, we obtain:
+
+    $$\norm{T}_{\Lcur(X, Y)} \leq \frac{n_0 + \norm{T x_0}_Y}{r} =: M$$
+
+\end{proof}
+
+\begin{fcorollary}
+    Let $X, Y$ Banach spaces, and $\{T_n\}_{n \in \N} \subset \Lcur(X, Y)$.
+    Assume that $\forall x \in X$, $\{T_n x\}_{n \in \N} \subset Y$ is a 
+    converging sequence. We have:
+
+    $$T(x) := \lim_{n \to \infty} T_n x$$
+
+    Then, $T \in \Lcur(X, Y)$.
+\end{fcorollary}
+
+\begin{proof}
+    The proof goes as follows:
+
+    \begin{itemize}
+        \item\textbf{$T$ is linear}: $\forall n \in \N$, we have:
+        $$T_n(\alpha x + \beta y) = \alpha T_n x + \beta T_n y$$
+
+        Since $T_n$ is continuous:
+
+        $$T(\alpha x + \beta y) = \alpha Tx + \beta Ty$$
+
+        \item \textbf{$T$ is bounded}: Since $\{T_n x\}_{n \in \N}$ converges, then it is bounded.
+        Then, $\exists M_x > 0$ such that:
+
+        $$\norm{T_n x}_Y \leq M_x, \quad \forall n \in \N$$
+
+        Then, $\{T_n\}_{n \in \N}$ is pointwise bounded. By the uniform boundedness theorem,
+        we have that $\{T_n\}_{n \in \N}$ is uniformly bounded, i.e., $\exists M > 0$ such that:
+
+        $$\norm{T_n}_{\Lcur(X, Y)} \leq M, \quad \forall n \in \N$$
+
+        I.e.:
+
+        $$\norm{T_n z} \leq M \quad \forall n \in \N, \; \forall \norm{z}_X \leq 1$$
+
+        Then, we have:
+
+        $$\norm{Tz}_Y = \lim_{n \to \infty} \norm{T_n z}_Y \leq M, \quad \forall \norm{z}_X \leq 1$$
+
+        Then, $T$ is bounded.
+
+    \end{itemize}
+\end{proof}
+
+\section{Open mapping and closed graph theorems}
+
+\begin{fdefinition}
+    We say that $T: X \to Y$ is an \textbf{open} if:
+
+    $$\forall A \subset X \text{ open}, \; T(A) \subset Y \text{ is open}$$
+\end{fdefinition}
+
+\begin{fremark}
+    Remember that $T$ is continuous if $T^{-1}(V)$ is open $\forall V \subset Y$ open.
+\end{fremark}
+
+\begin{example}
+    Let $f: \R \to \R$, s.t. $f(x) = 0$, $\forall x \in \R$. Then, 
+    $f$ is continuous but not open.
+\end{example}
+
+\vspace{1em}
+
+\begin{ftheorem}[Open mapping theorem]
+    Let $X, Y$ Banach spaces. Then:
+    $$T \in \Lcur(X, Y) \text{ surjective} \implies T \text{ is open}$$
+\end{ftheorem}
+
+\begin{proof}
+    Omitted, based on the uniform boundedness theorem and Baire.
+\end{proof}
+
+\begin{fcorollary}
+    Let $X, Y$ be Banach spaces, $T\in \Lcur(X, Y)$ bijective. Then
+
+    $$T^{-1} \in \Lcur(Y, X)$$
+
+    and $X \cong Y$. Also, if $T$ is injective, then:
+
+    $$T \text{ is embedding, i.e., } X \hookrightarrow Y$$
+\end{fcorollary}
+
+\begin{fcorollary}
+    Let $(X, \norm{\cdot}_a)$ and $(X, \norm{\cdot}_b)$ be Banach spaces, and
+    assume that $\exists c_1 > 0$ s.t. $\norm{x}_b \leq c_1 \norm{x}_a$.
+    Then,
+    
+    $$\exists c_2 > 0 \text{ s.t. } \norm{x}_a \leq c_2 \norm{x}_b$$
+\end{fcorollary}
+
+\begin{proof}
+    Apply previous corollary to $J: (X, \norm{\cdot}_a) \to (X, \norm{\cdot}_b)$
+    such that $J(x) = x$.
+\end{proof}
+
+\begin{fdefinition}
+    We say that $T: X \to Y$ is \textbf{closed} if the graph of $T$ is closed in $X \times Y$:
+
+    $$\begin{cases}
+        x_n \to x \text{ in } X\\
+        Tx_n \to y \text{ in } Y
+    \end{cases} \implies y = Tx$$
+\end{fdefinition}
+
+\begin{ftheorem}[Closed graph]
+    Let $X, Y$ be Banach spaces, $T: X \to Y$ linear. Then:
+
+    $$T \text{ is closed } \iff T \in \Lcur(X, Y)$$
+\end{ftheorem}
+
+\begin{proof}
+    Apply previous corollary to $\norm{x}_a = \norm{x}_X + \norm{Tx}_Y$, 
+    $\norm{x}_b = \norm{x}_X$.
+\end{proof}
+

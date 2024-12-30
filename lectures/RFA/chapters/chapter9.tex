@@ -1,0 +1,342 @@
+\chapter{Lebesgue spaces $L^p(X)$}
+
+\section{Definition of $L^p(X)$}
+
+\begin{fdefinition}
+    Let $(X, \M, \mu)$ be a complete measure space, and $p \in [1, \infty]$.
+    We define the following:
+    \vspace{1em}
+    \begin{enumerate}
+        \item $\Lcur^p(X, \M, \mu) := \left\{ f: X \to \R \mid f \text{ is } \M\text{-measurable and } \int_X |f|^p \, d\mu < \infty \right\}$.
+        \vspace{1em}
+        \item $u, v \in \Lcur^p(X, \M, \mu)$, $u \sim v$ $\iff$ $u = v$ a.e.
+        \vspace{1em}
+        \item $[f]_p := \left\{ g \in \Lcur^p(X, \M, \mu) \mid f \sim g \right\}$.
+    \end{enumerate}
+    \vspace{1em}
+    Finally, we define the $L^p$-space as follows:
+
+    $$L^p(X, \M, \mu) := \Lcur^p(X, \M, \mu) / \sim \, = \left\{ [f]_p \mid f \in \Lcur^p(X, \M, \mu) \right\}$$
+
+    where $\sim$ is the equivalence relation defined above. We also define
+    the norm as follows:
+
+    $$\norm{f}_{L^p} = \norm{f}_p = \begin{cases}
+        \left( \int_X |f|^p \, d\mu \right)^{1/p} & \text{if } 1 \leq p < \infty \\
+        \esssup_{x \in X} |f(x)| & \text{if } p = \infty
+    \end{cases}$$
+
+    and $d_p(f, g) = \norm{f - g}_p$.
+\end{fdefinition}
+
+\begin{fexample}
+    Notice that if $(X, \M, \mu) = (\N, \power(\N), \mu_{\#})$, then:
+    $$L^p(\N, \power(\N), \#) = \ell^p$$
+
+    For $1 \leq p < \infty$, we have:
+
+    $$\ell^p = \left\{ (a_n)_{n \in \N} \mid \sum_{n \in \N} |a_n|^p < \infty \right\}$$
+
+    with norm:
+
+    $$\norm{(a_n)}_p = \left( \sum_{n \in \N} |a_n|^p \right)^{1/p}$$
+
+    For $p = \infty$, we have:
+
+    $$\ell^{\infty} = \left\{ (a_n)_{n \in \N} \mid \sup_{n \in \N} |a_n| < \infty \right\}$$
+
+    with norm:
+
+    $$\norm{(a_n)}_{\infty} = \sup_{n \in \N} |a_n|$$
+\end{fexample}
+
+\begin{note}
+    Our plan is to show that $L^p(X, \M, \mu)$ is a Banach space, i.e.:
+    \begin{enumerate}
+        \item $L^p(X, \M, \mu)$ is a vector space.
+        \item $\norm{\cdot}_p$ is a norm.
+        \item $L^p(X, \M, \mu)$ is complete.
+    \end{enumerate}
+\end{note}
+
+\section{$L^p$-spaces are vector spaces}
+
+\begin{flemma}
+    Let $p \in [1, \infty)$, $a, b \in \R, a, b \leq 0$. Then:
+
+    $$(a + b)^p \leq 2^{p - 1} (a^p + b^p)$$
+\end{flemma}
+
+\begin{proof}[Proof (exercise)]
+    For $a \neq 0$, $t = b / a$, we have to show that:
+
+    $$\frac{(1 + t)^p}{1 + t^p} \leq 2^{p - 1} \quad \forall t \leq 0$$
+    
+\end{proof}
+
+\begin{ftheorem}
+    Let $p \in [1, \infty)$, then $L^p(X)$ is a vector space
+\end{ftheorem}
+
+\begin{proof}
+    Given $u, v \in L^p(X), \alpha \in \R$, we have to show that:
+
+    \begin{enumerate}
+        \item $u + v \in L^p(X)$
+        \item $\alpha u \in L^p(X)$
+    \end{enumerate}
+
+    \begin{enumerate}
+        \item We have:
+
+        $$\int_X |u + v|^p \, d\mu \leq \int_X (|u| + |v|)^p \, d\mu \leq 2^{p - 1} \left( \int_X |u|^p \, d\mu + \int_X |v|^p \, d\mu \right) < \infty$$
+
+        \item We have:
+
+        $$\int_X |\alpha u|^p \, d\mu = \int_X |\alpha|^p |u|^p \, d\mu = |\alpha|^p \int_X |u|^p \, d\mu < \infty$$
+
+    \end{enumerate}
+\end{proof}
+
+\section{$(L^p(X), \norm{\cdot}_p)$ are normed spaces}
+
+\begin{fdefinition}[Conjugated exponent]
+    For every $1 \leq p \leq \infty$, the \textbf{conjugated exponent} of $p$,
+    denoted by $q \in [1, \infty]$, satisfies:
+
+    $$\frac{1}{p} + \frac{1}{q} = 1$$
+    
+\end{fdefinition}
+
+\begin{flemma}[Young's inequality]
+    Let $p, q \in (1, \infty)$ be conjugated exponents. Then, for every $a, b \geq 0$:
+
+    $$ab \leq \frac{a^p}{p} + \frac{b^q}{q}$$
+\end{flemma}
+
+\begin{proof}
+    Notice that $\ln(x)$ is a concave function. Then:
+
+    $$\ln(\frac{a^p}{p} + \frac{b^q}{q}) \geq \frac{1}{p} \ln(a^p) + \frac{1}{q} \ln(b^q)$$
+    $$= \ln((a^p)^{1/p}) + \ln((b^q)^{1/q}) = \ln(a) + \ln(b) = \ln(ab)$$
+
+\end{proof}
+
+\begin{note}
+    As a consequence of Young's inequality, we have the
+    following inequality:
+\end{note}
+
+\begin{flemma}[Hölder's inequality]
+    Let $p, q \in [1, \infty]$ be conjugated exponents, $(X, \M, \mu)$ be a complete measure space,
+    and $u, v$ measurable functions. Then:
+
+    $$\norm{uv}_1 \leq \norm{u}_p \norm{v}_q$$
+\end{flemma}
+
+\begin{proof}
+    We will prove it for $p, q \in (1, \infty)$. For $p = 1, q = \infty$, it
+    is left as an exercise.\\
+    
+    We separate in cases:
+    \begin{itemize}
+        \item If $\norm{u}_p = 0$, then $u = 0$ a.e., and $uv = 0$ a.e., meaning that
+        $$\norm{uv}_1 = 0$$
+
+        (The same applies if $\norm{v}_q = 0$)
+
+        \item If $\norm{u}_p \cdot \norm{v}_q = \infty$, then the inequality is trivial.
+        
+        \item For $0 < \norm{u}_p, \norm{v}_q < \infty$, we apply the Young inequality for:
+        
+        $$a = \frac{|u(x)|}{\norm{u}_p}, \quad b = \frac{|v(x)|}{\norm{v}_q}$$
+
+        We have:
+
+        $$\frac{|u(x)| \cdot |v(x)|}{\norm{u}_p \norm{v}_q} = a b \leq \frac{1}{p} \frac{|u(x)|^p}{\norm{u}_p^p} + \frac{1}{q} \frac{|v(x)|^q}{\norm{v}_q^q}$$
+
+        We integrate to get:
+
+        $$\frac{\norm{uv}_1}{\norm{u}_p \norm{v}_q} \leq \frac{1}{p} \frac{\norm{u}_p^p}{\norm{u}_p^p} + \frac{1}{q} \frac{\norm{v}_q^q}{\norm{v}_q^q} = 1$$
+
+        $$\implies \norm{uv}_1 \leq \norm{u}_p \norm{v}_q$$
+    \end{itemize}
+\end{proof}
+
+\subsection{Inclusion of $L^p$ spaces}
+
+\begin{ftheorem}
+    Let $\mu(X) < \infty$, $1 \leq p \leq q \leq \infty$. Then:
+
+    $$L^q(X) \subset L^p(X)$$
+
+    More precisely, $\exists C > 0$ s.t.:
+
+    $$\norm{u}_p \leq C \norm{u}_q$$
+\end{ftheorem}
+
+\begin{ftheorem}[Interpolation]
+    Let $1 \leq p < q \leq \infty$. Then:
+
+    $$L^r(X) \subset L^p(X) \cap L^q(X), \quad \forall p \leq r \leq q$$
+\end{ftheorem}
+
+\subsection{Minkowski's inequality}
+
+\begin{ftheorem}[Minkowski's inequality]
+    Let $p \in [1, \infty]$, $(X, \M, \mu)$ be a complete measure space, and $u, v \in L^p(X)$. Then:
+
+    $$\norm{u + v}_p \leq \norm{u}_p + \norm{v}_p$$
+\end{ftheorem}
+
+\begin{proof}
+    We will prove it for $p \in (1, \infty)$. For $p = 1, p = \infty$, it is left as an exercise.\\
+
+    We have:
+
+    $$\norm{u + v}_p^p = \int_X |u + v|^p \, d\mu = \int_X |u + v| |u + v|^{p - 1} \, d\mu$$
+    $$ \leq \int_X |u| |u + v|^{p - 1} \, d\mu + \int_X |v| |u + v|^{p - 1} \, d\mu$$
+
+    For the first term, we have:
+
+    $$\int_X |u| |u + v|^{p - 1} \, d\mu \leq \norm{u}_p \left( \int_X |u + v|^{(p - 1)q} \, d\mu \right)^{1/q}$$
+    $$ \leq \norm{u}_p \norm{u + v}_p^{p/q} = \norm{u}_p \norm{u + v}_p^{p - 1}$$
+
+    Analogously, for the second term, we have:
+
+    $$\int_X |v| |u + v|^{p - 1} \, d\mu \leq \norm{v}_p \norm{u + v}_p^{p - 1}$$
+
+    and finally, we substitute back to get:
+
+    $$\norm{u + v}_p^p \leq \norm{u}_p \norm{u + v}_p^{p - 1} + \norm{v}_p \norm{u + v}_p^{p - 1}$$
+
+    and we divide by $\norm{u + v}_p^{p - 1}$ to get:
+
+    $$\norm{u + v}_p \leq \norm{u}_p + \norm{v}_p$$
+\end{proof}
+
+\begin{fcorollary}
+    ($L^p(X), \norm{\cdot}_p$) is a normed space for $p \in [1, \infty]$
+\end{fcorollary}
+
+\section{Completeness of $L^p$-spaces}
+
+\begin{ftheorem}[Riesz-Fischer]
+    Let $p \in [1, \infty]$, $(X, \M, \mu)$ be a complete measure space. Then:
+
+    $$L^p(X) \text{ is a Banach space}$$
+\end{ftheorem}
+
+\begin{proof}
+    The only thing left to show is that $L^p(X)$ is complete. We will
+    use the characterization of Banach spaces in terms of absolutely
+    convergent series.\\
+
+    Let us suppose that $\{f_n\}_n \subset L^p(X)$ is an absolutely
+    convergent series, i.e.:
+
+    $$\sum_{n = 1}^{\infty} \norm{f_n}_p = M < \infty$$
+
+    Introduce $g_k(x) = \sum_{n = 1}^k |f_n(x)|$. We have that, for every
+    $x \in X$, $\{g_k(x)\}_{k \in \N}$ is a non-decreasing sequence. Then:
+
+    $$g(x) = \lim_{k \to \infty} g_k(x) = \sum_{n = 1}^{\infty} |f_n(x)|$$
+
+    is well-defined for every $x \in X$. We have to show that $g \in L^p(X)$.\\
+
+    Notice that:
+
+    $$\norm{g_k}_p = \norm{\sum_{n = 1}^{k} |f_n|}_p \leq \sum_{n = 1}^{k} \norm{f_n}_p \leq$$
+    $$ \leq \sum_{n = 1}^{\infty} \norm{f_n}_p = M$$
+
+    where $M$ is a constant (since the series is absolutely convergent). Then, $g_k \in L^p(X)$
+    for every $k \in \N$.\\
+
+    Then, by the monotone convergence theorem, we have:
+
+    $$\int_X g^p \, d\mu = \int_X \left( \lim_{k \to \infty} g_k \right)^p \, d\mu = \lim_{k \to \infty} \int_X g_k^p \, d\mu$$
+    $$= \lim_{k \to \infty} \norm{g_k}_p^p \leq M^p < \infty$$
+
+    Then, $g \in L^p(X)$, meaning that $g(x) \leq \infty$ a.e., which implies
+    that:
+
+    $$\sum_{n = 1}^{\infty} |f_n(x)| < \infty \quad \text{a.e.}$$
+
+    Since $X$ is complete, we have that $\sum_{n = 1}^{\infty} f_n(x)$ converges a.e.
+    Then:
+
+    $$s(x) = \sum_{n = 1}^{\infty} f_n(x)$$
+
+    is well-defined for every $x \in X$. And we proved that $s_k(x) \to s(x)$ for a.e $x \in X$.\\
+
+    To conclude, we apply the dominated convergence theorem:
+
+    \begin{itemize}
+        \item $|s_k(x) - s(x)| \to 0$ a.e.
+        \item $$ |s_k - s|^p = \left| \sum_{n = k + 1}^{\infty} f_n \right|^p \leq \left( \sum_{n=k+1}^{\infty} |f_n| \right)^p$$
+        $$ \leq (g)^p \in L^1$$
+    \end{itemize}
+
+    These conditions imply that:
+
+    $$\int_X |s_k - s|^p \, d \mu \to 0$$
+
+    that is, convergence in $L^p$.
+\end{proof}
+
+\begin{fexample}
+    We know that the following are Banach spaces:
+    \vspace{1em}
+    \begin{enumerate}
+        \item $(\R^N, \text{any norm})$
+        \vspace{1em}
+        \item $(C([a, b]), \norm{\cdot}_{\infty})$
+        \vspace{1em}
+        \item $(L^p(X), \norm{\cdot}_p)$
+        \vspace{1em}
+        \item $(L^{\infty}, \norm{\cdot}_{\infty})$
+    \end{enumerate}
+\end{fexample}
+
+\vspace{1em}
+
+\begin{fexample}
+    Let $X = C([-1, 1])$, $\norm{u}_1 = \int_{-1}^{1} |u(x)| \, dx$. Then,
+    let $u_n$:
+
+    $$u_n(x) = \begin{cases}
+        0 & \text{if } x \in [-1, 0) \\
+        nx & \text{if } x \in [0, 1/n] \\
+        1 & \text{if } x \in [1/n, 1]
+    \end{cases}$$
+
+    We have that $\{u_n\}_n \subset X$ is a Cauchy sequence with respect to
+    the norm $\norm{\cdot}_1$. On the other hand:
+
+    $$\norm{u_n - u_m}_{\infty} = \max_{-1 \leq x \leq 1} |u_n(x) - u_m(x)| = 1 - \frac{n}{m} \notto 0$$
+
+    Moreover, we have that $\{u_n\}_n \subset L^1([-1, 1])$, s.t.
+    $u_n \to \mathcal{H}$, which is not in $C([-1, 1])$.\\
+
+    \textbf{Consequences:}
+    \vspace{1em}
+    \begin{enumerate}
+        \item $\norm{\cdot}_1$ is not equivalent to $\norm{\cdot}_{\infty}$
+        in $C([-1, 1])$.
+        \vspace{1em}
+        \item $(C([-1, 1]), \norm{\cdot}_1)$ is not a Banach space.
+        \vspace{1em}
+        \item $C([-1, 1])$ is a vector subspace of $L^1([-1, 1])$,
+        but it is not closed, since the sequence $\{u_n\}_n \subset C([-1, 1])$ converges
+        to a function that is not in $C([-1, 1])$.
+    \end{enumerate}
+\end{fexample}
+
+
+
+
+
+
+ 
+
+

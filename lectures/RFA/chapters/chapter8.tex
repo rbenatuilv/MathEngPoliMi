@@ -1,0 +1,169 @@
+\chapter{Banach spaces}
+
+\section{Normed and Banach spaces}
+
+\begin{fdefinition}
+    Let $X$ be a (real) vector space. A \textbf{norm} on $X$ is a 
+    function $\norm{\cdot}: X \to \R$ such that:
+    \vspace{1em}
+    \begin{enumerate}[label=(\roman*)]
+        \item $\norm{x} > 0$ for all $x \in X$ and $\norm{x} = 0 \iff x = 0$.
+        \vspace{1em}
+        \item $\norm{\alpha x} = |\alpha| \norm{x}$ for all $x \in X$ and $\alpha \in \R$.
+        \vspace{1em}
+        \item $\norm{x + y} \leq \norm{x} + \norm{y}$ for all $x, y \in X$.
+    \end{enumerate}
+    \vspace{1em}
+    Then $(X, \norm{\cdot})$ is called a \textbf{normed space}.
+\end{fdefinition}
+
+\begin{fproposition}
+    Let $(X, \norm{\cdot})$ be a normed space. Then:
+    $$d(x, y) = \norm{x - y}$$
+    is a metric on $X$, i.e., $(X, d)$ is a metric space.
+\end{fproposition}
+
+\vspace{1em}
+
+\begin{fproposition}
+    Let $\{x_n\}_n$ be a sequence in a normed space $(X, \norm{\cdot})$. Then:
+    \vspace{1em}
+    \begin{enumerate}[label=(\roman*)]
+        \item We say $x_n \to x$ if $\norm{x_n - x} \to 0$ as $n \to \infty$.
+        \vspace{1em}
+        \item For $f: X \to Y$, ($X, Y$ normed spaces), we say $f$ is continuous at $x \in X$ $\iff$:
+        $$\forall \{x_n\}_n: x_n \to x \in X \implies f(x_n) \to f(x) \in Y$$
+    \end{enumerate}
+\end{fproposition}
+
+\begin{fexercise}
+    Show that:
+    \vspace{1em}
+    \begin{enumerate}[label=(\roman*)]
+        \item $\left| \norm{x} - \norm{y} \right| \leq \norm{x - y}$
+        \vspace{1em}
+        \item $\norm{\cdot}: X \to \R$ is continuous in $X$.
+    \end{enumerate}
+\end{fexercise}
+
+\vspace{1em}
+
+\begin{fdefinition}
+    We say $\{x_n\}_n$ is a \textbf{Cauchy sequence} (or \textbf{fundamental sequence}) 
+    if $\norm{x_n - x_m} \to 0$ as $n, m \to \infty$. I.e., :
+
+    $$\forall \varepsilon > 0, \exists N \in \N: n, m \geq N \implies \norm{x_n - x_m} < \varepsilon$$
+\end{fdefinition}
+
+\begin{fremark}
+    If $\{x_n\}_n$ converges, then it is a Cauchy sequence. The 
+    converse is not true in general.
+\end{fremark}
+
+\vspace{1em}
+
+\begin{fdefinition}
+    A normed vector space $(X, \norm{\cdot})$ is called a \textbf{Banach space} if it
+    is complete, i.e., every Cauchy sequence in $X$ converges to a point in $X$.
+\end{fdefinition}
+
+\begin{example}
+    The following are examples of Banach spaces:
+    \begin{enumerate}[label=(\roman*)]
+        \item $X = \R^n$ with $\norm{x}_p = \left( \sum_{i=1}^n |x_i|^p \right)^{1/p}$ for
+        $1 \leq p < \infty$., $\norm{x}_{\infty} = \max_i |x_i|$, are Banach spaces.
+
+        \item $X = C([a, b])$ with $\norm{u} = \max_{x \in [a, b]} |u(x)|$ is a Banach space.
+        
+        \item $X = C^k([a, b])$ with $\norm{u} = \sum_{i=0}^k \max_{x \in [a, b]} |u^{(i)}(x)|$ is a Banach space.
+    \end{enumerate}
+\end{example}
+
+\begin{fremark}
+    Let $(X, \norm{\cdot})$ normed vector space, $\{x_n\}_n \subset X$. We can deal 
+    with series:
+    
+    $$\sum_{n=1}^{\infty} x_n = y \iff s_k = \sum_{n=1}^k x_n, \quad s_k \to y \text{ as } k \to \infty$$
+
+    For numerical series, $\{a_n\}_n \subset \R$, we have:
+
+    $$\sum_{n=1}^{\infty} |a_n| < \infty \implies \sum_{n=1}^{\infty} a_n \text{ converges}$$
+
+    This is not true in general for series in normed spaces.
+\end{fremark}
+
+\vspace{1em}
+
+\begin{fproposition}
+    $(X, \norm{\cdot})$ is a Banach space $\iff$ every absolutely convergent series in $X$ converges.
+    I.e., if:
+    $$\forall \{x_n\}_n \subset X: \sum_{n=1}^{\infty} \norm{x_n} < \infty \implies \sum_{n=1}^{\infty} x_n \text{ converges}$$
+\end{fproposition}
+
+\section{Equivalent/non equivalent norms}
+
+\begin{fdefinition}
+    Let $X$ be a vector space, and $\norm{\cdot}_a, \norm{\cdot}_b$ be two norms on $X$. We say
+    $\norm{\cdot}_a$ and $\norm{\cdot}_b$ are \textbf{equivalent} if there exist $0 < c_1 \leq c_2 < \infty$
+    such that:
+
+    $$c_1 \norm{x}_a \leq \norm{x}_b \leq c_2 \norm{x}_a \quad \forall x \in X$$
+
+    In particular, we say that they induce the same topology on $X$.
+\end{fdefinition}
+
+\begin{ftheorem}
+    Let $X$ be a vector space, such that $dim{X} < \infty$. Then all norms on $X$ are equivalent.
+\end{ftheorem}
+
+\begin{proof}
+    Notice that it is enough to prove that any norm $\norm{\cdot}$ on $X$ is equivalent to the
+    Euclidean norm $\norm{\cdot}_2$.\\
+
+    Moreover, it is enough to prove that $\exists c_1, c_2 > 0$ such that:
+    $$c_1 \leq \norm{x} \leq c_2  \quad \forall x \in X, \norm{x}_2 = 1$$
+
+    Indeed, if we have this, then:
+
+    $$y \in \R^N \setminus \{0\} \implies \norm{\frac{y}{\norm{y}_2}}_2 = 1$$
+
+    Then, we have:
+
+    $$c_1 \leq \norm{\frac{y}{\norm{y}_2}} \leq c_2 \implies c_1 \norm{y}_2 \leq \norm{y} \leq c_2 \norm{y}_2$$
+
+    Which is what we wanted to prove.\\
+
+    To prove this, let $f(x) = \norm{x}$. We will show that $f$ is 
+    continuous with respect to the Euclidean norm, i.e.:
+
+    $$\norm{x_n - x}_2 \to 0 \implies f(x_n - x) \to 0 \iff \norm{x_n - x} \to 0$$
+
+    Indeed, for $y \in X$, and $\{e_1, ..., e_N\}$ basis of $X$, we have:
+
+    $$\norm{y} = \norm{\sum_{i=1}^N y_i e_i} \leq \sum_{i=1}^N \norm{y_i e_i}$$
+    $$\leq \sum_{i=1}^N |y_i| \norm{e_i} \leq \left( \max_{i} |y_i| \right) \sum_{i=1}^N \norm{e_i}$$
+    $$\leq C \norm{y}_\infty \leq C \norm{y}_2$$
+
+    Where $C = \sum_{i=1}^N \norm{e_i}$. Then, we have:
+
+    $$0 < \norm{x_n - x} \leq C \norm{x_n - x}_2 \to 0 \implies \norm{x_n - x} \to 0$$
+
+    Finally, consider:
+
+    $$\min_{\norm{x}_2 = 1} f(x) \quad \max_{\norm{x}_2 = 1} f(x)$$
+
+    Since $f$ is continuous, and $S = \{x \in X: \norm{x}_2 = 1\}$ is compact, we have that
+    $f$ attains its minimum and maximum in $S$. Let $x_m = \argmin_{\norm{x}_2 = 1} f(x)$, and
+    $x_M = \argmax_{\norm{x}_2 = 1} f(x)$. Then, we have:
+
+    $$0 < \norm{x_m} \leq f(x) \leq \norm{x_M} \quad \forall x \in X, \norm{x}_2 = 1$$
+    $$\implies 0 < \norm{x_m} \leq \norm{x} \leq \norm{x_M} \quad \forall x \in X, \norm{x}_2 = 1$$
+
+\end{proof}
+
+\begin{fnote}
+    We postpone more general properties of Banach spaces (in paricular, 
+    that in infinite dimension, the theorem above is not true), and 
+    we anticipate the Lebesgue spaces.
+\end{fnote}
+

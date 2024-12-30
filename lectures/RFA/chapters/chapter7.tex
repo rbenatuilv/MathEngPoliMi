@@ -1,0 +1,77 @@
+\chapter{Derivatives of measures}
+
+Let $(X, \M, \mu)$ be a complete measure space. We know
+that, given $\Phi: X \to [0, \infty]$ measurable, the 
+function:
+
+$$\nu_{\Phi}(E) := \int_E \Phi d\mu = \int_E d \nu_{\Phi}$$
+
+is a measure on $(X, \M)$. Given $\mu, \nu$ measures on 
+$(X, \M)$, is it true that there exists $\Phi$ such that
+
+$$\nu(E) = \int_E \Phi d\mu \quad \forall E \in \M$$
+
+We will study this question in this chapter.
+
+\begin{fdefinition}
+    Let $\mu, \nu$ measures on $(X, \M)$. If $\exists \Phi$ s.t 
+
+    $$\nu(E) = \int_E \Phi d\mu \quad \forall E \in \M$$
+
+    then $\Phi$ is the \textbf{Radon-Nikodym derivative} of $\nu$
+    with respect to $\mu$ and we write:
+    $$\Phi = \frac{d\nu}{d\mu}$$
+\end{fdefinition}
+
+\begin{fdefinition}
+    Let $\mu, \nu$ measures on $(X, \M)$. Then $\nu$ is \textbf{absolutely 
+    continuous} with respect to $\mu$ (\say{$\nu << \mu$}) if:
+
+    $$\forall E \in \M, \quad \mu(E) = 0 \Rightarrow \nu(E) = 0$$
+\end{fdefinition}
+
+\begin{flemma}[Necessary condition]
+    Let $\mu, \nu$ measures on $(X, \M)$. If $\nu$ has a Radon-Nikodym 
+    derivative with respect to $\mu$, then $\nu$ is absolutely continuous 
+    with respect to $\mu$.
+\end{flemma}
+
+\begin{proof}
+    Assume $\nu$ has a Radon-Nikodym derivative with respect to $\mu$.
+    Then:
+
+    $$\nu(E) = \int_{E} \Phi d\mu = 0$$
+\end{proof}
+
+\begin{fexercise}
+    Take $(X, \M) = (\R , \Lcur(\R))$, $\mu = \lambda$ the Lebesgue
+    measure and $\nu = \delta_0$ the Dirac measure at $0$. Show that
+
+    $$\nexists \frac{d\nu}{d\mu}$$
+\end{fexercise}
+
+\vspace{1em}
+
+\section{The Radon-Nikodym Theorem}
+
+\begin{ftheorem}[Radon-Nikodym Theorem]
+    Let $(X, \M)$ be a measurable space, $\mu, \nu$ measures and 
+    $\mu$ is $\sigma$-finite. Then:
+
+    $$\nu << \mu \iff \exists \frac{d\nu}{d\mu}$$
+\end{ftheorem}
+
+\begin{fcorollary}
+    Let $\nu$ be a measure on $(\R^N, \Lcur(\R^N))$ and $\mu << \lambda$.
+    Then:
+
+    $$\exists \Phi := \frac{d\nu}{d\mu}: \quad \nu(E) = \int_E \Phi \, d\lambda \quad \forall E \in \Lcur(\R^N)$$
+
+    (Indeed, $\lambda$ is $\sigma$-finite)
+\end{fcorollary}
+
+
+
+
+
+

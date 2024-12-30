@@ -1,0 +1,815 @@
+\chapter{Lebesgue integral}
+
+\begin{itemize}
+    \item First, we will define the integral for non-negative simple (measurable)
+    functions.
+
+    \item Second, we will extend the definition to non-negative measurable functions.
+    
+    \item Finally, we will define the integral for general measurable functions.
+\end{itemize}
+
+\section{Integral of non-negative simple functions}
+
+\begin{fdefinition}
+
+    Let $s: X \to [0, \infty]$ be a measurable and simple function:
+
+    $$s = \sum_{i = 1}^k a_i \cdot \chi_{A_i}$$
+
+    where $a_i \geq 0$ and $A_i \in \M$. Let $E \in \M$. Then, we define the
+    \textbf{(Lebesgue) integral} of $s$ over $E$ as:
+
+    $$\int_{E} s \, d\mu = \sum_{i = 1}^k a_i \cdot \mu(A_i \cap E)$$
+    
+\end{fdefinition}
+
+\begin{fremark}
+    There are some remarks:
+    \vspace{1em}
+
+    \begin{enumerate}
+        \item $s: [a,b] \to [0, \infty)$, $\mu, \mu = \lambda$ (Lebesgue measure)\\
+        Then, $\int_{[a,b]} s \, d\mu =$ area under the graph of $s$ in $[a,b]$
+        \vspace{1em}
+
+        \item We are already using $0 \cdot \infty = 0$ in the definition. In particular,
+        
+        $$a_i \cdot \mu(A_i \cap E) = \begin{cases}
+            0 & a_i = 0 \\
+            \infty & a_i > 0
+        \end{cases}
+        $$
+
+        if $\mu(A_i \cap E) = \infty$.
+        \vspace{1em}
+
+        \item $D \in \M$, then $\chi_D$ is a simple function, and:
+        
+        $$\int_{E} \chi_D \, d\mu = \mu(D \cap E)$$
+
+        \vspace{1em}
+
+        \item More generally, $s$ simple and measurable, $E \in \M$, then:
+        
+        $$\int_{E} s \, d\mu = \int_{X} s \cdot \chi_E \, d\mu$$
+
+    \end{enumerate}
+
+\end{fremark}
+
+\vspace{1em}
+
+\begin{fproperties}[Basic properties]
+    Let $N, E, F \in \M$, $s_1, s_2: X \to [0, \infty)$ simple and measurable functions. Then:
+    \vspace{1em}
+
+    \begin{enumerate}[label=(\roman*)]
+        \item If $\mu(N) = 0$, then:
+        $$\int_{N} s_1 \, d\mu = 0$$
+        \vspace{1em}
+
+        \item If $0 \leq c \leq \infty$, then:
+        $$\int_{E} c \cdot s_1 \, d\mu = c \cdot \int_{E} s_1 \, d\mu$$
+        \vspace{1em}
+
+        \item $\int_{E} (s_1 + s_2) \, d\mu = \int_{E} s_1 \, d\mu + \int_{E} s_2 \, d\mu$
+        \vspace{1em}
+
+        \item If $s_1 \leq s_2$, then:
+        $$\int_{E} s_1 \, d\mu \leq \int_{E} s_2 \, d\mu$$
+        \vspace{1em}
+
+        \item if $E \subset F$, then:
+        $$\int_{E} s_1 \, d\mu \leq \int_{F} s_1 \, d\mu$$
+    \end{enumerate}
+
+    The properties $(ii)$ and $(iii)$ are called \textbf{linearity} of the integral.
+    The properties $(iv)$ and $(v)$ are called \textbf{monotonicity} of the integral.
+
+\end{fproperties}
+
+\vspace{1em}
+
+\begin{fproposition}
+    Let $s: X \to [0, \infty)$ be a simple measurable function. Then, the function:
+
+    $$\phi(E) := \int_{E} s \, d\mu: \M \to [0, \infty]$$
+
+    is a measure on $(X, \M)$.
+\end{fproposition}
+
+\begin{proof}
+    Let $s = \sum_{i=1}^k a_i \cdot \chi_{A_i}$, $0 \leq a_i \leq \infty$. We have to show that:
+
+    \begin{enumerate}
+        \item $\phi: \M \to [0, \infty]$?: Yes, since $s \geq 0$, $\phi(E) \geq 0, \; \forall E \in \M$.
+        
+        \item $\phi(\emptyset) = 0$?: Yes, since $\int_{\emptyset} s \, d\mu = 0$, as $\mu(\emptyset) = 0$.
+        
+        \item $\sigma$-additivity?: Let $\{E_n\}_{n \in \N}$ be a sequence of pairwise disjoint sets in $\M$, 
+        and $E = \bigcup_{n} E_n$. Then, we have that:
+
+        $$\phi(E) = \int_{E} s \, d\mu = \int_{X} s \cdot \chi_E \, d\mu = \sum_{i=1}^k a_i \cdot \mu(A_i \cap E)$$
+        $$= \sum_{i=1}^k a_i \cdot \mu\left(\bigcup_{n} A_i \cap E_n\right)$$
+
+        Since $\mu$ is $\sigma$-additive, we have that:
+
+        $$= \sum_{i=1}^k a_i \sum_{n}  \cdot \mu(A_i \cap E_n)$$
+        $$= \sum_{n} \sum_{i=1}^k a_i \cdot \mu(A_i \cap E_n)$$
+        $$= \sum_{n} \int_{E_n} s \, d\mu = \sum_{n} \phi(E_n)$$
+    \end{enumerate}
+
+\end{proof}
+
+\section{Integral of non-negative measurable functions}
+
+\begin{fdefinition}
+    Let $f: X \to [0, \infty]$ be a measurable function, $E \in \M$. Then, we define the 
+    \textbf{(Lebesgue) integral} of $f$ over $E$ as:
+
+    $$\int_{E} f \, d\mu = \sup\left\{\int_{E} s \, d\mu: s \text{ simple, measurable and } 0 \leq s \leq f\right\}$$
+\end{fdefinition}
+
+\begin{fremark}
+    There are some remarks:
+    \vspace{1em}
+
+    \begin{enumerate}
+        \item If $f$ is simple, then the definition coincides with the previous one.
+        \vspace{1em}
+
+        \item $(\N, \power(\N), \mu_{\#})$. Then $f: \N \to [0, \infty]$ is a sequence. Indeed, if we
+        name $f_n = f(n)$, then:
+
+        $$\int_{\N} f \, d\mu_{\#} = \sum_{n} f_n$$
+        \vspace{1em}
+
+        \item All the basic properties of the integral for simple functions above hold for this
+        new definition.
+    \end{enumerate}
+
+\end{fremark}
+
+\vspace{1em}
+
+\begin{note}
+    The following propositions assume that $(X, \M, \mu)$ is a complete measure space (needed for
+    a.e. properties).
+\end{note}
+
+\begin{fproposition}[Chebychev's inequality]
+    Let $f: X \to [0, \infty]$ be a measurable function, and $0 < c < \infty$. Then:
+    
+    $$\mu(\{f \geq c\}) \leq \frac{1}{c} \int_{\{f \geq c\}} f \, d\mu \leq \frac{1}{c} \int_{X} f \, d\mu$$
+
+    where $\{f \geq c\} = \{x \in X: f(x) \geq c\}$.
+
+\end{fproposition}
+
+\begin{proof}
+    $$\int_{X} f \, d\mu \geq \int_{\{f < c\}} f \, d\mu \geq \int_{\{f < c\}} c \, d\mu = c \cdot \mu(\{f < c\})$$
+
+    Now we just divide by $c$.
+\end{proof}
+
+\begin{note}
+    We have as a consequence the following lemmas:
+\end{note}
+
+\begin{flemma}[Vanishing lemma]
+    Let $f: X \to [0, \infty]$ be a measurable function, $E \in \M$:
+
+    $$\int_{E} f \, d\mu = 0 \iff f = 0 \text{ a.e. on } E$$
+\end{flemma}
+
+\begin{proof}
+    The proof goes as follows:
+
+    \begin{itemize}
+        \item[($\Leftarrow$)]: Trivial
+        
+        \item[($\Rightarrow$)]: We have to show that:
+        $$\mu(\{x \in E: f(x) > 0\}) = 0$$
+
+        Let us define $F = \{x: f(x) > 0\} = \bigcup_{n} F_n$, where $F_n = \{x: f(x) \geq 1/n\}$.
+        Then, we have that:
+
+        $$F_n \subset F_{n+1} \quad \forall n$$
+
+        so $F_n \uparrow F$. Then, we have that:
+
+        $$\mu(F_n) \to \mu(F)$$
+
+        and:
+
+        $$ 0 \leq \mu(F_n) = \mu(\{f \geq \frac{1}{n}\}) \leq \frac{1}{1/n} \int_{E} f \, d\mu = 0$$
+
+        Then, $\mu(F) = 0$.
+
+    \end{itemize}
+\end{proof}
+
+\begin{fremark}
+    The vanishing lemma applies to \textbf{every f} once $\mu(E) = 0$, indeed, every property
+    is true a.e. on negligible sets. \say{The Lebesgue integral does not see negligible sets}.
+\end{fremark}
+
+\begin{flemma}
+    Let $f: X \to [0, \infty]$ be a measurable function. Then:
+
+    $$\int_X f \, d\mu < \infty \implies \mu(\{f = \infty\}) = 0$$
+\end{flemma}
+
+\begin{proof}
+    Exercise. (Hint: $\{f = \infty\} = \bigcap_n \{f \geq n\}$)
+\end{proof}
+
+\begin{ftheorem}[Monotone Convergence Theorem (MCT)]
+    Let $\{f_n\}_{n \in \N}$ be a sequence of measurable functions $f_n: X \to [0, \infty]$.
+    Assume that:
+    \vspace{1em}
+    \begin{enumerate}[label=(\roman*)]
+        \item $f_n \leq f_{n+1} \quad \forall n$
+        \vspace{1em}
+        \item $\lim_{n \to \infty} f_n(x) = f(x) \quad \text{for } a.e. x \in X$
+        \vspace{1em}
+    \end{enumerate}
+
+    Then, we have that:
+
+    $$\lim_{n \to \infty} \int_{X} f_n \, d\mu = \int_{X} f \, d\mu$$
+
+\end{ftheorem}
+
+\begin{fremark}
+    All assumptions are essential
+\end{fremark}
+
+\begin{proof}
+    The proof goes as follows:\\
+
+    \textbf{\underline{Part 1:}}\\
+
+    Assume that assumptions (i) and (ii) hold $\forall x \in X$. We have some basic facts:
+
+    \begin{itemize}
+        \item $f(x) = \lim_{n \to \infty} f_n(x) \implies f(x) \geq 0$ and measurable.
+        
+        \item $\int_{X} f_n \, d\mu \leq \int_{X} f_{n+1} \, d\mu$. Then, if we define:
+        
+        $$\alpha_n = \int_{X} f_n \, d\mu, \quad \alpha = \lim_{n \to \infty} \alpha_n$$
+
+        we have that $\alpha_n \leq \alpha_{n+1}$, so $\alpha_n \uparrow \alpha$. Moreover,
+        we have that:
+
+        $$f_n(x) \leq f(x) \implies \int_{X} f_n \, d\mu \leq \int_{X} f \, d\mu$$
+        $$\implies \alpha \leq \int_{X} f \, d\mu$$
+    \end{itemize}
+
+    So, to complete part 1, we have to show that $\alpha \geq \int_{X} f \, d\mu$.\\
+
+    We use the definition of $\int_X f \, d\mu$:
+
+    Take any $s: X \to [0, \infty)$ simple, measurable and $0 \leq s \leq f$. Take also $0 \leq c < 1$.
+    Then, we have that:
+
+    $$0 < c \cdot s \leq f$$
+
+    Take $f_n(x) \uparrow f(x) \; \forall x \in X$. Consider $E_n = \{x \in X: f_n(x) \geq c \cdot s(x)\} \in \M$.
+    Then, we have that:
+
+    \begin{enumerate}[label=(\alph*)]
+        \item $E_n \subset E_{n+1}$: indeed, $x \in E_n \iff f_n(x) \geq c \cdot s(x) \implies f_{n+1}(x) \geq c \cdot s(x) \iff x \in E_{n+1}$
+        
+        \item $\bigcup_n E_n = X$: indeed, either $f(x) = 0 \implies x \in E_n \; \forall n$ or $f(x) > 0$ and 
+        $c \cdot s(x) < f(x)$. Since $f_n(x) \uparrow f(x)$, we have that $\exists N_0$ s.t. $f_{N_0}(x) \geq c \cdot s(x)$.
+        Then $x \in E_{N_0}$.
+    \end{enumerate}
+
+    Then, we have that:
+
+    $$\alpha \geq \alpha_n = \int_{X} f_n \, d\mu \geq \int_{E_n} c \cdot s \, d\mu = c \cdot \int_{E_n} s \, d\mu$$
+    $$= c \cdot \phi(E_n)$$
+
+    (where $\phi(E) = \int_{E} s \, d\mu$ is a measure). Then, notice that $E_n \uparrow X$, so $\phi(E_n) \to \phi(X)$.
+
+    Then, we have that:
+
+    $$\alpha \geq c \cdot \phi(X) = c \cdot \int_{X} s \, d\mu$$
+
+    Then, $\forall c < 1$, $\forall s$:
+
+    $$\alpha \geq c \int_{X} s \, d\mu$$
+
+    If we take the limit $c \to 1$, we have that $\alpha \geq \int_{X} s \, d\mu$. And if we take the supremum
+    over all $s$, we have that:
+
+    $$\alpha \geq \int_{X} f \, d\mu$$
+
+    \textbf{\underline{Part 2:}}\\
+
+    Now, we have to show that the result holds for $a.e. \; x \in X$. Define 
+    $$F = \{x \in X: \text{either } (i) \text{ or } (ii) \text{ fails}\}$$
+
+    Then we have that $\mu(F) = 0$, and $E = X \setminus F$. For any $g$ (non-negative, measurable), 
+    we have that:
+
+    $$g - \chi_E \cdot g = 0 \quad \text{a.e. on } X$$
+
+    Then, we use the vanishing lemma to show that:
+
+    $$\int_{X} (g - \chi_E \cdot g) \, d\mu = 0$$
+    $$\iff \int_{X} g \, d\mu = \int_{E} g \, d\mu$$
+
+    Finally:
+
+    $$\int_X f \, d\mu = \int_{E} f \, d\mu = \lim_{n \to \infty} \int_{E} f_n \, d\mu = \lim_{n \to \infty} \int_{X} f_n \, d\mu$$
+
+\end{proof}
+
+
+\begin{fremark}
+    Note that we now have 2 ways to compute the integral of a non-negative measurable function:
+
+    \begin{itemize}
+        \item $\int_{X} f \, d\mu = \sup\left\{\int_{X} s \, d\mu: s \text{ simple, measurable and } 0 \leq s \leq f\right\}$
+        \vspace{1em}
+        \item $\int_{X} f \, d\mu = \lim_{n \to \infty} \int_{X} f_n \, d\mu$ where $f_n \uparrow f$ simple and measurable functions.
+        
+    \end{itemize}
+\end{fremark}
+
+\vspace{1em}
+
+\begin{fcorollary}[Monotone convergence for series]
+    Let $\{f_n\}_{n \in \N}$ be a sequence of measurable functions $f_n: X \to [0, \infty]$.
+    Then, we have that:
+
+    $$\int_{X} \sum_{n} f_n \, d\mu = \sum_{n} \int_{X} f_n \, d\mu$$
+    
+\end{fcorollary}
+
+\vspace{1em}
+
+\begin{fproposition}
+    Take $\Phi: X \to [0, \infty]$ measurable, $E \in \M$. Define:
+
+    $$\nu(E) = \int_{E} \Phi \, d\mu$$
+
+    Then, $\nu$ is a measure on $(X, \M)$. Moreover, for $f: X \to [0, \infty]$ measurable:
+
+    $$\int_{X} f \, d\nu = \int_{X} f \cdot \Phi \, d\mu$$
+
+\end{fproposition}
+
+\begin{proof}
+
+    The proof goes as follows:
+
+    \begin{itemize}
+        \item $\nu: \M \to [0, \infty]$: Trivial
+        
+        \item $\nu(\emptyset) = 0$: Trivial
+        
+        \item $\sigma$-additivity: Let $\{E_n\}_{n \in \N}$ be a sequence of pairwise disjoint sets in $\M$,
+        and $E = \bigcup_{n} E_n$. Then, we have that:
+
+        $$\nu(E) = \int_{E} \Phi \, d\mu = \int_{X} \Phi \cdot \chi_E \, d\mu = \sum_{n} \int_{X} \Phi \cdot \chi_{E_n} \, d\mu$$
+        $$= \sum_{n} \int_{E_n} \Phi \, d\mu = \sum_{n} \nu(E_n)$$
+    \end{itemize}
+
+\end{proof}
+
+\begin{flemma}[Fatou]
+    Let $(X, \M, \mu)$ be a complete measure space, and 
+    $\{f_n\}_{n \in \N}$ be a sequence of measurable functions. Then:
+
+    $$\int_{X} \liminf_{n} f_n \, d\mu \leq \liminf_{n} \int_{X} f_n \, d\mu$$
+\end{flemma}
+
+\begin{proof}
+    Recall that:
+
+    $$\liminf_{n} f_n = \lim_{n \to \infty} \left(\inf_{k \geq n} f_k\right)$$
+    $$= \sup_{n} \left(\inf_{k \geq n} f_k\right)$$
+
+    Then, we define:
+
+    $$g_n = \inf_{k \geq n} f_k$$
+
+    We have the following properties $\forall n$:
+
+    \begin{itemize}
+        \item $g_n$ is measurable.
+        
+        \item $g_n \geq 0$
+        
+        \item $g_n \leq g_{n+1}$ 
+        
+        \item $g_n \leq f_n$
+    \end{itemize}
+
+    Then, by the MCT, we have that:
+
+    $$\int_{X} \liminf_{n} f_n \, d\mu = \int_{X} \lim_{n} g_n \, d\mu = \lim_{n} \int_{X} g_n \, d\mu$$
+    $$= \liminf_{n} \int_{X} g_n \, d\mu \leq \liminf_{n} \int_{X} f_n \, d\mu$$
+\end{proof}
+
+\section{Integral of real-valued measurable functions}
+
+Let $f: X \to \R$ be a measurable function. Then, we can write $f = f^+ - f^-$, where:
+$$f^+(x) = \max\{f(x), 0\} \quad f^-(x) = \max\{-f(x), 0\}$$
+
+Notice that $f^+, f^- \geq 0$ are measurable functions. Then, we define:<
+$$|f| = f^+ + f^-$$
+
+We also notice that $|f| = f^+ + f^- \geq 0$ is measurable. 
+
+\begin{fdefinition}
+    We say $f: X \to \R$ is \textbf{integrable} on $X$ if it is measurable and:
+    
+    $$\int_{X} |f| \, d\mu < \infty$$
+
+    We define the set of \textbf{integrable functions} as:
+
+    $$\Lcur^1(X, \M, \mu) = \{f: X \to \R: f \text{ is integrable}\}$$
+
+    For $f \in \Lcur^1(X, \M, \mu)$, and $E \in \M$, we define:
+
+    $$\int_{E} f \, d\mu = \int_{E} f^+ \, d\mu - \int_{E} f^- \, d\mu$$
+
+\end{fdefinition}
+
+\begin{fproposition}
+    Let $f: X \to \R$ be a measurable function. Then:
+    \vspace{1em}
+    \begin{enumerate}[label=(\roman*)]
+        \item $f \in \Lcur^1 \iff |f| \in \Lcur^1 \iff (f^+ \in \Lcur^1 \text{ and } f^- \in \Lcur^1)$
+        \vspace{1em}
+
+        \item (Triangular inequality):
+        $$\left|\int_{E} f \, d\mu\right| \leq \int_{E} |f| \, d\mu$$
+    \end{enumerate}
+\end{fproposition}
+
+\begin{proof}
+    The proof goes as follows:
+    \begin{enumerate}[label=(\roman*)]
+        \item Trivial (but see next remark)
+        
+        \item We have that:
+        $$\left|\int_{E} f \, d\mu\right| = \left|\int_{E} f^+ \, d\mu - \int_{E} f^- \, d\mu\right|$$
+        $$\leq \left|\int_{E} f^+ \, d\mu\right| + \left|\int_{E} f^- \, d\mu\right| = \int_{E} f^+ \, d\mu + \int_{E} f^- \, d\mu$$
+        $$= \int_{E} f^+ + f^- \, d\mu = \int_{E} |f| \, d\mu$$
+
+        \end{enumerate}
+\end{proof}
+
+\begin{fremark}
+    In general, it is not true that $|f|$ measurable $\implies f$ measurable. 
+    Take $F \subset X$, $F \notin \M$ and:
+
+    $$f(x) = \chi_F(x) - \chi_{X \setminus F}(x)$$
+
+    Then, $|f| = 1$ is measurable, but $f$ is not.
+\end{fremark}
+
+\vspace{1em}
+
+\begin{fproposition}
+    We propose two properties:
+    \vspace{1em}
+    \begin{enumerate}[label=(\roman*)]
+        \item $\Lcur^1(X, \M, \mu)$ is a (real) vector space.
+        \vspace{1em}
+
+        \item The functional 
+        $$I(\cdot) := \int_{X} \cdot \, d\mu: \Lcur^1(X, \M, \mu) \to \R$$
+        
+        is a linear functional.
+    \end{enumerate}
+\end{fproposition}
+
+\begin{proof}
+    The proof sketch goes as follows:\\
+
+    Let $u, v \in \Lcur^1(X, \M, \mu)$, $\alpha, \beta \in \R$. We should
+    show that:
+
+    $$\alpha u + \beta v \in \Lcur^1(X, \M, \mu)$$
+
+    since:
+
+    $$|\alpha u + \beta v| \leq |\alpha u| + |\beta v|$$
+
+    Then:
+
+    $$\int_{X} (\alpha u + \beta v) \, d\mu \leq \int_{X} |\alpha u + \beta v| \, d\mu \leq  \int_{X} |\alpha u| \, d\mu + \int_{X} |\beta v| \, d\mu < \infty$$
+
+    since $|\alpha u|, |\beta v| \in \Lcur^1(X, \M, \mu)$.
+    Then, we have that $\alpha u + \beta v \in \Lcur^1(X, \M, \mu)$.\\
+
+    For the second property, we have that:
+
+    $$I(\alpha u + \beta v) = \int_{X} (\alpha u + \beta v) \, d\mu = \alpha \int_{X} u \, d\mu + \beta \int_{X} v \, d\mu = \alpha I(u) + \beta I(v)$$
+\end{proof}
+
+\begin{fremark}
+    All the other basic properties of the integral of non-negative functions
+    can be extended to the integral of real-valued functions.
+\end{fremark}
+
+\vspace{1em}
+
+\begin{ftheorem}[Vanishing lemma]
+    Let $(X, \M, \mu)$ be a complete measure space,
+    and $f, g \in \Lcur^1(X, \M, \mu)$. Then:
+
+    $$f = g \text{ a.e.} \iff \int_{X} |f - g| \, d\mu = 0 \iff \int_{E} (f - g) \, d\mu = 0 \; \forall E \in \M$$
+    
+\end{ftheorem}
+
+\begin{proof}
+    The \say{difficult} part of the proof is:
+
+    $$ \int_{E} (f - g) \, d\mu, \quad \forall E \in \M \implies f = g \text{ a.e.}$$
+
+    The proof goes as follows:
+
+    Let $E_1 = \{f \geq g\}$, and $E_2 = X \setminus E_1$. Then, we have that:
+
+    $$0 = \int_{E_1} (f - g) \, d\mu = \int_{E_1}  (f - g)^+ \, d\mu$$
+    $$0 = \int_{E_2} (f - g) \, d\mu = -\int_{E_2}  (f - g)^- \, d\mu$$
+
+    Then, we have that:
+
+    $$(f - g)^+ = 0 \text{ and } (f - g)^- = 0 \text{ a.e. on } X$$
+\end{proof}
+
+\begin{fremark}
+    In particular, for $u \in \Lcur^1$:
+
+    $$\int_{E} u \, d\mu = 0 \; \forall E \in \M \implies u = 0 \text{ a.e.}$$ 
+
+    This is the same as:
+
+    $$\int_{X} u \varphi \, d\mu = 0 \quad \forall \varphi \text{ characteristic function} \implies u = 0 \text{ a.e.}$$
+
+    This can be true also replacing $\varphi$ by \say{something else}. For
+    instance, in the case of $u \in \Lcur^1(\R, \Lcur(\R), \lambda)$:
+
+    $$\int_{\R} u \varphi \, d\lambda = 0 \quad \forall \varphi \in V \implies u = 0 \text{ a.e.}$$
+
+    where $V = \{C_0^{\infty}(\R)\}$, or
+    $V = \{C_0^0(\R)\}$.
+
+    This is the \say{fundamental lemma of calculus of variations}.
+
+\end{fremark}
+
+\vspace{1em}
+
+\begin{ftheorem}[Dominated convergence theorem (DCT)]
+    Let $(X, \M. \mu)$ be a complete measure space and $\{f_n\}_{n \in \N}$ be 
+    a sequence of measurable functions $f_n: X \to \R$,
+    and $f: X \to \R$. Assume that:
+    \vspace{1em}
+    \begin{enumerate}[label=(\roman*)]
+        \item $|f_n| \leq g$ a.e. on $X$, $\forall n \in \N$, where $g \in \Lcur^1(X, \M, \mu)$
+        \vspace{1em}
+        \item $\lim_{n \to \infty} f_n(x) = f(x)$ for a.e. $x \in X$
+        \vspace{1em}
+    \end{enumerate}
+
+    Then, $f \in \Lcur^1(X, \M, \mu)$, and:
+
+    $$\lim_{n \to \infty} \int_{E} |f_n - f| \, d\mu = 0$$
+
+    In particular:
+
+    $$\lim_{n \to \infty} \int_{X} f_n \, d\mu = \int_{X} f \, d\mu$$
+    
+\end{ftheorem}
+
+\begin{proof}
+    First, we have 2 basic facts:
+
+    \begin{enumerate}
+        \item $|f_n| \leq g$ a.e. on $X$, $\forall n \in \N \implies f_n \in \Lcur^1(X, \M, \mu)$
+        
+        \item $|f| \leq g$ a.e. on $X \implies f \in \Lcur^1(X, \M, \mu)$
+    \end{enumerate}
+
+    Then, consider the sequence $h_n = 2g - |f_n - f|$. We have that:
+
+    \begin{itemize}
+        \item $h_n$ is measurable.
+        \item $h_n \leq 2 g$
+        \item $h_n \geq 0$. Indeed:
+        $$|f_n - f| \leq |f_n| + |f| \leq 2g \implies 2g - |f_n - f| \geq 0$$
+    \end{itemize}
+
+    We now apply the Fatou's lemma to the sequence $h_n$:
+
+    $$\int_{X} (\liminf_{n} h_n) \, d\mu \leq \liminf_{n} \int_{X} h_n \, d\mu$$
+    $$ = \int_{X} 2g \, d\mu - \limsup_{n} \int_{X} |f_n - f| \, d\mu$$
+
+    Also, notice that:
+    $$\liminf_{n} h_n = 2g$$
+
+    Then, we have that:
+
+    $$\int_{X} 2g \, d\mu \leq \int_{X} 2g \, d\mu - \limsup_{n} \int_{X} |f_n - f| \, d\mu$$
+    $$\implies \limsup_{n} \int_{X} |f_n - f| \, d\mu \leq 0$$
+
+    Then, we have that:
+    $$\limsup_{n} \int_{X} |f_n - f| \, d\mu \geq \liminf_{n} \int_{X} |f_n - f| \, d\mu \geq 0$$
+
+    In the end:
+
+    $$\lim_{n} \int_{X} |f_n - f| \, d\mu = 0$$
+\end{proof}
+
+\begin{fremark}
+    If $\mu(X) < \infty$, then the constants are integrable. Then, if
+    $|f_n(x)| \leq M$ a.e, for some $M \in \R$, then:
+
+    $$\lim_{n \to \infty} \int_{X} f_n \, d\mu = \int_{X} \lim_{n \to \infty} f_n \, d\mu$$
+
+    (We are using the DCT with $g = M$)
+\end{fremark}
+
+\begin{fcorollary}[Dominated Convergence for series]
+    Let $\{f_n\}_{n \in \N}$ be a sequence of measurable functions $f_n: X \to \R$,
+    s.t $f_n \in \Lcur^1(X, \M, \mu)$. If $\sum_{n} \int_{X} |f_n| \, d\mu < \infty$,
+    then:
+    
+    $$\int_{X} \sum_{n} f_n \, d\mu = \sum_{n} \int_{X} f_n \, d\mu$$
+\end{fcorollary}
+
+\section{Comparison between Riemann and Lebesgue integrals}
+
+\begin{ftheorem}
+    Let $I = [a, b] \subset \R$ be a closed interval, and $f: I \to \R$.
+    If $f$ is \textbf{Riemann integrable} on $I$, then $f$ is \textbf{Lebesgue integrable} on $I$,
+    i.e., $f \in \Lcur^1(I, \Lcur(I), \lambda)$, and the two integrals coincide:
+
+    $$\int_{I} f \, d\lambda = \int_{a}^{b} f(x) \, dx$$
+
+\end{ftheorem}
+
+\vspace{1em}
+
+\begin{ftheorem}
+    Let $I = (\alpha, \beta)$, such that $-\infty \leq \alpha < \beta \leq \infty$.
+    If $|f|$ is \textbf{Riemann integrable} on $I$ (in the generalized sense), 
+    then $f$ is \textbf{Lebesgue integrable} on $I$:
+
+    $$\int_{I} f \, d\lambda = \int_{\alpha}^{\beta} f(x) \, dx$$
+\end{ftheorem}
+
+\begin{fremark}
+    If the generalized Riemann integral of $|f|$ diverges, then:
+
+    $$\int_{I} |f| \, d\lambda = \infty$$
+
+    but $\int_{I} f \, d\lambda$ is not defined (unless $f = \pm |f|$)
+    and:
+
+    $$\int_{\alpha}^{\beta} f(x) \, dx \text{ and } \int_{I} f \, d\lambda$$
+
+    are not related.
+\end{fremark}
+
+\section{Spaces of integrable functions}
+
+For a $(X, \M, \mu)$ complete measure space, we already know that
+$\Lcur^1(X, \M, \mu)$ is a vector space. We can also define a distance
+in this space:
+
+$$d(f, g) = \int_{X} |f - g| \, d\mu$$
+
+Immediately, we have that:
+
+\begin{itemize}
+    \item \textbf{Symmetry}: $d(f, g) = d(g, f)$
+    
+    \item \textbf{Triangle inequality}: $d(f, g) \leq d(f, h) + d(h, g)$
+    
+    \item \textbf{Non-negativity}: $d(f, g) \geq 0$
+\end{itemize}
+
+But notice that $d(f, g) = 0$ does not imply $f = g$ (only a.e.).
+This means that $d(f, g)$ is a \textbf{pseudo-distance}.\\
+
+To solve this, we can define an equivalence relation:
+
+$$f \sim g \iff f = g \text{ a.e.}$$
+
+With this equivalence relation, we can define the following space:
+
+\begin{fdefinition}
+    We define the space $L^1(X, \M, \mu)$ as:
+
+    $$L^1(X, \M, \mu) = \{[f]: f \in \Lcur^1(X, \M, \mu)\}$$
+
+    where $[f]$ is the equivalence class of $f$ defined as:
+
+    $$[f] = \{g: g = f \text{ a.e.}\}$$
+\end{fdefinition}
+
+\begin{fremark}
+    We can define the distance in $L^1(X, \M, \mu)$ as:
+
+    $$d([f], [g]) = \int_{X} |f - g| \, d\mu$$
+
+    This distance is well-defined, and it is a true distance.
+    Then, $(L^1(X), d)$ is a metric space.
+\end{fremark}
+
+\begin{note}
+We understand that elements of $L^1$ are functions: instead of $[u]$,
+we work with a representant $u$, and we can \textbf{only} use 
+operations/properties that are \textbf{independent of the representant}.
+\end{note}
+
+\begin{fexample}
+    $X = (0, 1)$, we work on $(X, \Lcur(X), \lambda)$. If we take
+    $u \in L^1(X)$, we have the following:
+
+    \vspace{1em}
+    \begin{itemize}
+        \item $u \geq 0$ in $X$: \textbf{NOT} well-defined
+        \vspace{1em}
+
+        \item $u \geq 0$ a.e. on $X$: \textbf{GOOD}
+        \vspace{1em}
+
+        \item $u(1/2)$: \textbf{NOT} well-defined
+        \vspace{1em}
+
+        \item $\int_{[0, 1/2]} u \, d\lambda$: \textbf{GOOD}
+    \end{itemize}
+\end{fexample}
+
+\vspace{1em}
+
+\begin{fdefinition}
+    Let $f: X \to \R$ be a measurable function. We say it is
+    \textbf{essentially bounded} if:
+
+    $$\exists M \in \R: |f(x)| \leq M \text{ a.e. on } X$$
+
+    i.e.:
+
+    $$\mu(\{x \in X: |f(x)| > M\}) = 0$$
+\end{fdefinition}
+
+\begin{example}
+    Two examples:
+
+    $$f(x) = \begin{cases}
+        \infty & \text{if } x = 0\\
+        0 & \text{if } x \in (0, 1] 
+    \end{cases} \text{ is essentially bounded}
+    $$
+
+    $$g(x) = \begin{cases}
+        0 & \text{if } x = 0\\
+        1/x & \text{if } x \in (0, 1]
+    \end{cases} \text{ is not essentially bounded}
+    $$
+
+\end{example}
+
+\begin{fdefinition}
+    If $f: X \to \R$ is essentially bounded, we define the
+    \textbf{essential supremum} of $f$ as:
+
+    $$\esssup f := \inf\{M \in \R: \mu(\{f > M\}) = 0\}$$
+
+\end{fdefinition}
+
+\vspace{1em}
+
+\begin{fdefinition}
+    We define the space $\Lcur^{\infty}(X, \M, \mu)$ as:
+
+    $$\Lcur^{\infty}(X, \M, \mu) = \{f: X \to \R: f \text{ is essentially bounded}\}$$
+
+    We can also define the space $L^{\infty}(X, \M, \mu)$ as:
+
+    $$L^{\infty}(X, \M, \mu) = \{[f]: f \in \Lcur^{\infty}(X, \M, \mu)\}$$
+
+    where $[f]$ is the equivalence class of $f$ defined as:
+
+    $$[f] = \{g: g = f \text{ a.e.}\}$$
+\end{fdefinition}
+
+\begin{fremark}
+    One can prove that $L^{\infty}(X, \M, \mu)$ is a vector space, with 
+    the distance:
+
+    $$d([f], [g]) = \esssup |f - g|$$
+\end{fremark}

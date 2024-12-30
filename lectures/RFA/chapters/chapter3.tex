@@ -1,0 +1,317 @@
+\chapter{Measurable functions}
+
+\begin{fdefinition}
+    Given $f: X \to Y$, it is well-defined the \textbf{preimage} (or 
+    counterimage) of $f$ as:
+
+    $$f^{-1}: \power(Y) \to \power(X), \quad f^{-1}(E) = \{x \in X: f(x) \in E\}$$
+\end{fdefinition}
+
+\begin{fremark}
+    Preimages work well with set operations:
+    \begin{itemize}
+        \item $f^{-1}(E \cup F) = f^{-1}(E) \cup f^{-1}(F)$
+        \item $f^{-1}(E \cap F) = f^{-1}(E) \cap f^{-1}(F)$
+        \item $f^{-1}(E \setminus F) = f^{-1}(E) \setminus f^{-1}(F)$
+    \end{itemize}
+
+    Note this is not true for images.
+\end{fremark}
+
+\vspace{1em}
+
+\begin{fdefinition}
+    Let $(X, \M)$ and $(Y, \Ncur)$ be measurable spaces. A function $f: X \to Y$ is 
+    \textbf{measurable} if $\forall E \in \Ncur$, we have that $f^{-1}(E) \in \M$.
+    We also say that $f$ is \textbf{($\M$,$\Ncur$)-measurable}.
+\end{fdefinition}
+
+\vspace{1em}
+
+\begin{fproposition}
+    Let $(X, \M)$ and $(Y, \Ncur)$ be measurable spaces, and $\rho \subset \Ncur$ s.t.
+    $\Ncur = \sigma_0(\rho)$. Then, $f: X \to Y$ is measurable $\iff$ $\forall E \in \rho$,
+    we have that $f^{-1}(E) \in \M$.
+\end{fproposition}
+
+\begin{proof}
+    The proofs goes as follows:
+
+    \begin{itemize}
+        \item[($\Rightarrow$)]: Trivial
+        \item[($\Leftarrow$)]:
+        Define $\Sigma := \{E \subset Y: f^{-1}(E) \in \M\}$. We have:
+
+        \begin{itemize}[label=$\bullet$]
+            \item $\rho \subset \Sigma$ as a consecuence of ($\forall E \in \rho, f^{-1}(E) \in \M$)
+            \item $\Sigma$ is a $\sigma$-algebra (check as an exercise)
+        \end{itemize}
+
+        Then, we have that $\Ncur = \sigma_0(\rho) \subset \Sigma$. Therefore, $f$ is measurable. 
+
+    \end{itemize}
+\end{proof}
+
+\begin{fdefinition}
+    Suppose that $\M \supseteq \B(X)$ and $\Ncur = \B(Y)$.
+    We say that $f: X \to Y$ is:
+    \vspace{1em}
+
+    \begin{itemize}
+        \item \textbf{Borel measurable} if $f$ is ($\B(X),\B(Y)$)-measurable.
+        \vspace{1em}
+        \item \textbf{Lebesgue measurable} if it is $(\M, \B(Y))$-measurable.
+    \end{itemize}
+\end{fdefinition}
+
+\begin{fremark}
+    If $f: X \to Y$ is Borel measurable, then it is Lebesgue measurable. 
+    The converse is not true.\\
+
+    Also, we never deal with $\Lcur(Y)$.
+\end{fremark}
+
+\vspace{1em}
+
+\begin{fcorollary}
+    $f$ is Borel measurable $\iff$ $f^{-1}(E) \in \B(X), \; \forall E \in Y$ open.
+    Also, $f$ is Lebesgue measurable $\iff$ $f^{-1}(E) \in \M, \; \forall E \in Y$ open.
+\end{fcorollary}
+
+\begin{proof}
+    It follows from the previous proposition, since $\B(Y) = \sigma_0(\{E \subset Y: E \text{ open}\})$.
+\end{proof}
+
+\begin{fdefinition}
+    We say that $f$ is \textbf{continuous} $\iff$ $f^{-1}(E) \subset X$ is open $\forall E \subset Y$ open.
+\end{fdefinition}
+
+\begin{fproposition}
+    If $f: X \to Y$ is continuous, then $f$ is Borel measurable (and thus Lebesgue measurable).
+\end{fproposition}
+
+\begin{proof}
+    Let $E \subset Y$ be open. By continuity of $f$, we have that $f^{-1}(E)$ is open.
+    Then $f^{-1}(E) \in \B(X)$, and thus $f$ is Borel measurable.\\
+
+    Note that the proposition is false when $\Ncur \supsetneq \B(Y)$.
+\end{proof}
+
+\section{Operations on measurable functions}
+
+\begin{fproposition}
+    Let $f: X \to Y$ be Lebesgue measurable, and $g: Y \to Z$ be continuous. Then:
+
+    $$g \circ f: X \to Z \text{ is Lebesgue measurable}$$
+\end{fproposition}
+
+\begin{fcorollary}
+    Let $f: X \to Y$ be Lebesgue measurable. Then:
+    \vspace{1em}
+    \begin{itemize}
+        \item $f^+(x) = \max\{f(x), 0\}$ is Lebesgue measurable
+        \vspace{1em}
+        \item $f^-(x) = \max\{-f(x), 0\}$ is Lebesgue measurable
+        \vspace{1em}
+        \item $|f(x)| = f^+(x) + f^-(x)$ is Lebesgue measurable
+    \end{itemize}
+
+\end{fcorollary}
+
+\begin{proof}
+    Let $f$ be Lebesgue measurable, and $g: \R \to \R$ be continuous. Then, take
+    $E \subset Z$ open. We have that:
+
+    $$(g \circ f)^{-1}(E) = f^{-1}(g^{-1}(E))$$
+
+    Since $g$ is continuous, $g^{-1}(E)$ is open. Then, $f^{-1}(g^{-1}(E)) \in \M$
+\end{proof}
+
+\begin{fproposition}
+    Let $f, g: X \to \R$ be Lebesgue measurable, and $\Phi: \R^2 \to \R$ be continuous.
+    Then, $h(x) = \Phi(f(x), g(x))$ is Lebesgue measurable. 
+\end{fproposition}
+
+\begin{proof}
+    Let $h(x) = \Phi(f(x), g(x)) = (\Phi \circ \Psi)(x)$, where $\Psi: X \to \R^2$ is defined as
+
+    $$\Psi(x) = (f(x), g(x))$$
+
+    Then, we should prove that $\Psi$ is Lebesgue measurable for applying the previous proposition.
+    For this, we have to show that $\forall (a, b) \times (c, d) \subset \R^2$, we have that:
+
+    $$\Psi^{-1}((a, b) \times (c, d)) = \{x \in X: f(x) \in (a, b), g(x) \in (c, d)\} \in \M$$
+
+    This can be done using the fact that $f$ and $g$ are Lebesgue measurable.
+
+\end{proof}
+
+\begin{fcorollary}
+    Let $f, g: X \to \R$ be Lebesgue measurable. Then:
+    \vspace{1em}
+    \begin{itemize}
+        \item $f + g$ is Lebesgue measurable
+        \vspace{1em}
+        \item $f \cdot g$ is Lebesgue measurable
+    \end{itemize}
+
+\end{fcorollary}
+
+\vspace{1em}
+
+\begin{fproposition}
+    Let $(X, \M)$ be a measurable space (with $\M \supseteq \B(X)$), and
+    $\{f_n\}_{n \in \N}$ be a sequence of Lebesgue measurable functions $f_n: X \to \R$.
+    Then, the following functions are Lebesgue measurable:
+
+    \vspace{1em}
+
+    \begin{enumerate}
+        \item $\sup_{n} f_n$
+        \vspace{1em}
+        \item $\inf_{n} f_n$
+        \vspace{1em}
+        \item $\limsup_{n} f_n$
+        \vspace{1em}
+        \item $\liminf_{n} f_n$
+    \end{enumerate}
+
+    In particular, if $\lim_{n} f_n$ exists, then it is Lebesgue measurable.
+
+\end{fproposition}
+
+\begin{proof}
+    The proof goes as follows:
+
+    \begin{enumerate}
+        \item Since $\B(\R) = \sigma_0(\{(a, \infty): a \in \R\})$, it is enough to show that
+        $\forall a \in \R$, we have that:
+
+        $$(\sup_{n} f_n)^{-1}((a, \infty))= \{x \in X: \sup_{n} f_n(x) > a\} \in \M$$
+    
+        This can be done by using the fact that $f_n$ is Lebesgue measurable. 
+        Indeed, we have that:
+        
+        $$\{x \in X: \sup_{n} f_n(x) > a\} = \bigcup_{n} \{x \in X: f_n(x) > a\} $$
+        $$ = \bigcup_{n} f_n^{-1}((a, \infty)) \in \M$$
+
+        because $f_n^{-1}((a, \infty)) \in \M$ for all $n$.
+    
+        \item The proof is analogous to the previous case, taking that:
+        
+        $$\inf_{n} f_n = -\sup_{n} (-f_n)$$
+
+        \item We have that:
+        
+        $$\limsup_{n} f_n = \inf_{n} \sup_{k \geq n} f_k$$
+
+        \item We have that:
+        
+        $$\liminf_{n} f_n = \sup_{n} \inf_{k \geq n} f_k$$
+
+    \end{enumerate}
+\end{proof}
+
+\section{Properties holding almost everywhere}
+
+\begin{fdefinition}
+    Let $(X, \M, \mu)$ be a complete measure space. 
+    We say that a property $P(x)$ holds \textbf{$\mu$-almost everywhere}
+    (a.e) if:
+    
+    $$\mu(\{x \in X: P(x) \text{ is false}\}) = 0$$
+
+    In other words, $P(x)$ holds $\mu$-almost everywhere if it holds everywhere except
+    for a set of measure zero.
+
+\end{fdefinition}
+
+\begin{example}
+    Let $f(x) = x^2$. Is it true that $f(x) > 0$ a.e.?\\
+
+    We have that $\{x: x^2 \leq 0\} = \{0\}$
+    \vspace{1em}
+
+    \begin{itemize}
+        \item In $(\R, \Lcur(\R), \lambda)$, the property is true a.e., since
+        $\lambda(\{0\}) = 0$
+
+        \item In $(\R, \power(\R), \mu_{\#})$ (counting measure), the property is false a.e.,
+        since $\mu_{\#}(\{0\}) = 1$
+    \end{itemize}
+\end{example}
+
+\begin{fproposition}
+    Let $(X, \M, \mu)$ be a measure space:
+    \vspace{1em}
+    \begin{enumerate}
+        \item $f: X \to \Rbar$ s.t. $f = g$ a.e, with $g$ measurable $\implies f$ is measurable
+        \vspace{1em}
+        \item $\{f_n\}_{n \in \N}$ a sequence of measurable functions s.t. $f_n \to f$ a.e., 
+        then $f$ is measurable.
+    \end{enumerate}
+\end{fproposition}
+
+\section{Simple functions}
+
+\begin{fdefinition}
+    Let $(X, \M)$ be a measurable space. A function $s: X \to \Rbar$ is 
+    measurable and \textbf{simple} if $s$ is measurable and $s(X)$ is a finite set:
+
+    $$s(X) = \{a_1, a_2, ..., a_k\}$$
+
+    where $a_i \in \Rbar \; \forall i$, with $a_i \neq a_j$ for $i \neq j$.
+    Then, $s$ can be written as:
+
+    $$s(x) = \sum_{i=1}^{k} a_i \cdot \chi_{A_i}(x)$$
+
+    where $A_i = s^{-1}(\{a_i\})$, $A_i \cap A_j = \emptyset$ for $i \neq j$,
+    $\bigcup_{i=1}^{k} A_i = X$ and $A_i \in \M, \; \forall i$.
+\end{fdefinition}
+
+\textbf{\underline{Particular case:}}\\
+
+If $X = \R$ (or $(a, b) \subset \R$) and $A_i$ is an interval $\forall i$, 
+then $s$ is called a \textbf{step function}.\\
+
+On the other hand, $\chi_{\Q}$ is a simple function, but not a step function:
+
+$$\chi_{\Q}(x) = \begin{cases} 1 & x \in \Q \\ 0 & x \notin \Q \end{cases}$$
+
+\begin{fremark}
+    One may define simple functions without measurability requirements. 
+\end{fremark}
+
+\vspace{1em}
+
+\textbf{\underline{Goal:}}\\
+Approximate any measurable function $f: X \to \Rbar$ with (measurable and) 
+simple functions.
+
+\begin{ftheorem}[Simple approximation theorem (SAT)]
+
+    Take $(X, \M)$ measurable space and $f: X \to [0, \infty]$, measurable.
+    Then $\exists \{s_n\}_{n \in \N}$ a sequence of measurable, simple functions
+    s.t. $s_1 \leq s_2 \leq ... \leq f$ pointwise (i.e., $\forall x \in X$) and:
+
+    $$\lim_{n \to \infty} s_n(x) = f(x) \quad \forall x \in X$$
+
+    Moreover, if $f$ is bounded, the convergence is uniform:
+
+    $$\lim_{n \to \infty} \sup_{x \in X} |s_n(x) - f(x)| = 0$$
+\end{ftheorem}
+
+\begin{proof}
+    In case $f$ is bounded, say $0 \leq f < 1$.\\ 
+    
+    For any $n \geq 1$, divide $[0, 1)$ into $2^{n}$ intervals of length 
+    $2^{-n}$, and define:
+
+    $$A_{n}^{(i)} = \{x \in X: \frac{i}{2^n} \leq f(x) < \frac{i + 1}{2^n}\}$$
+
+    and:
+
+    $$s_n(x) = \sum_{n = 0}^{2^n - 1} \frac{i}{2^n} \cdot \chi_{A_{n}^{(i)}}(x)$$
+
+    One can show that such a sequence has the required properties
+\end{proof}

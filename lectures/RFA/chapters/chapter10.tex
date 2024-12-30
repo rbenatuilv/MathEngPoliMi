@@ -1,0 +1,384 @@
+\chapter{Compactness, Density and Separability}
+
+\section{Compactness}
+
+We say that $(X, d)$ is a metric space.\\
+
+\begin{fdefinition}
+    $E \subset X$ is \textbf{compact} if from any open covering 
+    $\{A_i\}_{i \in I}$ ($A_i$ open $\forall i \in I$, $E \subset \bigcup_{i \in I} A_i$)
+    we can extract a finite subcovering.\\
+
+    Typically, we define it as follows:\\
+
+    Take $E$, fix $r > 0$ and consider $\{B_r(x)\}_{x \in E}$, the open balls of radius $r$ centered at $x \in E$.\\
+    Then, $E$ is compact if there exists $x_1, ..., x_k \in E$ s.t.
+
+    $$E \subset \bigcup_{i=1}^k B_r(x_i)$$
+
+\end{fdefinition}
+
+\vspace{1em}
+
+\begin{fdefinition}
+    $E$ is \textbf{sequentially compact} if $\forall \{x_n\}_{n \in \N} \subset E$, there
+    exists a subsequence $\{x_{n_k}\}_{k \in \N}$ that converges to some $x \in E$.\\
+\end{fdefinition}
+
+\begin{fremark}
+    The two definitions are equivalent in metric spaces.
+\end{fremark}
+
+\vspace{1em}
+
+\begin{fdefinition}
+    $E \subset X$ is \textbf{relatively compact} if $\overline{E}$ is compact.
+\end{fdefinition}
+
+\vspace{1em}
+
+\begin{ftheorem}[Heine-Borel]
+    Let $(X, \norm{\cdot})$ be a normed vector space. If 
+    $dim(X) < \infty$, then $E \subset X$ is compact $\iff$ $E$ is closed and bounded.
+\end{ftheorem}
+
+\begin{fremark}
+    The theorem is not true in infinite-dimensional spaces. In particular,
+    if $E \subset X$ is compact, then $E$ is closed and bounded, but the converse
+    is not true.
+\end{fremark}
+
+\vspace{1em}
+
+\begin{ftheorem}[Riesz]
+    Let $(X, \norm{\cdot})$ be a normed vector space. Then:
+
+    $$\overline{B_1(0)} \text{ is compact} \iff dim(X) < \infty$$
+\end{ftheorem}
+
+\begin{proof}
+    \begin{itemize}
+        \item[($\Leftarrow$)] Exercise.
+        \item[($\Rightarrow$)] Suppose $\overline{B_1(0)} = \{x \in X: \norm{x} \leq 1\}$ is compact.\\
+        
+        Consider $\{ B_{1/2}(x) \}_{x \in \overline{B_1(0)}}$.
+        Then:
+        $$\overline{B_1(0)} \subset \bigcup_{x \in \overline{B_1(0)}} B_{1/2}(x)$$
+
+        By compactness, $\exists x_1, ..., x_k \in \overline{B_1(0)}$ s.t.
+        $$\overline{B_1(0)} \subset \bigcup_{i=1}^k B_{1/2}(x_i)$$
+        $$\subset \bigcup_{i=1}^k \overline{B_{1/2}(x_i)}$$
+
+        This means that $\forall x \in \overline{B_1(0)}$, $\exists i \in \{1, ..., k\}$, s.t.
+
+        $$x = x_i + z \text{ for some } \norm{z} \leq 1/2$$
+
+        Define $V = span\{x_1, ..., x_k\}$. Then, $V \subset X$ is a vector subspace
+        and $dim V \leq k < \infty$.\\
+        
+        We can then rewrite the previous implication as: $\forall x \in \overline{B_1(0)}$, $\exists v \in V$ s.t.
+
+        $$x = v + z \text{ for some } \norm{z} \leq 1/2$$
+
+        Now, take $y \in X$, s.t. $y \neq 0$. Then, notice that:
+
+        $$\frac{y}{\norm{y}} \in \overline{B_1(0)}$$
+
+        So there exists $v \in V$ and $z: \norm{z} \leq 1/2$ s.t.
+
+        $$\frac{y}{\norm{y}} = v + z$$
+
+        Then, $y = \norm{y}v + \norm{y}z$. We rewrite this as:
+
+        $$y = v' + z'$$
+
+        where $v' = \norm{y}v \in V$ and $\norm{z'} \leq \norm{y}/2$.\\
+
+        Then, take any $x \in X$ and apply the previous result to $y = x$:
+
+        $$x = v_1 + z_1, \quad v_1 \in V, \quad \norm{z_1} \leq \norm{x}/2$$
+
+        Then, apply it again to $y = z_1$:
+
+        $$x = v_1 + v' + z_2, \quad v_1, v' \in V, \quad \norm{z_2} \leq \norm{z_1}/2 \leq \norm{x}/4$$
+
+        Notice that, because $V$ is a vector space, $v_1 + v' \in V$. Then, we rewrite the previous equation as:
+
+        $$x = v_2 + z_2, \quad v_2 \in V, \quad \norm{z_2} \leq \norm{x}/4$$
+
+        By induction:
+
+        $$x = v_n + z_n, \quad v_n \in V, \quad \norm{z_n} \leq \norm{x}/2^n$$
+
+        Notice that $z_n \to 0$ as $n \to \infty$. Then:
+
+        $$v_n = x - z_n \to x \text{ as } n \to \infty$$
+
+        Meaning that the sequence $\{v_n\}_n \subset V$ converges to $x \in X$, and because
+        $V$ is a finite-dimentional vector subspace, it is closed, so $x \in V$.\\
+
+        With this, we have shown that $X = V$, and therefore, $dim X \leq k < \infty$.
+
+    \end{itemize}
+\end{proof}
+
+\section{Compactness in $C([a, b])$}
+
+\begin{note}
+    We always deal with $(C([a, b]), \norm{\cdot}_{\infty})$, which is Banach
+\end{note}
+
+\begin{fdefinition}
+    Let $\{u_n\}_n \subset C([a, b])$ a sequence of continuous functions. 
+    Then, we say that it is \textbf{uniformly equicontinuous} if $\forall \varepsilon > 0$,
+    $\exists \delta > 0$ s.t.,
+
+    $$|x - y| < \delta \implies |u_n(x) - u_n(y)| < \varepsilon, \quad \forall 
+    x, y \in [a, b], \forall n \in \N$$
+
+    (The value of $\delta$ only depends on $\varepsilon$)
+\end{fdefinition}
+
+\vspace{1em}
+
+\begin{ftheorem}[Ascoli-Arzelà]
+    Take $\{u_n\}_n \subset C([a, b])$. Assume that:
+    \vspace{1em}
+    \begin{enumerate}[label=(\roman*)]
+        \item $\{u_n\}_{n \in \N}$ is uniformly bounded, i.e.:
+        $$\exists \, 0 < M < \infty, \quad \norm{u_n}_{\infty} \leq M \quad \forall n \in \N$$
+
+        \vspace{1em}
+
+        \item $\{u_n\}_n$ is uniformly equicontinuous.
+    \end{enumerate}
+    \vspace{1em}
+
+    Then, there exists a subsequence $\{u_{n_k}\}_{k \in \N}$ and $u \in C([a, b])$
+    s.t. $u_{n_k} \to u$ as $k \to \infty$
+\end{ftheorem}
+
+\begin{fexample}
+    Let $\{u_n\}_n \subset C^1([a, b]) \subset C([a, b])$. Assume that:
+    \vspace{1em}
+    \begin{enumerate}
+        \item $\norm{u_n} \leq M. \; \forall n$
+        \vspace{1em}
+        \item $\norm{u'_n}_n \leq L, \; \forall n$ 
+    \end{enumerate}
+    \vspace{1em}
+
+    Then, the theorem applies. Indeed: $1) \implies (i)$ in Ascoli-Arzelà.
+    To check equicontinuity: $\forall x, y \in [a, b], x \neq y$:
+
+    $$|u_n(x) - u_n(y)| = |u'_n(\zeta) \cdot (x - y)| \quad (\text{Mean Value Thm.})$$ 
+
+    $$\implies |u_n(x) - u_n(y)| \leq |u'_n(\zeta)| \cdot |x - y|$$
+    $$\leq \norm{u'_n}_{\infty} \cdot |x - y|$$
+    $$\leq L |x - y|, \quad \forall n \in \N$$
+
+    $$\implies \text{ equicontinuity (take } \delta = \frac{\varepsilon}{L})$$
+
+    Roughly, the thm. implies that \say{boundedness in $C^1 \implies$ compactness in $C^0$ }.
+\end{fexample}
+
+\vspace{1em}
+
+\begin{fremark}
+    The same is true for Lipschitz continuos functions with uniformly bounded Lipschitz constant.\\
+
+    Also, there are similar theorems in $L^p$ with:
+    $$W^{1, p} = \{L^p \text{ functions having } L^p \text{ weak derivatives}\}$$
+    and \say{boundedness in $W^{1, p} \implies$ compactness in $L^p$ }.
+\end{fremark}
+
+\section{Density, separability}
+
+\begin{fdefinition}
+    We say that $D \subset X$ is \textbf{dense} if $\overline{D} = X$, i.e.:
+
+    $$\forall x \in X, \; \exists \{y_n\}_n \subset D: \; y_n \to x \in X$$
+\end{fdefinition}
+
+\vspace{1em}
+
+\begin{fdefinition}
+    $X$ is \textbf{separable} if $\exists D \subset X$, s.t. $D$ is countable and dense
+\end{fdefinition}
+
+\begin{fremark}
+    Typically, one uses dense subsets because \say{continuous properties, true on $D$, are also true on $X$}.
+    When $D$ is separable, you have few elements to check the property. 
+\end{fremark}
+
+\begin{example}
+    $\R, \R^N, \Omega \subset \R^N$ are all separable: $\overline{\Q} = \R$ and $\Q$ is countable.
+\end{example}
+
+\begin{ftheorem}
+    The following spaces are separable:
+    \vspace{1em}
+    \begin{itemize}
+        \item $(C([a, b]), \norm{\cdot}_{\infty})$
+        \vspace{1em}
+        \item $(L^p(\R), \norm{\cdot}_p)$ for $1 \leq p < \infty$
+    \end{itemize}
+    \vspace{1em}
+    and $(L^{\infty}(\R), \norm{\cdot}_{\infty})$ is \textbf{NOT} separable.
+\end{ftheorem}
+
+\subsection{Dense subspaces}
+
+For continuous functions, we have the following result:\\
+
+\begin{ftheorem}[Stone-Weierstrass]
+    Polynomials are dense in $C([a, b])$, i.e.:
+
+    $$\forall f \in C([a, b]), \; \forall \varepsilon > 0, \; \exists P(x) \text{ polynomial s.t.}$$
+    $$\norm{f - P}_{\infty} < \varepsilon$$
+
+    Note that polynomials with coefficients in $\Q$ are countable.
+\end{ftheorem}
+\vspace{1em}
+
+For $L^p$ spaces, we have the following dense subspaces:
+\begin{itemize}
+    \item Simple functions
+    \item Continuous (or more regular) functions
+\end{itemize}
+
+\begin{note}[Recall]
+    $s: \R \to \R$ is (measurable and) simple if:
+    $$s = \sum_{i=1}^k \alpha_i \1_{A_i}$$
+
+    where $\alpha_i \in \R$ and $A_i \in \Lcur(\R)$ are disjoint sets, s.t.:
+    $$\bigcup_{i=1}^k A_i = \R$$
+
+    We know that $s$ simple $\implies s in L^{\infty}(\R)$. Does $s$ simple $\implies s \in L^p(\R)$?
+    For $p \in [1, \infty)$, we have that:
+    $$s \in L^p(\R) \iff \lambda(\{x: s(x) \neq 0\}) < \infty$$
+
+\end{note}
+
+\begin{fdefinition}
+    We define $\tilde{\rho}(\R)$ as the set of simple functions on $\R$,
+    such that $\lambda(\{x: s(x) \neq 0\}) < \infty$:
+
+    $$\tilde{\rho}(\R) = \{s: \R \to \R \text{ simple} \; | \; \lambda(\{x: s(x) \neq 0\}) < \infty\}$$
+\end{fdefinition}
+
+\begin{ftheorem}
+    $\tilde{\rho}(\R)$ is dense in $L^p(\R)$ for $1 \leq p < \infty$.
+\end{ftheorem}
+
+\vspace{1em}
+
+\begin{fdefinition}
+    We define the following concepts:
+    \vspace{1em}
+    \begin{enumerate}
+        \item $u: \R \to \R$. The \textbf{support} of $u$ is defined as:
+        $$supp(u) = \overline{\{x: u(x) \neq 0\}}$$
+        
+        \item $C_c(\R) = \{u \in C(\R): supp(u) \text{ is compact}\}$
+        \vspace{1em}
+
+        \item $C_c^{\infty}(\R) = \{u \in C_c(\R): u \text{ is infinitely differentiable}\} = \C_0^{\infty}(\R) = \mathcal{D}(\R)$
+    \end{enumerate}
+\end{fdefinition}
+
+\begin{ftheorem}
+    $C_c^{\infty}(\R)$ is dense in $L^p(\R)$ for $1 \leq p < \infty$.
+\end{ftheorem}
+
+\begin{fcorollary}
+    $C_c(\R)$ is dense in $L^p(\R)$ for $1 \leq p < \infty$.\\
+
+    ($D \subset X$ dense, $D \subset E \subset X \implies E$ dense in $X$)
+\end{fcorollary}
+
+\vspace{1em}
+
+\begin{fremark}
+    $C_c^(\R)$ is not dense in $L^{\infty}(\R)$. Indeed, take
+
+    $$\mathcal{H}(x) = \begin{cases}
+        1 & \text{if } x > 0 \\
+        0 & \text{otherwise}
+    \end{cases}
+    $$
+
+    Then, $\mathcal{H} \in L^{\infty}(\R)$, but now suppose that we have 
+    a function $g \in C_c(\R)$ s.t.: 
+    
+    $$\norm{\mathcal{H} - g}_{\infty} \leq 1/3 $$
+
+    Then:
+    $$|\mathcal{H}(x) - g(x)| \leq 1/3, \quad \text{a.e. } x \in \R$$
+    $$\implies \mathcal{H}(x) - 1/3 \leq g(x) \leq \mathcal{H}(x) + 1/3$$
+
+    This implies that $g$ cannot be continuous in $x = 0$. Conttradiction.
+\end{fremark}
+
+\vspace{1em}
+
+\begin{note}
+    Let us see that $L^{\infty}(\R)$ is not separable.\\
+\end{note}
+
+\begin{flemma}
+    Take $X$ Banach. Assume that $\{A_i\}_{i \in I}$ is s.t.:
+    \vspace{1em}
+    \begin{enumerate}[label=(\alph*)]
+        \item $\forall i \in I, \; A_i \subset X$ is open and non-empty
+        \vspace{1em}
+        \item $\forall i \neq j \in I, \; A_i \cap A_j = \emptyset$
+        \vspace{1em}
+        \item $I$ is more than countable.
+    \end{enumerate}
+
+    Then, $X$ is not separable.
+\end{flemma}
+
+\begin{proof}
+    By contradiction. Assume that $X$ is separable. Then, $\exists \{x_n\}_{n \in \N} \subset X$ s.t.:
+    $$X = \overline{\bigcup_{n \in \N} \{x_n\}}$$
+
+    Then, $\forall A_i, \; \exists x_{n_i} \in A_i$. 
+    This is because $A_i$ is non-empty, then $\exists z_i \in A_i$, and 
+    because $\{x_n\}_n$ dense, $\exists \{x_{n_k}\}_{k \in \N}$ s.t. $x_{n_k} \to z_i$ as $k \to \infty$.
+    Notice that $A_i \subset X$ is open, so the sequence $\{x_{n_k}\}_k$ is eventually in $A_i$.\\
+    
+    Since $A_i \cap A_j = \emptyset$,
+    $x_{n_i} \neq x_{n_j}$, i.e., $n_i \neq n_j$.\\
+
+    Then, we have a map $i \to n_i$ that is injective, so $I$ is at most countable. Contradiction.
+
+\end{proof}
+
+\begin{ftheorem}
+    $L^{\infty}(\R)$ is not separable.
+\end{ftheorem}
+
+\begin{proof}
+    We use the previous lemma. $\forall \alpha \in \R^+ = (0, \infty)$, we define:
+
+    $$g_{\alpha}(x) = \chi_{[-\alpha, \alpha]}(x) = \begin{cases}
+        1 & \text{if } |x| \leq \alpha \\
+        0 & \text{otherwise}
+    \end{cases}$$
+
+    Notice that, if $\alpha_1 \neq \alpha_2$, then $\norm{g_{\alpha_1} - g_{\alpha_2}}_{\infty} = 1$.\\
+    $$\implies B_{1/2}(g_{\alpha_1}) \cap B_{1/2}(g_{\alpha_2}) = \emptyset$$
+
+    Indeed, $\forall f \in L^{\infty}(\R)$, we have that:
+
+    $$1 = \norm{g_{\alpha_1} - g_{\alpha_2}}_{\infty} \leq \norm{g_{\alpha_1} - f}_{\infty} + \norm{f - g_{\alpha_2}}_{\infty}$$
+    $$\implies \text{ at least one of the norms is greater than } 1/2$$
+
+    Then, we have a family of open sets $\{B_{1/2}(g_{\alpha})\}_{\alpha \in \R^+}$ that satisfies the conditions of the lemma.\\
+
+    Then, $L^{\infty}(\R)$ is not separable.
+    
+\end{proof}
+
