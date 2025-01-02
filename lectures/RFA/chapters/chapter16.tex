@@ -1,0 +1,36 @@
+\chapter{Spectral theory}
+
+\begin{note}
+    We will consider $E$ Banach, $T \in \Lcur(E, E) = \Lcur(E)$, and the problem:
+    $$Tx = \lambda x \iff (T - \lambda I)x = 0$$
+\end{note}
+
+\begin{fdefinition}
+    We define the following concepts:
+    \vspace{1em}
+    \begin{itemize}
+        \item The \textbf{resolvent set} of $T$ is:
+        $$\rho(T) = \{ \lambda \in \R: T - \lambda I: E \to E \text{ is bijective} \}$$
+
+        \vspace{1em}
+        \item The \textbf{spectrum} of $T$ is:
+        $$\sigma(T) = \R \setminus \rho(T)$$
+
+        \vspace{1em}
+        \item $\lambda$ is an \textbf{eigenvalue} of $T$ if:
+        $$Ker(T - \lambda I) \neq \{0\}$$
+
+        where $Ker (T - \lambda I)$ is called the \textbf{eigenspace} corresponding to $\lambda$.
+        Also:
+        $$EV(T) = \{\text{eigenvalues of } T\} \subset \R$$
+    \end{itemize}
+\end{fdefinition}
+
+\begin{fremark}
+    Note that:
+    $$EV(T) \subset \sigma(T)$$
+
+    as $\lambda \in EV(T) \iff T - \lambda I$ is not injective. Also, note that if $dim E < \infty$, 
+    then $EV(T) = \sigma(T)$. If $E$ has infinite dimension, then the inclusion may be strict.
+\end{fremark}
+

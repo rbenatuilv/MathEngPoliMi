@@ -1,0 +1,126 @@
+\chapter{Compact operators}
+
+\begin{note}
+    We will work with $X, Y$ Banach spaces.
+\end{note}
+
+\begin{fdefinition}
+    Let $K: X \to Y$ be a linear operator. We say that $K$ is \textbf{compact} if:
+    $$\forall E \subset X \text{ bounded }, K(E) \text{ is relatively compact, i.e., } \overline{K(E)} \text{ is compact}$$
+
+    Or, equivalently:
+    $$\forall \{x_n\}_n \subset X \text{ bounded, } \exists \{K(x_{n_k})\}_k \subset Y \text{ (strongly) convergent subsequence}$$
+
+\end{fdefinition}
+
+\vspace{1em}
+
+\begin{fproposition}
+    Let $K: X \to Y$ be a linear compact operator. Then $K$ is bounded, i.e., $K \in \Lcur(X, Y)$.
+\end{fproposition}
+
+\begin{proof}
+    We know that $B_1(0) \subset X$ is bounded. Then, $\overline{K(B_1(0))}$ is compact in $Y$.
+    Therefore, $\overline{K(B_1(0))}$ is bounded in $Y$.
+
+    Then, $\exists M > 0$ such that $\norm{K(x)} \leq M \quad \forall x \in B_1(0)$.
+\end{proof}
+
+\begin{fremark}
+    The above property is not true for non-linear compact operators.
+\end{fremark}
+
+\begin{fexercise}[Compactness of the integral map]
+    Let $K: C([0, 1]) \to C([0, 1])$ be the integral map:
+
+    $$K(f)(x) = \int_0^x f(t) \; dt \quad \forall x \in [0, 1]$$
+
+    and note that it is linear. Prove that $K$ is compact.\\
+    
+    (Hint: take $\{u_n\}_n \subset C([0,1])$ bounded, and prove that $\{K(u_n)\}_n$ has a convergent subsequence
+    using the Arzelà-Ascoli theorem).
+\end{fexercise}
+
+\vspace{1em}
+
+\begin{fdefinition}
+    We say that $T \in \Lcur(X, Y)$ is a \textbf{finite rank operator} if:
+    $$ dim \; R(T) < \infty$$
+
+    (Note: $R(T) = T(X)$).
+\end{fdefinition}
+
+\begin{example}
+    As many as you want:\\
+
+    $T \in X^*$: $C^k([a, b]) \to \prob^k$ polynomials of degree $k$:
+    \begin{itemize}
+        \item Taylor expansion
+        \item Lagrange interpolation
+        \item etc.
+    \end{itemize}
+\end{example}
+
+\begin{fproposition}
+    Let $T \in \Lcur(X, Y)$ be a finite rank operator. Then $T$ is compact.
+\end{fproposition}
+
+\begin{proof}
+    Let $A \subset X$ be bounded. Then, $T(A)$ is bounded in $Y$, and $\overline{T(A)}$ is bounded
+    and closed in $Y$.\\
+
+    Since $dim \; R(T) < \infty$, $\overline{T(A)}$ is compact in $Y$.
+\end{proof}
+
+\begin{fdefinition}
+    We denote $\K(X, Y)$ as the set of compact operators from $X$ to $Y$, i.e.:
+
+    $$\K(X, Y) = \{K \in \Lcur(X, Y) \; | \; K \text{ is compact}\}$$
+\end{fdefinition}
+
+\vspace{1em}
+
+\begin{ftheorem}
+    Let $X, Y$ be Banach spaces. Then $\K(X, Y)$ is a closed vector subspace of $\Lcur(X, Y)$.
+\end{ftheorem}
+
+\begin{fremark}
+    Now, to check that $T$ is compact, it is enough to find a sequence $\{T_n\}_n \subset \K(X, Y)$
+    such that $T_n \to T$ in $\Lcur(X, Y)$, i.e., $\norm{T_n - T}_{\Lcur(X, Y)} \to 0$.
+\end{fremark}
+
+\vspace{1em}
+
+\begin{ftheorem}[Compact operators vs weak convergence]
+    Let $X, Y$ be Banach, then:
+    \vspace{1em}
+    \begin{enumerate}[label=(\roman*)]
+        \item If $T \in \K(X, Y)$, then:
+        $$\{x_n\}_n \subset X \text{ s.t. } x_n \weakto x \text{ in } X \implies T(x_n) \to T(x) \text{ in } Y$$
+
+        \vspace{1em}
+
+        \item If $X$ is reflexive, then, the converse is also true, i.e., $T \in \K(X, Y)$ if\\
+        $\forall \{x_n\}_n \subset X$:
+        $$x_n \weakto x \text{ in } X \implies T(x_n) \to T(x) \text{ in } Y$$
+    
+    \end{enumerate}
+    
+\end{ftheorem}
+
+\vspace{1em}
+
+\begin{fproposition}
+    Let $T \in \K(X, Y)$, and $dim Y = \infty$. Then, $T$ cannot be surjective.
+\end{fproposition}
+
+\begin{fproposition}
+    Take either $T \in \Lcur(X, Y)$, $S \in \K(X, Y)$ or $T \in K(X, Y)$ and $S \in \Lcur(X, Y)$. Then:
+    $$ S \circ T \in \K(X, Y)$$
+\end{fproposition}
+
+\begin{proof}
+    Trivial, because bounded operators map bounded sets to bounded sets, and precompact sets to precompact sets.
+
+\end{proof}
+

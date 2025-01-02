@@ -1,0 +1,394 @@
+\chapter{Hilbert spaces}
+
+\begin{fdefinition}
+    Let $H$ be a (real) vector space. A function $p: H \times H \to \R$ is called a 
+    \textbf{scalar product} (or \textbf{inner product}) if:
+    \vspace{1em}
+    \begin{enumerate}[label=(\roman*)]
+        \item (Positivity): $p(x, x) \geq 0 \; \forall x \in H$, and $p(x, x) = 0 \iff x = 0$.
+        \vspace{1em}
+        \item (Symmetry): $p(x, y) = p(y, x) \; \forall x, y \in H$.
+        \vspace{1em}
+        \item (Bilinearity): $p(\alpha x + \beta y, z) = \alpha p(x, z) + \beta p(y, z)$\\
+        $\forall x, y, z \in H$ and $\alpha, \beta \in \R$.
+    \end{enumerate}
+\end{fdefinition}
+
+\begin{note}
+    For notation, we use the following:
+    $$p(x, y) = \intprod{x}{y} = (x, y) = x \cdot y$$
+\end{note}
+
+\begin{fdefinition}
+    The space $(H, \intprod{\cdot}{\cdot})$ is called a \textbf{pre-Hilbertian} space
+    (inner product space).
+\end{fdefinition}
+
+\begin{fproposition}
+    Let $(H, \intprod{\cdot}{\cdot})$ be a pre-Hilbertian space. Then:
+    \vspace{1em}
+    \begin{enumerate}[label=\arabic*)]
+        \item $|\intprod{x}{y}| \leq \sqrt{\intprod{x}{x}} \cdot \sqrt{\intprod{y}{y}}$ (Cauchy-Schwarz inequality).
+        \vspace{1em}
+        \item $\norm{x} = \sqrt{\intprod{x}{x}}$ is a norm on $H$.
+        \vspace{1em}
+        \item $\norm{x + y}^2 + \norm{x - y}^2 = 2 \norm{x}^2 + 2 \norm{y}^2$ (parallelogram law).
+    \end{enumerate}
+\end{fproposition}
+
+\begin{proof}
+    The proof is as follows:
+    \begin{enumerate}[label=\arabic*)]
+        \item Same as $\R^N$.
+        \item Exercise (Cauchy-Schwarz ineq. $\implies$ triangle ineq.)
+        \item $\intprod{x \pm y}{x \pm y} = \norm{x}^2 \pm 2\intprod{x}{y} + \norm{y}^2$.
+    \end{enumerate}
+\end{proof}
+
+\begin{fremark}
+    Notice that, because an inner product induces a norm, the space $(H, d)$ with
+    $d(x, y) = \norm{x - y}$ is a metric space. Then, we can talk about convergence.
+\end{fremark}
+
+\vspace{1em}
+
+\begin{fdefinition}
+    A pre-Hilbertian space $(H, \intprod{\cdot}{\cdot})$ is called a \textbf{Hilbert space} if it is complete
+    with respect to the induced norm $\norm{x} = \sqrt{\intprod{x}{x}}$. (I.e., if 
+    $(H, \norm{\cdot})$ is a Banach space).
+\end{fdefinition}
+
+\begin{example}
+    We have the following examples of Hilbert spaces:
+    \begin{enumerate}[label=\arabic*)]
+        \item $\R^N$ with the Euclidean scalar product (usual dot product).
+        \item $L^2(X, \M, \mu)$ with the scalar product:
+        $$\intprod{f}{g} = \int_X f \cdot g \; d\mu$$
+        That induces the norm:
+        $$\norm{f} = \left( \int_X f^2 \; d\mu \right)^{1/2}$$
+    \end{enumerate}
+
+    Notice that $(C([a, b]), \intprod{\cdot}{\cdot}_{L^2})$ is an inner product space, but not a Hilbert space. 
+\end{example}
+
+\begin{fproposition}
+    Let $(X, \norm{\cdot})$ be a Banach space. Then, it is also a Hilbert space if and only if
+    the norm satisfies the parallelogram law. The inner product is then given by:
+    $$\intprod{x}{y} = \frac{1}{4} \left( \norm{x + y}^2 - \norm{x - y}^2 \right)$$
+\end{fproposition}
+
+\begin{fremark}
+    With the proposition above, we can check that the space $(C([0, 1]), \norm{\cdot}_\infty)$
+    is not a Hilbert space. Also, $(L^p(X, \M, \mu), \norm{\cdot}_p)$ is not a Hilbert space for $p \neq 2$.
+\end{fremark}
+
+\begin{fdefinition}
+    Let $H$ be a Hilbert space. We say that:
+    \vspace{1em}
+    \begin{enumerate}[label=(\roman*)]
+        \item $x, y \in H$ are \textbf{orthogonal} $\iff$ $\intprod{x}{y} = 0$. We write $x \perp y$.
+        \vspace{1em}
+        \item Given $V \subset H$, the \textbf{orthogonal complement} of $V$ is:
+        $$V^\perp = \{x \in H \; | \; \intprod{x}{y} = 0 \; \forall y \in V\}$$
+    \end{enumerate}
+\end{fdefinition}
+
+\section{Orthogonal projections}
+
+\begin{note}
+    Recall that:
+    \begin{itemize}
+        \item $S \subset H$ is convex is $\forall x, y \in S$, $\alpha x + (1 - \alpha) y \in S$ for all $\alpha \in [0, 1]$.
+        \item $S \subset H$, $x \in H$, then the distance from $x$ to $S$ is:
+        $$d(x, S) = \inf_{y \in S} \norm{x - y}$$
+    \end{itemize}
+\end{note}
+
+\begin{ftheorem}[Projection theorem on closed convex sets]
+    Let $H$ be Hilbert, $x \in H$ and $S \subset H$ closed, convex and non-empty. Then:\\
+    $$\exists ! h \in S \text{ s.t. } d(x, S) = \norm{x - h}$$
+    
+    Moreover, $h$ is characterized by the \say{variational inequality}:
+    $$\intprod{x - h}{y - h} \leq 0 \quad \forall y \in S$$
+
+    (This inequality is equivalent to the first statement)\\
+
+    We call $h$ the \textbf{orthogonal projection} of $x$ onto $S$.
+\end{ftheorem}
+
+\begin{proof}
+    The proof is as follows:
+    \begin{enumerate}[label=\arabic*)]
+        \item Existence: Let $d = d(x, S)$. Then, take a \say{minimizing sequence},
+        $\{y_n\}_n \subset S$ such that $\norm{x - y_n} \to d$.\\
+
+        Then, we are going to show that $\{y_n\}_n$ is a Cauchy sequence by applying
+        the parallelogram law to $x - y_n$ and $x - y_m$:
+
+        $$\norm{x - v_n + x - v_m}^2 + \norm{x - v_n - x + v_m}^2 = 2 \norm{x - v_n}^2 + 2 \norm{x - v_m}$$
+        $$\implies \norm{v_m - v_n}^2 = 2 \norm{x - v_n}^2 + 2 \norm{x - v_m}^2 - \norm{2x - v_n - v_m}^2$$
+
+        Notice that:
+        $$\norm{2x - v_n - v_m}^2 = 4 \norm{x - \frac{v_n + v_m}{2}}^2 \geq 4d^2$$
+
+        since $\frac{v_n + v_m}{2} \in S$ (convexity). Then, we have:
+
+        $$\norm{v_m - v_n}^2 \leq 2 \norm{x - v_n}^2 + 2 \norm{x - v_m}^2 - 4d^2 \to 0$$
+
+        Then, $\{y_n\}_n$ is Cauchy, and since $H$ is complete, $\exists h \in H$ such that
+        $\norm{x - h} = d$. Also, $h \in S$ because $S$ is closed.
+
+        \item Uniqueness: Let $h_1, h_2 \in S$ be two orthogonal projections of $x$ onto $S$.
+        Then, using the parallelogram law, we have:
+
+        $$\norm{h_1 - h_2}^2 = 2 \norm{x - h_1}^2 + 2 \norm{x - h_2}^2 - \norm{2x - h_1 - h_2}^2$$
+        $$\leq 2d^2 + 2d^2 - 4d^2 = 0$$
+
+        Then, $h_1 = h_2$.
+
+    \end{enumerate}
+\end{proof}
+
+\begin{ftheorem}[Projection theorem on closed subspaces]
+    Let $H$ be Hilbert, $x \in H$, $V \subset H$ a closed subspace. Then:
+    $$\exists ! h \in V: \; \; \norm{x - h} = d(x, V)$$
+
+    Moreover, $h$ satisfies the previous implication if and only if:
+    $$\intprod{x - h}{y} = 0 \quad \forall y \in V$$
+    
+\end{ftheorem}
+
+\begin{fremark}
+    Notice that $x - h \perp y$ $\forall y \in V$, meaning that $x-h \in V^{\perp}$.\\
+
+    We use the following notation:
+    $$h = P_V x = proj_V x$$
+\end{fremark}
+
+\begin{fremark}
+    Let $H$ be a Hilbert space, $V \subset H$ a subspace. Then, it is always closed on the following
+    cases:
+    \vspace{1em}
+    \begin{itemize}
+        \item if $dim V < \infty$
+        \vspace{1em}
+        \item $V = Ker L$ for some $L \in \Lcur(H, Y)$
+        \vspace{1em}
+        \item $V^{\perp}$ is closed for any $V$. This implies that:
+        $$(V^{\perp})^{\perp} = \overline{V}$$
+    \end{itemize}
+\end{fremark}
+
+\vspace{1em}
+
+\begin{ftheorem}
+    Let $H$ be Hilbert. $V \subset H$ a closed subspace. Then:
+    \vspace{1em}
+    \begin{enumerate}[label=(\roman*)]
+        \item $\forall x \in H, \; \; x = P_V x + P_{V^{\perp}} x$
+        \vspace{1em}
+        \item $x \in V \iff x = P_V x$
+        \vspace{1em}
+        \item $\norm{x}^2 = \norm{P_V x}^2 + \norm{P_{V^{\perp}} x}^2$
+        \vspace{1em}
+        \item $P_V, P_{V^{\perp}} \in \Lcur(H)$ and their norm is 1.
+    \end{enumerate}
+\end{ftheorem}
+
+\section{Dual of a Hilbert space}
+
+\begin{fdefinition}
+    Let $H$ be Hilbert. We define the mapping $i: H \to H^*$ (\textbf{Riesz map isometry}) as:
+    $$i(u) = L_u$$
+
+    where $L_u$ is defined as:
+    $$L_u v := \intprod{u}{v}, \quad \forall v \in H$$
+
+    Notice that $L_u$ is linear, and moreover, $\norm{L_u}_* = \norm{u}$.
+\end{fdefinition}
+
+\begin{ftheorem}[Riesz representation theorem]
+    Let $H$ be Hilbert. Then, $\forall L \in H*$, $\exists ! u \in H$ s.t.:
+    $$L_v = \intprod{u}{v}, \quad \forall v \in H$$
+
+    Moreover, $\norm{u} = \norm{L}_*$. This means that the mapping $i$ is an isometric
+    isomorphism.
+    
+\end{ftheorem}
+
+\begin{fcorollary}
+    Let $H$ be Hilbert, then $H$ is reflexive. Also:
+    $$H \cong H^* \implies H^* \cong H^{**}$$
+
+    (or: parallelogram $\implies$ $H$ unif. convex)
+\end{fcorollary}
+
+\vspace{1em}
+
+\begin{fremark}
+    We can identify $H$ and $H^*$, but depending on $\intprod{\cdot}{\cdot}$. So, for
+    a $V \subset H$ subspace dense, we have that:
+    $$V \subset H \cong H^* \subset V^*$$
+\end{fremark}
+
+\begin{fremark}
+    The Riesz rep. thm. is a \say{well-posedness} theorem.
+\end{fremark}
+
+\begin{proof}[Proof (Riesz):]
+    The proof goes as follows:
+    \begin{itemize}
+        \item Existence:\\
+        \textbf{Case 1:} $Ker L = H$. Then, take $u = 0$. Notice that:
+        $$\intprod{0}{v} = 0 = Lv \quad \forall v \in H$$
+
+        \textbf{Case 2:} $\exists z_0 \in H \setminus KerL$. Since $Ker L$ is a closed subspace of 
+        $H$, let:
+        $$z:= \frac{P_{(Ker L)^{\perp}} z_0}{\norm{P_{(Ker L)^{\perp}} z_0}}$$
+
+        and notice that $\norm{z} = 1$ and $z \in (Ker L)^{\perp}$. Take $v \in H$ and 
+
+        $$w = v - \frac{Lv}{Lz}z$$
+
+        so that $Lw = 0$, $w \in Ker L$. Now, we have:
+        $$0 = \intprod{w}{z} = \intprod{v - \frac{Lv}{Lz}z}{z} = \intprod{v}{z} - \frac{Lv}{Lz}\intprod{z}{z}$$
+        $$= \intprod{z}{v} - \frac{Lv}{Lz}$$
+
+        I.e.:
+        $$Lv = Lz \intprod{z}{v} = \intprod{(Lz)z}{v} \quad \forall v \in H$$
+
+        Now, let $u = (Lz) z$
+    
+        \item Uniqueness: Let $u_1, u_2 \in H$ s.t. 
+        $$Lv = \intprod{u_1}{v} \quad \forall v \in H$$
+        $$Lv = \intprod{u_2}{v} \quad \forall v \in H$$
+
+        Then:
+        $$\intprod{u_1 - u_2}{v} = 0 \quad \forall v \in H$$
+
+        Take $v = u_1 - u_2$, then:
+        $$\norm{u_1 - u_2}^2 = 0$$
+
+        Therefore, $u_1 = u_2$.
+    \end{itemize}
+
+    Finally:
+
+    $$\norm{L}_* = \sup_{x \neq 0} \frac{|Lx|}{\norm{x}} = \sup_{x \neq 0} \frac{|\intprod{u}{x}|}{\norm{x}} 
+    \leq \sup_{x \neq 0} \frac{\norm{u} \norm{x}}{\norm{x}} = \norm{u}$$
+
+    $$\norm{L}_* = \sup_{x \neq 0} \frac{|Lx|}{\norm{x}} = \sup_{x \neq 0} \frac{|\intprod{u}{x}|}{\norm{x}} 
+    \geq \frac{|\intprod{u}{u}|}{\norm{u}} = \norm{u}$$
+
+    Then, $\norm{L}_* = \norm{u}$.
+
+\end{proof}
+
+\section{Consequences of the Riesz theorem}
+
+\begin{ftheorem}
+    Let $H$ be Hilbert, $\{x_n\}_n \subset H$. Then, $x_n \weakto x$ in $H$ if and only if:
+    $$\intprod{u}{x_n} \to \intprod{u}{x} \quad \forall u \in H$$
+
+    Moreover, by reflexivity, if $\{x_n\}_n \subset H$ is bounded, then $\exists \{x_{n_k}\}_k$ subsequence
+    such that:
+    $$x_{n_k} \weakto x$$
+\end{ftheorem}
+
+\vspace{1em}
+
+\begin{fproposition}
+    Let $\{x_n\}_n \subset H$ and assume that:
+    \vspace{1em}
+    \begin{enumerate}[label=(\roman*)]
+        \item $x_n \weakto x$ weakly in $H$
+        \vspace{1em}
+        \item $\norm{x_n} \to \norm{x}$ strongly in $H$
+    \end{enumerate}
+    \vspace{1em}
+    Then, $x_n \to x$ strongly in $H$.
+\end{fproposition}
+
+\begin{proof}
+    We have that:
+    $$\norm{x_n - x} = \norm{x_n}^2 - 2 \intprod{x_n}{x} + \norm{x}^2$$
+
+    Notice that $\norm{x_n} \to \norm{x}$ and $\intprod{x_n}{x} \to \intprod{x}{x} = \norm{x}^2$. Then:
+    $$\norm{x_n - x}^2 \to 0 \implies x_n \to x$$
+
+\end{proof}
+
+\section{Orthonormal basis}
+
+\begin{note}
+    We will consider $H$ as a Hilbert space.
+\end{note}
+
+\begin{fdefinition}
+    A sequence $\{e_n\}_{n \in \N} \subset H$ is an \textbf{orthonormal basis} if:
+    \vspace{1em}
+    \begin{enumerate}[label=(\roman*)]
+        \item $\norm{e_n} = 1$, $\intprod{e_i}{e_j} = 0$ $\forall i \neq j$.
+        \vspace{1em}
+        \item $span (\{e_n\}_{n \in \N})$ is dense in $H$, i.e. $H = \overline{span (\{e_n\}_{n \in \N})}$.
+    \end{enumerate}
+    \vspace{1em}
+    (Note: the span of an infinite sequence of vectors consists of all the finite linear combinations of them).
+\end{fdefinition}
+
+\begin{example}
+    We have some examples:
+    \begin{itemize}
+        \item $H = \ell^2$, we have $e_1 = (1, 0, 0, ...), \; \; e_2 = (0, 1, 0, ...), ...$.
+        \item $H = L^2[-\pi, \pi]$ we have:
+        $$\left\{ \frac{1}{\sqrt{2\pi}}, \frac{\sin nx}{\sqrt{\pi}},\frac{\cos nx}{\sqrt{\pi}}, n = 1, 2, 3, ... \right\}$$ 
+    \end{itemize}
+\end{example}
+
+\begin{ftheorem}
+    Every separable Hilbert space $H$ has an orthonormal basis.
+\end{ftheorem}
+
+\begin{ftheorem}
+    Let $\{e_n\}_{n \in \N} \subset H$ be an orthonormal basis. Then:
+    \vspace{1em}
+    \begin{enumerate}[label=(\roman*)]
+        \item $\forall u \in H$, 
+        $$u = \sum_{n \in \N} \intprod{u}{e_n} e_n$$
+
+        and
+        $$\norm{u}^2 = \sum_{n \in \N} |\intprod{u}{e_n}|^2$$
+
+        (\textbf{Parseval-Bessel identity}).
+
+        \vspace{1em}
+
+        \item Conversely: $\{\alpha_n\}_{n \in \N} \in \ell^2$, then:
+        $$\sum_{n \in \N} \alpha_n e_n = x \in H$$
+
+        with $\intprod{x}{e_n} = \alpha_n$.
+    \end{enumerate}
+\end{ftheorem}
+
+\vspace{1em}
+
+\begin{fproposition}
+    $\{e_n\}_{n \in \N}$ orthonormal basis. Then:
+    $$e_n \weakto 0 \text{ weakly in } H$$
+
+    but $e_n \notto 0$ strongly.
+\end{fproposition}
+
+\begin{proof}
+    By the theorem, $\forall u \in H$, the series:
+    $$\sum_{n} |\intprod{u}{e_n}|^2 < \infty$$
+
+    This implies that $\intprod{u}{e_n} \to 0, \;\; \forall u \in H$. So, $e_n \weakto 0$. But:
+    $$\norm{e_n} = 1 \notto 0$$
+
+\end{proof}
+
+
+
+
+

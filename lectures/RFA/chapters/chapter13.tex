@@ -1,0 +1,268 @@
+\chapter{Weak convergence}
+
+\begin{fdefinition}
+    Let $X$ be Banach, $\{x_n\}_{n \in \N} \subset X$, $x \in X$. We say that
+    $x_n$ \textbf{weakly converges} to $x$, denoted:
+    $$x_n \weakto x$$
+
+    if $\forall L \in X^*:$ $L x_n \to Lx$ 
+
+\end{fdefinition}
+
+\begin{fremark}
+    Suppose that $x_n \to x$ strongly, and $f: X \to Y$ continuous. Then
+    $f(x_n) \to f(x)$. Since $L \in X^*$, then $L$ is continuous, meaning
+    that $Lx_n \to Lx$. In other words:
+
+    $$\{x_n\}_n \text{ converges strongly } \implies \{x_n\}_n \text{ converges weakly}$$
+
+    Actually, in $\R^N$ strong convergence $iff$ weak convergence.
+\end{fremark}
+
+\begin{fremark}
+    For $p \in [1, \infty)$, by using the Riesz rep. thm., we have that:
+
+    $$u_n \weakto u \iff \int_X w u_n \; d\mu \to \int_X w u \; d \mu \quad w \in L^q(X)$$
+\end{fremark}
+
+\vspace{1em}
+
+\begin{fproposition}
+    $u_n \weakto u$ and $u_n \to v$ a.e., then $u = v$ a.e.
+\end{fproposition}
+
+\section{Basic properties}
+
+\begin{fproposition}
+    If it exists, the weak limit is unique.
+\end{fproposition}
+
+\begin{proof}
+    Let $\{x_n\}_n \subset X$, and suppose that $x_n \weakto y$ and $x_n \weakto z$.
+    Then, $\forall L \in X^*$, $Lx_n \to Ly$ and $Lx_n \to Lz$. Then:
+
+    $$Ly = Lz \quad \forall L \in X^* \implies y = z$$
+
+    by a corollary of H-B.
+
+\end{proof}
+
+\begin{fproposition}
+    If $x_n \weakto x$ in X, then $\{x_n\}_n$ is bounded.
+\end{fproposition}
+
+\begin{proof}
+    Use Banach-Steinhaus in $X^*$. Let us propose the
+    sequence of operators given by $\{\tau(x_n)\}_{n \in \N} \subset X^{**}$.\\
+    
+    Notice that $x_n \weakto x \implies L x_n \to L x \quad \forall L \in X^*$.\\
+
+    Then, $\intprod{\tau(x_n)}{L} = L x_n \to L x = \intprod{\tau(x)}{L} \quad \forall L \in X^*$.\\
+
+    This means that $\{\tau(x_n)\}_n$ converges pointwise to $\tau(x)$, i.e.:
+
+    $$\intprod{\tau(x_n)}{L} \to \intprod{\tau(x)}{L} \quad \forall L \in X^*$$
+
+    By Banach-Steinhaus, $\{\tau(x_n)\}_n$ is bounded in $X^{**}$, meaning that:
+
+    $$\exists M > 0: \text{ s.t. } \norm{\tau(x_n)}_{X^{**}} \leq M \quad \forall n \in \N$$
+
+    Since $\norm{\tau(x_n)}_{X^{**}} = \norm{x_n}_{X}$, we have that:
+
+    $$\norm{x_n}_{X} \leq M \quad \forall n \in \N$$
+
+    which means that $\{x_n\}_n$ is bounded in $X$.
+
+\end{proof}
+
+\begin{fproposition}
+    If $x_n \weakto x$ in $X$, then:
+
+    $$\norm{x} \leq \liminf_{n \to \infty} \norm{x_n}$$
+\end{fproposition}
+
+\begin{proof}
+    By a corollary of H-B, if $x \neq 0$, then $\exists L \in X^*$ s.t.:
+
+    $$Lx = \norm{x}, \quad \norm{L} = 1$$
+
+    Then:
+
+    $$\norm{x} = L x = \lim_{n \to \infty} L x_n = \liminf_{n \to \infty} L x_n \leq \liminf_{n \to \infty} \norm{L}_* \norm{x_n}$$
+    $$= \liminf_{n \to \infty} \norm{x_n}$$
+
+\end{proof}
+
+\begin{fremark}
+    Notice that $\norm{\cdot}: X \to \R$ is strongly continuous, but not weakly
+    continuous. It is \say{weakly lower semicontinuous}.
+\end{fremark}
+
+\begin{fproposition}
+    Let $x_n \weakto x$ in $X$, and $L_n \to L$ strongly in $X^*$. Then:
+    $$L_n x_n \to L x$$
+
+    Tha same if $L_n \weakto L$ in $X^*$ and $x_n \to x$ strongly.\\
+
+    If both sequences converge weakly, nothing can be inferred.
+\end{fproposition}
+
+\begin{proof}
+    Let $x_n \weakto x$ in $X$, and $L_n \to L$ in $X^*$. Then:
+
+    $$0 \leq |L_n x_n - Lx| = |L_n x_n - Lx_n + Lx_n - Lx| \leq |L_n x_n - Lx_n| + |Lx_n - Lx|$$
+
+    Notice that $|Lx_n - Lx| \to 0$ by the strong convergence of $x_n$. Also, we
+    have that:
+    $$|L_n x_n - Lx_n| \leq \norm{L_n - L}_* \norm{x_n} \to 0$$
+
+    This means that $L_n x_n \to Lx$.
+\end{proof}
+
+\begin{fproposition}
+    Let $X$ be Banach, $V \subset X*$ dense, $\{x_n\}_n \subset X$ bounded. 
+    Then:
+
+    $$Lx_n \to Lx \quad \forall L \in V \implies Lx_n \to Lx \quad \forall L \in X^*$$
+
+    i.e., $x_n \weakto x$.
+
+\end{fproposition}
+
+\begin{proof}
+    Omitted (as the one in prop. 4, and use the density of $V$)
+\end{proof}
+
+\begin{fexample}
+    Recall that $1 < p < \infty$, then $u_n \weakto u$ in $L^p(\Omega)$ if:
+
+    $$\int_\Omega w u_n \; d\mu \to \int_\Omega w u \; d\mu \quad \forall w \in L^q(\Omega)$$
+
+    where $\frac{1}{p} + \frac{1}{q} = 1$.\\
+
+    By property 5, it is enough to ask: $\{u_n\}_n \subset L^p(\Omega)$ bounded and:
+    $$\int_{\Omega} w u_n \; d\mu \to \int_{\Omega} w u \; d\mu \quad \forall w \in C_c(\Omega)$$
+
+    or $\forall w$ simple functions.
+\end{fexample}
+
+\vspace{1em}
+
+\begin{fproposition}
+    Let $X, Y$ Banach, $T \in \Lcur(X, Y)$ and $\{x_n\}_n \subset X$. Then:
+
+    $$x_n \weakto x \implies T x_n \weakto T x$$
+
+    We say that $T$ is \say{weakly-weakly continuous}.
+\end{fproposition}
+
+\vspace{1em}
+
+\begin{fdefinition}
+    Let $X$ be Banach, $X^*$ (Banach) dual of $X$, $\{L_n\}_n \subset X^*$ and $L \in X^*$.
+    We say that $L_n$ \textbf{weakly-* converges} to $L$, denoted:
+
+    $$L_n \overset{*}{\weakto} L$$
+
+    if $\forall x \in X$, $L_n x \to Lx$ as $n \to \infty$.
+\end{fdefinition}
+
+\begin{fremark}
+    Note that:
+    \vspace{1em}
+    \begin{itemize}
+        \item $L_n \weakto L$ if $\phi L_n \to \phi L \quad \forall \phi \in X^{**}$.
+        \vspace{1em}
+        \item $L_n \overset{*}{\weakto} L$ if $\tau(x) L_n \to \tau(x) L \quad \forall x \in X$.
+    \end{itemize}
+\end{fremark}
+
+\vspace{1em}
+
+\begin{fproposition}
+    If $X$ is reflexive, then:
+
+    $$L_n \overset{*}{\weakto} L \text{ in } X^* \iff L_n \weakto L \text{ in } X^*$$
+\end{fproposition}
+
+\begin{fexample}
+    Weak-* convergence in $L^{\infty}(\Omega)$ ($\Omega \in \Lcur(\R^N)$):\\
+
+    We know that $L^1(\Omega)$ is Banach and $L^{\infty}(\Omega) \cong (L^1(\Omega))^*$.\\
+    Then, for $\{u_n\}_n \subset L^{\infty}(\Omega)$, $u \in L^{\infty}(\Omega)$, we have that
+    $u_n \overset{*}{\weakto} u$ in $L^{\infty}(\Omega)$ if:
+
+    $$\int_{\Omega} u_n v \; d \mu \to \int_{\Omega} u v \; d \mu \quad \forall v \in L^1(\Omega)$$
+\end{fexample}
+
+\begin{fremark}
+    In general, weak convergence implies weak-* convergence, but the converse is not true.
+\end{fremark}
+
+\vspace{1em}
+
+\begin{fproperties}[Weak-* convergence]
+    For weak-* convergence, we have that:
+    \vspace{1em}
+    \begin{enumerate}
+        \item If $L_n \overset{*}{\weakto} L$, then the limit is unique.
+        \vspace{1em}
+        \item If $L_n \overset{*}{\weakto} L$, then $\{L_n\}_n$ is bounded in $X^*$.
+        \vspace{1em}
+        \item If $\L_n \overset{*}{\weakto} L$, then: 
+            $$\norm{L}_* \leq \liminf_{n \to \infty} \norm{L_n}_*$$
+        \vspace{1em}
+        \item If $L_n \overset{*}{\weakto} L$ and $x_n \to x$ strongly, then:
+            $$L_n x_n \to Lx$$
+    \end{enumerate}
+    
+\end{fproperties}
+
+\begin{fremark}
+    The notions of (topological) dual, weak convergence, weak-* convergence, do not need
+    norms, just a topology. E.g., \say{test functions} $\mathcal{D}(\R^N) = C_c^{\infty}(\R^N)$,
+    have a topological dual $\mathcal{D}'(\R^N)$, and convergence in $\mathcal{D}'$ is the
+    weak-* convergence.
+\end{fremark}
+
+\begin{fremark}
+    We defined weak (weak-*) convergence, not the weak (weak-*) topology. This topology
+    in general is not metrizable and weakly compact sets are not weakly sequentially compact.
+\end{fremark}
+
+\section{Banach-Alaoglu theorem}
+
+\begin{ftheorem}[Banach-Alaoglu (variant 1)]
+    Let $X$ be Banach and reflexive. Then, every bounded sequence $\{x_n\}_n \subset X$
+    admits a subsequence $\{x_{n_k}\}_k$ which weakly converges in $X$.
+    
+\end{ftheorem}
+
+\begin{ftheorem}[Banach-Alaoglu (variant 2)]
+    Let $X$ be Banach and separable. Then, every bounded sequence $\{L_n\}_n \subset X^*$
+    admits a subsequence $\{L_{n_k}\}_k$ which weakly-* converges in $X^*$.
+\end{ftheorem}
+
+\vspace{1em}
+
+\begin{fexample}
+    Let $1 < p < \infty$, then we know that $L^p(\Omega)$ is reflexive. Moreover, we know that
+    $f_n \weakto f$ in $L^p$ $\iff$:
+    $$\int_{\Omega} f_n g \; d\mu \to \int_{\Omega} f g \; d\mu \quad \forall g \in L^q(\Omega)$$
+
+    where $\frac{1}{p} + \frac{1}{q} = 1$. If we apply variant 1 of Banach-Alaoglu, we have that:\\
+    $\forall \{u_n\}_n \subset L^p(\Omega)$, s.t., $\norm{u_n}_{p} \leq M \; \forall n \in \N$,
+    $\exists \{u_{n_k}\}_k , u \in L^p(\Omega)$ s.t. $u_{n_k} \weakto u$ in $L^p(\Omega)$, i.e.:
+
+    $$\int_{\Omega} u_{n_k} g \; d\mu \to \int_{\Omega} u g \; d\mu \quad \forall g \in L^q(\Omega)$$
+
+    Also, we know that $L^1(\Omega)$ is separable, and $(L^1(\Omega))^* \cong L^{\infty}(\Omega)$.
+    Then, if we apply variant 2 of Banach-Alaoglu, we have that:\\
+    $\forall \{u_n\}_n \subset L^{\infty}(\Omega)$, s.t., $\norm{u_n}_{\infty} \leq M \; \forall n \in \N$,
+    $\exists \{u_{n_k}\}_k , u \in L^{\infty}(\Omega)$ s.t. $u_{n_k} \overset{*}{\weakto} u$ in $L^{\infty}(\Omega)$, i.e.:
+
+    $$\int_{\Omega} u_{n_k} g \; d\mu \to \int_{\Omega} u g \; d\mu \quad \forall g \in L^1(\Omega)$$
+
+    Finally, bounded sequences on $L^1$ have no reason to converge.
+\end{fexample}
+
