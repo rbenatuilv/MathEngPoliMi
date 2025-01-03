@@ -34,3 +34,179 @@
     then $EV(T) = \sigma(T)$. If $E$ has infinite dimension, then the inclusion may be strict.
 \end{fremark}
 
+\vspace{1em}
+
+\begin{ftheorem}
+    Let $E$ be Banach, $T \in \Lcur(E)$. Then:
+    \vspace{1em}
+    \begin{enumerate}[label=(\roman*)]
+        \item $\sigma(T) \subset [- \norm{T}, \norm{T}]$
+        \vspace{1em}
+        \item $\sigma(T)$ is closed.
+    \end{enumerate}
+\end{ftheorem}
+
+\begin{fremark}
+    (i) means that the \say{spectral radius} is always $\leq$ the operatorial norm of $T$.
+\end{fremark}
+
+\begin{fremark}
+    $|\lambda| > \norm{T} \implies T - \lambda I$ is invertible. Moreover, $\rho(T)$ is open.
+\end{fremark}
+
+\vspace{1em}
+
+\begin{fexample}
+    Let $E = \ell^2$. We define the \say{left shift operator} $T_{\ell}: \ell^2 \to \ell^2$ as
+    follows:
+    $$T_{\ell} x = (x^{(1)}, x^{(2)}, ...)$$
+    
+    for $x = (x^{(0)}, x^{(1)}, x^{(2)}, ...)$. Then, one can prove that $T_{\ell} \in \Lcur(\ell^2)$
+    and $\norm{T_{\ell}} = 1$. By the theorem, $\sigma(T) \subset [-1, 1]$, closed.\\
+
+    Also, notice that (for $\lambda = 0$) $T_{\ell}$ is surjective, but not injective. I.e., 
+    $$R(T_{\ell}) = \ell^2, \quad Ker\; T_{\ell} = \{x \in \ell^2: x^{(k)} = 0 \; \forall k \geq 1, \; x^{(0)} \in \R\}$$
+
+    Then, $\lambda = 0$ is an eigenvalue of multiplicity 1.\\
+
+    Let us look for more eigenvalues: we know that $\lambda \in EV(T) \iff \exists x \neq 0$ s.t.:
+    $$T_{\ell} x = \lambda x$$
+    $$\iff (T_{\ell}x)^{(k)} = \lambda x^{(k)} \quad \forall k \geq 0$$
+    $$\iff x^{(k + 1)} = \lambda x^{(k)} \quad \forall k \geq 0$$
+
+    Take any $x^{(0)} = x_0 \neq 0$. Then, notice that:
+    \begin{align*}
+        x^{(1)} &= \lambda x_0\\
+        x^{(2)} &= \lambda x^{(1)} = \lambda^2 x_0\\
+        \vdots\\
+        x^{(k)} &= \lambda x^{(k - 1)} = ... = \lambda^k x_0
+    \end{align*}
+
+    Then, $\lambda$ is an eigenvalue $\iff x = (x_0, \lambda x_0, \lambda^2 x_0, ...) = x_0 (1, \lambda, \lambda^2, ...) \in \ell^2$
+    $$\iff \sum_{k=0}^{\infty} (\lambda^k)^2 < \infty \iff |\lambda| < 1$$
+
+    Then, $EV(T) = (-1, 1)$ and
+    $$(-1, 1) \subset \sigma(T) \subset [-1, 1]$$
+
+    and because $\sigma(T)$ is closed, we conclude that $\sigma(T) = [-1, 1]$.
+\end{fexample}
+
+\begin{fexercise}
+    Discuss $T_r: \ell^2 \to \ell^2$ the \say{right shift operator} such that:
+    $$T_r x = (0, x^{(0)}, x^{(1)}, x^{(2)}, ...)$$
+
+    Show that $T_r \in \Lcur(\ell^2)$ and $\norm{T_r} = 1$. Then, show that $\sigma(T_r) = [-1, 1]$
+    and $EV(T_r) = \emptyset$.
+\end{fexercise}
+
+\section{Symmetric operators}
+
+\begin{note}
+    In what follows, consider:
+    \begin{itemize}
+        \item $(H, \intprod{\cdot}{\cdot})$ a Hilbert space.
+        \item $T \in \K(X) = \K(X, X)$ a compact operator.
+        \item $T$ is symmetric (self-adjoint)
+    \end{itemize}
+\end{note}
+
+\begin{fdefinition}
+    We say that $T$ is \textbf{symmetric} $\iff$
+    $$\intprod{Tx}{y} = \intprod{x}{Ty} \quad \forall x, y \in H$$
+\end{fdefinition}
+
+\begin{fremark}
+    If $T$ is symmetric, then:
+    $$\norm{T}_{\Lcur(H)} = \sup_{x \neq 0} \frac{\intprod{Tx}{x}}{\norm{x}^2}$$
+
+    This is called the \textbf{Rayleigh quotient}.
+\end{fremark}
+
+\vspace{1em}
+
+\subsection{Fredholm's alternative theorem}
+
+\begin{ftheorem}[Fredholm's alternative theorem]
+    Let $H$ be Hilbert, $T \in \K(H)$ symmetric. Then:
+    \vspace{1em}
+    \begin{enumerate}[label=(\roman*)]
+        \item $dim \; Ker (I - T) < \infty$
+        \vspace{1em}
+        \item $R(I - T)$ is closed.
+        \vspace{1em}
+        \item $Ker (I - T) = R(I - T)^{\perp}$ and $R(I - T) = Ker(I - T)^{\perp}$\\
+        (in particular, $I - T$ is surjective $\iff$ is injective)
+        \vspace{1em}
+        \item Consider the following problem:
+        $$(\star) = \begin{cases}
+            \text{Given } f \in H, \text{ find } x \in H, \text{ s.t.:}\\
+            (I - T)x = f
+        \end{cases}$$
+
+        Then, exactly one of the following is true:
+        \vspace{1em}
+        \begin{itemize}
+            \item $\forall f, \; \exists ! x \in H$ solving $(\star)$
+            \vspace{1em}
+            \item $(\star)$ is solvable $\iff f \in Ker(I - T)^{\perp}$, and because
+            $dim \; Ker(I-T) = N < \infty$, this means that:
+            $$\intprod{f}{u_i} = 0 \quad \forall i = 1, ..., N$$
+
+            s.t. $span(\{u_i\}_{i=1}^N) = Ker(I-T)$. 
+        \end{itemize}
+        
+    \end{enumerate}
+\end{ftheorem}
+
+\begin{fremark}
+    Consider $\lambda \neq 0$, $T - \lambda I$. Then, the FAT applies:
+    $$T - \lambda I = - \lambda (I - \frac{1}{\lambda}T)$$
+
+    where $\frac{1}{\lambda}T \in \K(H)$. As a consequence, we have that, for 
+    $T \in \K(H)$ symmetric:
+    $$\sigma(T) \setminus \{0\} = EV(T) \setminus \{0\}$$
+\end{fremark}
+
+\begin{fremark}
+    For the theorem, there are some conditions that are not strictly necessary:
+    \vspace{1em}
+    \begin{itemize}
+        \item $T$ symmetric is not necessary, as (i), (ii) are true, and (iii), (iv)
+        can be formulated in terms of the adjoint operator $T^*$: $\intprod{Tx}{y} = \intprod{x}{T^*y}$.
+
+        \vspace{1em}
+        \item $H$ Hilbert is not necessary, for $E$ Banach, use duality pairing instead of 
+        the scalar product.
+    \end{itemize}
+    \vspace{1em}
+    Notice that, without the compactness assumption, the theorem breaks.
+\end{fremark}
+
+\section{Spectral theorem}
+
+\begin{ftheorem}[Spectral theorem]
+    Let $H$ be Hilbert and separable, with $dim H = \infty$. Let $T \in \K(H)$ symmetric.
+    Then: 
+    $$0 \in \sigma(T), \quad \sigma(T) \setminus \{0\} = EV(T) \setminus \{0\}$$
+
+    and the following alternative holds:
+    \vspace{1em}
+    \begin{enumerate}[label=(\roman*)]
+        \item Either $T$ has finitely many eigenvalues different from 0, and then
+        $0 \in EV(T)$, with $dim \; Ker(T) = \infty$
+        \vspace{1em}
+        \item Or $EV(T) \setminus \{0\}$ is a sequence $\{\lambda_n\}_{n \in \N} \subset [-\norm{T}, \norm{T}]$
+        and $\lambda_n \to 0$ as $n \to \infty$, i.e., $0 \in \sigma(T)$.
+    \end{enumerate}
+    \vspace{1em}
+    Moreover, in both cases, there exists an orthonormal basis of $H$ made by the eigenvectors
+    of $T$.
+\end{ftheorem}
+
+\begin{proof}
+    The proof is based on the FAT, and it is omitted.
+
+\end{proof}
+
+
+
