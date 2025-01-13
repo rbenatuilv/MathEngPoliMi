@@ -147,7 +147,7 @@ How many processes are created is determined by the \texttt{-np} flag in the \te
 On this example, we can see new functions that are used in MPI. We will explain them in the
 following sections.
 
-\subsection{ \texttt{MPI\_Init} and \texttt{MPI\_Finalize}}
+\subsection{ \texttt{MPI\_Init}, \texttt{MPI\_Finalize}, \texttt{MPI\_Comm\_rank} and \texttt{MPI\_Comm\_size}}
 
 The function \texttt{MPI\_Init} initializes the MPI environment. It must be called before
 any other MPI function. It is responsible for allocate storage for message buffers and decide
@@ -177,8 +177,6 @@ In general, no MPI function should be called after \texttt{MPI\_Finalize}. The f
 \begin{lstlisting}[language=C++]
 int MPI_Finalize();
 \end{lstlisting}
-
-\section{Point-to-point communication}
 
 MPI processes can be addressed via \textbf{communicators}. A communicator is a collection of
 processes that send messages to each other.\\
@@ -210,6 +208,8 @@ int MPI_Comm_size(MPI_Comm comm, int* size);
     \item \texttt{comm} is the communicator in which the size is to be determined.
     \item \texttt{size} is a pointer to the integer where the size will be stored.
 \end{itemize}
+
+\section{Point-to-point communication}
 
 \textbf{Point-to-point} communication means that we explicitly state which among the 
 communicator's processes you want to communicate with. The most basic point-to-point
