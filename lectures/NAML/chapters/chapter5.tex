@@ -1,0 +1,198 @@
+\chapter{Other topics}
+
+\section{Toeplitz matrices}
+
+A Toeplitz matrix is a matrix in which each descending diagonal from left to right is constant. In other
+words, a matrix $T$ is Toeplitz if $T_{i,j} = T_{i+1,j+1}$ for all $i,j$. A Toeplitz matrix is completely
+determined by its first row and first column, i.e., for a matrix $T$ of size $n \times n$, the set:
+
+$$\{t_i \in \R: -(n-1) \leq i \leq (n-1)\}$$
+
+determines the matrix $T$ in the following way:
+
+$$T = \begin{bmatrix}
+t_0 & t_{-1} & t_{-2} & \cdots & t_{-(n-1)} \\
+t_1 & t_0 & t_{-1} & \cdots & t_{-(n-2)} \\
+t_2 & t_1 & t_0 & \cdots & t_{-(n-3)} \\
+\vdots & \vdots & \vdots & \ddots & \vdots \\
+t_{n-1} & t_{n-2} & t_{n-3} & \cdots & t_0
+\end{bmatrix}$$
+
+\section{Circulant matrices}
+
+A circulant matrix is a special kind of Toeplitz matrix in which each row is a cyclic shift of the previous 
+row. In other words, a matrix $C$ is circulant if $C_{i,j} = C_{i+1,j+1}$ for all $i,j$, where the indices 
+are taken modulo $n$ (the size of the matrix). A circulant matrix is completely determined by its first row, 
+i.e., for a matrix $C$ of size $n \times n$, the set:
+
+$$\{c_i \in \R: 0 \leq i \leq n-1\}$$
+
+determines the matrix $C$ in the following way:
+
+$$C = \begin{bmatrix}
+c_0 & c_{n-1} & c_{n-2} & \cdots & c_1 \\
+c_1 & c_0 & c_{n-1} & \cdots & c_2 \\
+c_2 & c_1 & c_0 & \cdots & c_3 \\
+\vdots & \vdots & \vdots & \ddots & \vdots \\
+c_{n-1} & c_{n-2} & c_{n-3} & \cdots & c_0
+\end{bmatrix}$$
+
+Notice that a circulant matrix can be represented using the following permutation matrix (example with
+$n=4$):
+
+$$P = \begin{bmatrix}
+0 & 1 & 0 & 0 \\
+0 & 0 & 1 & 0 \\
+0 & 0 & 0 & 1 \\
+1 & 0 & 0 & 0
+\end{bmatrix}$$
+
+and the first row of the circulant matrix $\vec{c} = [c_0, c_1, c_2, c_3]$ in the following way:
+
+$$C = \begin{bmatrix}
+c_0 & c_1 & c_2 & c_3 \\
+c_3 & c_0 & c_1 & c_2 \\
+c_2 & c_3 & c_0 & c_1 \\
+c_1 & c_2 & c_3 & c_0
+\end{bmatrix} = (c_0 I + c_1 P + c_2 P^2 + c_3 P^3)$$
+
+Also, note that $P \in \R^{n \times n}$ (the permutation matrix in $\R^{n \times n}$) is a circulant matrix, 
+and has the following property:
+
+$$P^{m} = P^{(m \mod n)}$$
+
+with $P^0 = I$. This is a very useful property when working with circulant matrices.\\
+
+For example, assume that $C, D \in \R^{4 \times 4}$ are circulant matrices with first rows 
+$\vec{c} = [c_0, c_1, c_2, c_3]$ and $\vec{d} = [d_0, d_1, d_2, d_3]$, respectively. Then, the product
+$CD$ is also a circulant matrix with first row $\vec{e} = [e_0, e_1, e_2, e_3]$. \\
+
+In fact, we can show that the multiplication of these matrices is a multiplication of polynomials
+in the following way:
+
+$$C D = (c_0 I + c_1 P + c_2 P^2 + c_3 P^3)(d_0 I + d_1 P + d_2 P^2 + d_3 P^3)$$
+
+and by the cycling property of $P$, we have that the result will be also a polynomial in $P$ of 
+degree at $n-1 = 3$:
+
+$$C D = e_0 I + e_1 P + e_2 P^2 + e_3 P^3$$
+
+where the coefficients $e_i$ are given by:
+
+$$\vec{e} = \vec{c} \circledast \vec{d}$$
+
+where $\circledast$ denotes the cyclic convolution of the vectors $\vec{c}$ and $\vec{d}$, defined as:
+
+$$e_i = \sum_{j=0}^{n-1} c_j d_{i-j}$$
+
+\section{Eigenvalues and eigenvectors of circulant matrices}
+
+The eigenvalues and eigenvectors of circulant matrices have a very nice structure. In particular, the
+eigenvalues of a circulant matrix $C$ are given by:
+
+$$\lambda_k = c_0 + c_1 \omega^k + c_2 \omega^{2k} + \cdots + c_{n-1} \omega^{(n-1)k}$$
+
+where $\omega = e^{2 \pi i / n}$ is a primitive $n$-th root of unity. The eigenvectors of $C$ are given by:
+
+$$v_k = \frac{1}{\sqrt{n}} [1, \omega^k, \omega^{2k}, \ldots, \omega^{(n-1)k}]^T$$
+
+where $k = 0, 1, \ldots, n-1$. Notice that the eigenvectors of a circulant matrix are the columns of the
+$n \times n$ DFT matrix (Fourier matrix), which we will denote as $F_n$. The DFT matrix is defined as:
+
+$$F_n = \frac{1}{\sqrt{n}} \begin{bmatrix}
+1 & 1 & 1 & \cdots & 1 \\
+1 & \omega & \omega^2 & \cdots & \omega^{n-1} \\
+1 & \omega^2 & \omega^4 & \cdots & \omega^{2(n-1)} \\
+\vdots & \vdots & \vdots & \ddots & \vdots \\
+1 & \omega^{n-1} & \omega^{2(n-1)} & \cdots & \omega^{(n-1)(n-1)}
+\end{bmatrix}$$
+
+For example, for $n = 4$, and the circulant matrix $C$ with first row $\vec{c} = [c_0, c_1, c_2, c_3]$, 
+the eigenvalues and eigenvectors are given by:
+
+$$\lambda_0 = c_0 + c_1 + c_2 + c_3$$
+$$\lambda_1 = c_0 + c_1 i + c_2 i^2 + c_3 i^3$$
+$$\lambda_2 = c_0 + c_1 i^2 + c_2 i^4 + c_3 i^6$$
+$$\lambda_3 = c_0 + c_1 i^3 + c_2 i^6 + c_3 i^9$$
+
+as $\omega = e^{2 \pi i / 4} = i$. The eigenvectors are:
+
+$$v_0 = \frac{1}{2} [1, 1, 1, 1]^T$$
+$$v_1 = \frac{1}{2} [1, i, -1, -i]^T$$
+$$v_2 = \frac{1}{2} [1, -1, 1, -1]^T$$
+$$v_3 = \frac{1}{2} [1, -i, -1, i]^T$$
+
+which are the columns of the DFT matrix $F_4$:
+
+$$F_4 = \frac{1}{2} \begin{bmatrix}
+1 & 1 & 1 & 1 \\
+1 & i & i^2 & i^3 \\
+1 & i^2 & i^4 & i^6 \\
+1 & i^3 & i^6 & i^9
+\end{bmatrix} = \frac{1}{2} \begin{bmatrix}
+1 & 1 & 1 & 1 \\
+1 & i & -1 & -i \\
+1 & -1 & 1 & -1 \\
+1 & -i & -1 & i
+\end{bmatrix}$$
+
+Note that we can calculate the eigenvalues and eigenvectors of a circulant matrix using the DFT matrix
+$F_n$ in the following way:
+
+$$\vec{\lambda}(C) = F_n \vec{c}$$
+$$V(C) = F_n$$
+
+where $\vec{\lambda}(C)$ is the vector of eigenvalues of $C$, and $V(C)$ is the matrix of eigenvectors of $C$.
+
+\section{Convolution rule}
+
+Note that, from the properties of before, we can write the product of two circulant matrices as a new
+circulant matrix, with the coefficients given by the cyclic convolution of the coefficients of the original
+matrices. In other words, if $C, D \in \R^{n \times n}$ are circulant matrices with first rows
+$\vec{c} = [c_0, c_1, \ldots, c_{n-1}]$ and $\vec{d} = [d_0, d_1, \ldots, d_{n-1}]$, respectively, then
+the product $CD$ is also a circulant matrix with first row $\vec{e} = [e_0, e_1, \ldots, e_{n-1}]$, where
+
+$$\vec{e} = \vec{c} \circledast \vec{d}$$
+
+Now, the eigenvalues of the product $CD$ are given by:
+
+$$\vec{\lambda}(CD) = F_n \vec{e} = F_n (\vec{c} \circledast \vec{d})$$
+
+Now, notice that:
+
+$$CD x = C (Dx) = C (\lambda(D) x) = \lambda(D) (Cx) = \lambda(D) (\lambda(C) x) = \lambda(C) \lambda(D) x$$
+
+where $\lambda(C)$ and $\lambda(D)$ are the eigenvalues of $C$ and $D$, respectively. Therefore, the eigenvalues
+of the product $CD$ are given by the element-wise product of the eigenvalues of $C$ and $D$:
+
+$$\vec{\lambda}(CD) = \vec{\lambda}(C) \odot \vec{\lambda}(D)$$
+
+where $\odot$ denotes the element-wise product of two vectors. But we now that:
+
+$$\vec{\lambda}(C) = F_n \vec{c}, \quad \vec{\lambda}(D) = F_n \vec{d}$$
+
+So, combining these results, we have that:
+
+$$\vec{\lambda}(CD) = F_n \vec{c} \odot F_n \vec{d} = F_n (\vec{c} \circledast \vec{d})$$
+
+Formally, we denote this relation as the convolution rule for circulant matrices (also known as 
+as the circular convolution theorem):
+
+\begin{theorem}
+    For $\vec{c} \in \R^n$ and $\vec{d} \in \R^n$, we have that:
+
+    $$F_n (\vec{c} \circledast \vec{d}) = F_n \vec{c} \odot F_n \vec{d}$$
+
+    where $\circledast$ denotes the cyclic convolution of the vectors $\vec{c}$ and $\vec{d}$, and $\odot$ denotes
+    the element-wise product of two vectors.
+\end{theorem}
+
+Notice that this is a very useful property. Indeed, notice that performing a circular convolution
+between 2 vectors takes $O(n^2)$ operations, and then computing the DFT of the result takes $O(n \log n)$
+operations, resulting in a total complexity of $O(n \log n + n^2) = O(n^2)$ operations. On the other 
+hand, computing the DFT of the two vectors takes $O(n \log n)$ operations, and then performing the element-wise
+product takes $O(n)$ operations, resulting in a total complexity of $O(n \log n + n) = O(n \log n)$ operations.\\
+
+Therefore, the convolution rule allows us to compute the left-hand side of the equation in less
+operations. 
+

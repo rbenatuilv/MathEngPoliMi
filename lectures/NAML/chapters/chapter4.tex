@@ -1,0 +1,390 @@
+\chapter{Approximation properties of neural networks}
+
+In this chapter, we will study the approximation properties of neural networks. 
+We will show that neural networks can approximate any continuous function on a 
+compact set to arbitrary precision. This result is known as the universal 
+approximation theorem. We will also discuss the limitations of neural networks in 
+approximating functions.
+
+\section{Universal approximation theorem}
+
+In this section, we will state and prove the universal approximation theorem.
+First, we need some concepts:
+
+\subsection{Preliminary notions}
+
+\begin{definition}
+    A function $\sigma: \R \to \R$ is called a \textbf{sigmoidal function} if:
+    $$\lim_{x \to -\infty} \sigma(x) = 0 \quad \text{and} \quad \lim_{x \to \infty} \sigma(x) = 1$$
+\end{definition}
+
+\begin{definition}
+    Let $n$ be a natural number and $I_n = [0, 1]^n$. We say that an activation function
+    $f: \R \to \R$ is \textbf{$n$-discriminatory} if the only signed Borel measure $\mu$ such that:
+    $$\int_{I_n} f(y \cdot x + \theta) d\mu(w) = 0 \quad \forall y \in \R^n, \theta \in \R$$
+
+    is the zero measure.
+\end{definition}
+
+\begin{definition}
+    We say an activation function $f: \R \to \R$ is \textbf{discriminatory} if it is 
+    $n$-discriminatory for all $n \in \N$.
+\end{definition}
+
+\begin{remark}
+    A discriminatory function $\sigma$ is \textbf{volumetrically non-destructive} when 
+    it acts on linear transformations of input.
+\end{remark}
+
+\begin{definition}
+    A subspace $U$ of $X$ is called \textbf{dense} in $X$ if $\overline{U} = X$. In other
+    words, $U$ is dense in $X$ if there are elements $u \in U$ arbitrarily close to any
+    element $x \in X$. Alternatively:
+    \begin{enumerate}
+        \item $\forall x \in X$, there is a sequence $\{u_n\} \subset U$ s.t. $u_n \to x$.
+        \item $\forall x \in X, \forall \epsilon > 0, \exists u \in U$ s.t. $\norm{x - u} < \epsilon$.
+    \end{enumerate}
+\end{definition}
+
+The fact that the subspace $U$ is \textbf{not dense} in $X$ can be described as:
+\begin{enumerate}
+    \item There are elements $x_0 \in X$ such that no element $u \in U$ is arbitrarily close to $x_0$.
+    \item There is a $\delta > 0$ such that $\forall u \in U$ we have $\norm{x_0 - u} \geq \delta$.
+\end{enumerate}
+
+\begin{definition}
+    We say that a neural network is an \textbf{universal approximator} for the space
+    $(S, d)$ if the space of outcomes $U$ is $d$-dense in $S$, i.e.:
+    $$\forall f \in S, \; \forall \epsilon > 0, \; \exists g \in U \text{ s.t. } d(f, g) < \epsilon$$
+
+    In practice it means that for any function $f$ in the space $S$, there are functions in $U$ in
+    any proximity to $f$.
+\end{definition}
+
+Let us also introduce some notations:
+\begin{itemize}
+    \item Let $K$ denote a compact set in $\R^n$, and denote $C(K)$ the set of real-valued
+    continuous functions on $K$.
+
+    \item Let $M(I_n)$ denote the set of signed regular Borel measures on $I_n$. By regular,
+    we mean that, while different measures may define different sizes for a single set, they
+    all ideally convey some idea of how much space that set takes up relative to the 
+    larger space it is contained in.
+\end{itemize}
+
+\begin{theorem}[Representation of linear bounded functionals]
+    Let $K$ be a compact set in $\R^n$, and let $F$ be a linear bounded functional on $C(K)$.
+    Then there exists a unique signed regular Borel measure $\mu$ on $K$ such that:
+    $$F(f) = \int_K f(x) d\mu(x) \quad \forall f \in C(K)$$
+
+    Moreover, the norm of $F$ is equal to the total variation of $\mu$, i.e.:
+    $$\norm{F} = |\mu|(K)$$
+\end{theorem}
+
+\begin{theorem}[Hahn-Banach]
+    Let $X$ be a linear real vector space, $X_0$ a linear subspace, $p$ a linear 
+    convex functional on $X$, and $f$ a linear functional on $X_0$ such that:
+    $$f(x) \leq p(x) \quad \forall x \in X_0$$
+
+    Then there exists a linear functional $F$ on $X$ such that:
+    \begin{enumerate}[label=(\roman*)]
+        \item $F(x) = f(x) \quad \forall x \in X_0$
+        \item $F(x) \leq p(x) \quad \forall x \in X$
+    \end{enumerate}
+\end{theorem}
+
+\begin{remark}
+    The HB theorem tells us that we can always extend a linear functional defined on a 
+    subspace to obtain a linear functional on the whole space that behaves in the same way.
+    This is useful because it allows us to study the behavior of linear functionals on a 
+    larger space, which can provide more information about the structure of the original 
+    subspace.
+\end{remark}
+
+From the HB theorem, we have the following 2 lemmas:
+
+\begin{lemma}
+    Let $U$ be a linear subspace of a normed linear space $X$ and consider $x_0 \in X$
+    such that:
+    $$d(x_0, U) \geq \delta$$
+
+    for some $\delta > 0$, i.e.:
+    $$\norm{x_0 - u} \geq \delta \quad \forall u \in U$$
+    
+    Then there exists a bounded linear functional $F$ on $X$ such that:
+    \begin{enumerate}[label=(\roman*)]
+        \item $\norm{F} \leq 1$
+        \item $F(u) = 0 \quad \forall u \in U$
+        \item $F(x_0) = \delta$
+    \end{enumerate}
+\end{lemma}
+
+\begin{lemma}
+    Let $U$ be a linear, non-dense subspace of a normed linear space $X$. Then there
+    is a bounded linear functional $F$ on $X$ such that:
+    \begin{enumerate}[label=(\roman*)]
+        \item $F \neq 0$
+        \item $F(u) = 0 \quad \forall u \in U$
+    \end{enumerate}
+\end{lemma}
+
+\begin{lemma}
+    Let $U$ be a linear, non-dense subspace of $C(I_n)$. Then, there is a measure 
+    $\mu \in M(I_n)$ such that:
+    $$\int_{I_n} h \, d\mu = 0 \quad \forall h \in U$$
+\end{lemma}
+
+\begin{proof}
+    Considering $X = C(I_n)$ in the previous lemma, there is a bounded linear functional
+    $F: C(I_n) \to \R$ such that $F \neq 0$ and $F(h) = 0 \; \forall h \in U$. Applying
+    the representation theorem, there is a measure $\mu \in M(I_n)$ such that:
+    $$F(f) = \int_{I_n} f \, d\mu \quad \forall f \in C(I_n)$$
+
+    In particular, for any $h \in U$, we have $F(h) = 0$, which implies:
+    $$\int_{I_n} h \, d\mu = 0 \quad \forall h \in U$$
+
+    This completes the proof.
+\end{proof}
+
+\begin{remark}
+    Note that $F \neq 0$ implies that $\mu$ is not the zero measure.
+\end{remark}
+
+\subsection{Important results}
+
+\begin{proposition}
+    Let $\sigma$ be any continuous discriminatory function. Then, the finite sums of 
+    the form:
+    $$G(x) = \sum_{j=1}^{N} \alpha_j \sigma(w_j^T \cdot x + \theta_j), \quad w_j \in \R^n, \alpha_j, \theta_j \in \R$$
+
+    are dense in $C(I_n)$.
+\end{proposition}
+
+\begin{proof}
+    Since $\sigma$ is continuous, it follows that:
+    $$U = \left\{ G : G(x) = \sum_{j=1}^{N} \alpha_j \sigma(w_j^T \cdot x + \theta_j) \right\}$$
+
+    is a linear subspace of $C(I_n)$. We will show that $U$ is dense in $C(I_n)$. 
+    Assume by contradiction that $U$ is not dense in $C(I_n)$. Then, by HB theorem,
+    there is a bounded linear functional $F$ on $C(I_n)$ such that:
+    \begin{enumerate}[label=(\roman*)]
+        \item $F(G) = 0 \quad \forall G \in U$
+        \item $F \neq 0$
+    \end{enumerate}
+
+    By the representation theorem, there is a measure $\mu \in M(I_n)$ such that:
+    $$F(f) = \int_{I_n} f \, d\mu \quad \forall f \in C(I_n)$$
+
+    In particular, since $\sigma(w^T \cdot x + \theta) \in U$, we have:
+    $$F(\sigma(w^T \cdot x + \theta)) = \int_{I_n} \sigma(w^T \cdot x + \theta) \, d\mu(x) = 0$$
+
+    However, we have assumed that $\sigma$ is discriminatory, so this implies that 
+    $\mu$ is the zero measure. This contradicts the fact that $F \neq 0$, so $U$ must
+    be dense in $C(I_n)$.
+
+\end{proof}
+
+Let us propose now some extra definitions:
+
+\begin{definition}
+    Let:
+    \begin{itemize}
+        \item $P_{w, \theta} = \{x: w^T x + \theta = 0\}$ be a hyperplane in $\R^n$ with
+        normal vector $w$ and intercept $\theta$.
+
+        \item $H_{w, \theta}^+ = H_{w, \theta} = \{x: w^T x + \theta > 0\}$ be the positive
+        half-space defined by the hyperplane.
+
+        \item $H_{w, \theta}^- = \{x: w^T x + \theta < 0\}$ be the negative half-space.
+    \end{itemize}
+\end{definition}
+
+\begin{lemma}
+    Let $\mu \in M(I_n)$. If $\mu$ vanishes on all hyperplanes and open half-spaces in
+    $\R^n$, then $\mu$ is the zero measure. More precisely, if:
+    $$\mu(P_{w, \theta}) = 0 \quad \text{and} \quad \mu(H_{w, \theta}) = 0 \quad \forall w, \theta$$
+
+    then $\mu = 0$.
+\end{lemma}
+
+Now, let us prove some more propositions:
+
+\begin{proposition}
+    Any continuous sigmoidal function is discriminatory for all measures $\mu \in M(I_n)$.
+\end{proposition}
+
+\begin{proof}
+    Let $\mu \in M(I_n)$ be a fixed measure. Choose a continuos sigmoidal function $\sigma$,
+    that satisfies:
+    \begin{equation}
+        \int_{I_n} \sigma(w^T \cdot x + \theta) \, d\mu(x) = 0 \quad \forall w \in \R^n, \theta
+        \tag{$\star$}
+    \end{equation}
+    
+
+    We need to show that $\mu = 0$. First, construct the continuous function:
+    $$\sigma_{\lambda}(x) = \sigma(\lambda (w^T x + \theta) + \phi)$$
+
+    for given $w, \theta, \phi$ and use the definition of a sigmoidal to note that:
+    $$\lim_{\lambda \to \infty} \sigma_{\lambda}(x) = \begin{cases}
+        1, & \text{if } w^T x + \theta > 0 \\
+        0, & \text{if } w^T x + \theta < 0\\
+        \sigma(\phi), & \text{if } w^T x + \theta = 0
+    \end{cases}$$
+
+    Define the bounded function:
+    $$\gamma(x) = \begin{cases}
+        1, & \text{if } x \in H_{w, \theta}^+ \\
+        0, & \text{if } x \in H_{w, \theta}^- \\
+        \sigma(\phi), & \text{if } x \in P_{w, \theta}
+    \end{cases}$$
+
+    and notice that $\sigma_{\lambda}(x) \to \gamma(x)$ pointwise on $\R$, as $\lambda \to \infty$.
+    The dominated convergence theorem allows switching the limit and the integral, so:
+    $$\lim_{\lambda \to \infty} \int_{I_n} \sigma_{\lambda}(x) \, d\mu(x) = \int_{I_n} \gamma(x) \, d\mu(x)=$$
+    $$= \int_{H_{w, \theta}^+} \gamma(x) \, d\mu(x) + \int_{H_{w, \theta}^-} \gamma(x) \, d\mu(x) + \int_{P_{w, \theta}} \gamma(x) \, d\mu(x) =$$
+    $$= \mu(H_{w, \theta}^+) + \sigma(\phi) \mu(P_{w, \theta})$$
+
+    Equation ($\star$) implies that the limit of the left-hand side is zero, so we must have:
+    $$\mu(H_{w, \theta}^+) + \sigma(\phi) \mu(P_{w, \theta}) = 0$$
+
+    Since this relationship holds for any value of $\phi$, taking $\phi \to \infty$ and using properties of
+    the sigmoidal function, we get:
+    $$\mu(H_{w, \theta}^+) + \mu(P_{w, \theta}) = 0 \quad \forall w, \theta$$
+
+    Similarly, taking $\phi \to -\infty$ gives:
+    \begin{equation}
+        \mu(H_{w, \theta}^-) + \mu(P_{w, \theta}) = 0 \quad \forall w, \theta
+        \tag{$\star\star$}
+    \end{equation}
+
+    therefore:
+    $$\mu(P_{w, \theta}) = 0 \quad \forall w, \theta$$
+
+    Note that, since $H_{w, \theta}^+ = H_{-w, -\theta}^-$, the relation ($\star\star$) implies that
+    the measure $\mu$ vanishes on all hyperplanes and open half-spaces in $\R^n$. By the previous lemma,
+    this implies that $\mu = 0$. Therefore, the function $\sigma$ is discriminatory.
+
+\end{proof}
+
+\begin{proposition}
+    The ReLU function is 1-discriminatory.
+\end{proposition}
+
+\begin{proof}
+    Let $\mu$ be a signed Borel measure, and assume the following holds for all $y \in \R$ and $\theta \in \R$:
+    $$\int_{I_1} ReLU(yx + \theta) \, d\mu(x) = 0$$
+
+    We want to show that $\mu$ is the zero measure. For that, we will construct a sigmoid bounded, continuous
+    (and therefore Borel measurable) function from subtracting two ReLU functions with different parameters.
+    In particular, consider the function:
+    $$f(x) = \begin{cases}
+        0, & \text{if } x < 0 \\
+        x, & \text{if } x \in [0, 1] \\
+        1, & \text{if } x > 1
+    \end{cases}$$
+
+    Then any function of the form $g(x) = f(yx + \theta)$ with $y \neq 0$ can be described as:
+    $$g(x) = ReLU(yx + \theta_1) - ReLU(yx + \theta_2)$$
+
+    by setting $\theta_1 = -\theta / y$ and $\theta_2 = (1 - \theta)/y$. If $y=0$, then instead set:
+    $$g(x) = f(\theta) = \begin{cases}
+        ReLU(f(\theta)), & \text{if } f(\theta) \geq 0 \\
+        -ReLU(-f(\theta)), & \text{if } f(\theta) < 0
+    \end{cases}$$
+
+    which means that for any $y \in \R, \theta \in \R$:
+    $$\int f(yx + \theta) \, d\mu(x) = \int (ReLU(yx + \theta_1) - ReLU(yx + \theta_2)) \, d\mu(x) =$$
+    $$= \int ReLU(yx + \theta_1) \, d\mu(x) - \int ReLU(yx + \theta_2) \, d\mu(x) =$$
+    $$= 0 - 0 = 0$$
+
+    By the previous lemma, $f$ is discriminatory, so $\mu$ must be the zero measure.
+    Therefore, the ReLU function is 1-discriminatory.
+
+\end{proof}
+
+Finally, to complement the previous results, we have the following proposition:
+
+\begin{definition}
+    For $f: \R \to \R$ an activation function, we define:
+    $$\Sigma_n(f) = span \{f(y \cdot x + \theta): y\in \R^n, \theta \in \R\}$$
+\end{definition}
+
+\begin{proposition}
+    If $\Sigma_1(f)$ is dense in $C(I_1)$, then $\Sigma_n(f)$ is dense in $C(I_n)$.
+\end{proposition}
+
+
+\subsection{Universal approximation theorem}
+
+Now, we are ready to state the universal approximation theorem:
+
+\begin{theorem}[Universal approximation theorem]
+    Let $\sigma$ be a continuous sigmoidal function. Then, for any compact set $K \subset \R^n$ and any
+    function $f \in C(K)$, there exist a neural network $G$ with a single hidden layer and a finite number
+    of neurons such that:
+    $$\norm{f - G}_K < \epsilon$$
+
+    for any $\epsilon > 0$. This also holds for ReLU activation functions.
+\end{theorem}
+
+\begin{proof}
+    Note that a single hidden layer neural network can be written as:
+    $$G(x) = \sum_{j=1}^{N} \alpha_j \sigma(w_j^T \cdot x + \theta_j)$$
+
+    where $N$ is the number of neurons in the hidden layer, and $\sigma$ is the activation function,
+    which is either a continuous sigmoidal function or the ReLU function.\\
+
+    We have shown that the finite sums of the form $G(x)$ are dense in $C(I_n)$, when $\sigma$ is a
+    discriminatory function. We also proved that any continuous sigmoidal function is discriminatory,
+    so the result holds for sigmoidal functions.\\
+
+    For the ReLU function, we have shown that it is 1-discriminatory, so the linear combinations of
+    $n$ ReLU functions are dense in $C(I_n)$. Therefore, the universal approximation theorem holds for
+    ReLU functions as well.
+
+\end{proof}
+
+\subsection{Complexity of the neural network}
+
+Let us introduce some definitions:
+
+\begin{definition}
+    Let:
+    \begin{itemize}
+        \item $W_m^{n}$ be the class of $n$-variable functions with partial derivatives up to order $m$.
+        \item $W_m^{n,2} \subset W_m^n$ be the compositional subclass following binary tree structure.
+    \end{itemize}
+\end{definition}
+
+Then, we have:
+
+\begin{theorem}
+    Let $\sigma: \R \to \R$ be infinitely differentiable, and not polynomial. For $f \in W_m^{n}$, the 
+    complexity of shallow networks that provide an accuracy of $\epsilon$ is:
+    $$O(\epsilon^{-n/m})$$
+
+    and it is the best possible.
+\end{theorem}
+
+\begin{theorem}
+    For $f \in W_m^{n,2}$, consider a deep network with the same compositional architecture and with an 
+    activation function $\sigma: \R \to \R$ which is infinitely differentiable and not polynomial. Then, the
+    complexity of the network that provides an accuracy of $\epsilon$ is:
+    $$O((n-1) \epsilon^{-2/m})$$ 
+\end{theorem}
+
+\begin{theorem}
+    Let $f$ be a L-Lipschitz continuous function of $n$ variables. Then, the complexity of a network which is 
+    a linear combination of ReLU providing an approximation with accuracy at least $\epsilon$ is:
+    $$O\left(\left(\frac{\epsilon}{L}\right)^{-n}\right)$$
+
+    whereas that of a deep compositional architecture is:
+    $$O\left((n-1)\left(\frac{\epsilon}{L}\right)^{-2}\right)$$
+\end{theorem}
+
+
+
+
+
+
