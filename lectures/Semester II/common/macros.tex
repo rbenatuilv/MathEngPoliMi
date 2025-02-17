@@ -1,0 +1,48 @@
+%% === Macros ===
+\newcommand{\prob}{\mathbb{P}}
+\newcommand{\power}{\mathcal{P}}
+\newcommand{\E}{\mathbb{E}}
+\newcommand{\R}{\mathbb{R}}
+\newcommand{\Rbar}{\overline{\R}}
+\newcommand{\Z}{\mathbb{Z}}
+\newcommand{\N}{\mathbb{N}}
+\newcommand{\Q}{\mathbb{Q}}
+\newcommand{\C}{\mathbb{C}}
+\newcommand{\T}{\mathcal{T}}
+\newcommand{\1}{\mathbbm{1}}
+\newcommand{\M}{\mathcal{M}}
+\newcommand{\B}{\mathcal{B}}
+\newcommand{\K}{\mathcal{K}}
+\newcommand{\Lcur}{\mathcal{L}}
+\newcommand{\Ncur}{\mathcal{N}}
+\newcommand{\notto}{\nrightarrow}
+\newcommand{\norm}[1]{\left\|#1\right\|}
+\newcommand{\intprod}[2]{\left\langle #1, #2 \right\rangle}
+\newcommand{\weakto}{\rightharpoonup}
+
+\DeclareMathOperator*{\argmin}{arg\,min}
+\DeclareMathOperator*{\argmax}{arg\,max}
+\DeclareMathOperator{\esssup}{ess\,sup}
+
+
+
+\newcommand{\puntaje}[1]{
+    {\color{red}
+    \ifthenelse{\equal{#1}{1}}%
+    {[#1 punto]}    % #1 = 1    --> [1 punto]
+    {[#1 puntos]}   % #1 != 1   --> [#1 puntos]
+    }
+}
+\newcommand{\comentario}[1]{
+    {\color{violet} \%\% #1 \%\% }
+}
+
+\newcommand{\problema}[1]{
+    \stepcounter{section}
+    \section*{Problema \thesection \puntaje{#1} }
+}
+
+
+
+
+

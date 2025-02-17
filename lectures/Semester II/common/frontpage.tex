@@ -1,0 +1,49 @@
+% --- Encabezado --- %
+\newcommand{\header}[1]
+{
+\begin{minipage}[b]{0.15\textwidth}
+    %\color{white}.
+    \includegraphics[width=2.2cm]{../common/figures/poli_logo.png}
+\end{minipage}
+\begin{minipage}[b]{0.84\textwidth}
+\sc
+Politecnico di Milano\\
+School of Industrial and Information Engineering\\
+Academic Year #1\\
+\end{minipage}
+\vspace{0.5em}
+}
+
+% --- Portada --- %
+\newcommand{\frontpage}[4]
+{
+    \begin{titlepage}
+
+        % Incluir el header definido anteriormente
+        \header{#4}
+        
+        \vfill % Rellenar el espacio hasta el final de la página
+        
+        % Título del curso
+        \begin{center}
+            \LARGE \textbf{#1} \\ % Título del curso en negrita y grande
+            \vspace{0.5cm}
+            \Large Professor: #2 \\ % Nombre del profesor
+            \vspace{0.5cm}
+            \Large \textit{Last updated: \today} % Versión del documento
+        \end{center}
+        
+        \vfill % Rellenar el espacio hasta el final de la página
+        
+        % Advertencia en la parte inferior
+        \begin{center}
+            \textbf{This document is intended for educational purposes only.}\\ % Advertencia
+            % Warn students that these are unreviewed notes
+            \textbf{These are unreviewed notes and may contain errors.} % Advertencia
+
+            Made by #3 % Nombre del autor
+        \end{center}
+        
+    \end{titlepage}
+
+}
